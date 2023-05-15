@@ -1,4 +1,5 @@
 require('dotenv').config();
+require('express-async-errors');
 const connectDB = require('./db/connect');
 const config = require('./config');
 const logger = require('./logger');

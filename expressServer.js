@@ -66,7 +66,7 @@ class ExpressServer {
         });
 
         http.createServer(this.app).listen(this.port);
-        console.log(`Listening on port ${this.port}`);
+        console.log(`Listening on port http://localhost:${this.port}`);
       });
   }
 

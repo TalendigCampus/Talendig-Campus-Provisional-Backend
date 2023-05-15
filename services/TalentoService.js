@@ -1,5 +1,9 @@
 /* eslint-disable no-unused-vars */
+const { StatusCodes } = require('http-status-codes');
 const Service = require('./Service');
+const CustomAPIError = require('../errors/index');
+const { SUCCESSREPONSETYPE, SHORTTEXTREPONSE } = require('../constants/helperConstants');
+const { textResponseFormat } = require('../utils/utilsFunctions');
 
 /**
 * Add a new talent to the store
@@ -533,20 +537,25 @@ const getTalentAssingmentFileById = ({ talentAssignmentFileId }) => new Promise(
 * talentId String ID of talent to return
 * returns getTalentById_200_response
 * */
-const getTalentById = ({ talentId }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        talentId,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
+const getTalentById = ({ talentId }) => {
+
+  const talent = null;
+  const entityName = 'Talento';
+
+  if(!talent){
+    throw new CustomAPIError.NotFoundError(
+      textResponseFormat(entityName, SHORTTEXTREPONSE.notFound)
+    );
+  }
+
+  return{
+    payload: {
+      hasError: false,
+      message: 'Talento encontrado',
+      content: talent
     }
-  },
-);
+  }
+};
 /**
 * Find a talent process with recruiter by ID
 * Returns a single talent
