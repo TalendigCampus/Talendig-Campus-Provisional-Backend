@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
+const AddressSchema = require('./commons/address');
 
 const UserSchema = new mongoose.Schema({
     name: {
@@ -39,9 +39,7 @@ const UserSchema = new mongoose.Schema({
             message: 'Por favor, coloque un número valido',
         },
     },
-    address: {
-        type: 
-    }
+    address: AddressSchema,
 
 
 //   email: {
