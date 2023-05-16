@@ -24,7 +24,7 @@ class Controller {
       message: error.error ? error.error : error.message,
       content: {},
     }
-    
+    logger.error('error sucedio', error);
     response.json(responseContent);
   }
 
