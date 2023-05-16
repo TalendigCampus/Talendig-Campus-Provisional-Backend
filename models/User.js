@@ -2,13 +2,48 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 
 const UserSchema = new mongoose.Schema({
-//   name: {
-//     type: String,
-//     required: [true, 'Please provide name'],
-//     minlength: 3,
-//     maxlength: 20,
-//     trim: true,
-//   },
+    name: {
+        type: String,
+        required: [true, 'Por favor, coloque un nombre'],
+        minlength: 3,
+        trim: true,
+    },
+    lastName: {
+        type: String,
+        required: [true, 'Por favor, coloque un apellido'],
+        minlength: 3,
+        trim: true,
+    },
+    prhotoUrl: {
+        type: String,
+        trim: true,
+    },
+    idCard: {
+        type: String,
+        trim: true,
+        required: [true, 'Por favor, coloque una identificación'],
+        minlength: 5,
+        unique: true,
+    },
+    avatar: {
+        type: String,
+        required: [true, 'Por favor, coloque un avatar'],
+        minlength: 2,
+        maxlength: 2
+    },
+    phoneNumber: {
+        type: String,
+        required: [true, 'Por favor, coloque un número de contacto'],
+        validate: {
+            validator: (phoneNumber) => /\d{10}/.test(phoneNumber),
+            message: 'Por favor, coloque un número valido',
+        },
+    },
+    address: {
+        type: 
+    }
+
+
 //   email: {
 //     type: String,
 //     required: [true, 'Please provide email'],
