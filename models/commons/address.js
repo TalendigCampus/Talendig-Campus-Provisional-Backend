@@ -32,4 +32,4 @@ const AddressSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Address', AddressSchema);
+module.exports = AddressSchema;
