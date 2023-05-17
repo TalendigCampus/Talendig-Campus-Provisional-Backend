@@ -9,34 +9,49 @@ const InstructorSchema = new mongoose.Schema(
       enum: ['Femenino', 'Masculino', 'Otro'],
       required: [true, 'Por favor, selecciona un género'],
     },
-
     languages: {
       type: [mongoose.Types.ObjectId],
-      ref: 'Languaje',
+      ref: 'Language',
       required: [true, 'Por favor, selecciona un idioma'],
     },
-
-    emergencyContacts: {
+    contacts: {
       type: [mongoose.Types.ObjectId],
       ref: 'Contact',
       required: [true, 'Por favor, agregar el contacto de emergencia'],
     },
-
     lastName: {
       type: String,
       trim: true,
       maxLength: 50,
       required: [true, 'Por favor ingrese su apellido.'],
     },
-
+    address: AddressSchema,
     phone: {
       type: String,
-      required: [true, 'Por favor ingrese su apellido.'],
+      required: [true, 'Por favor, agregue el número telefónico'],
+      validate: {
+        validator(value) {
+          return validator.isMobilePhone(value, 'es-DO');
+        },
+        message: 'Por favor, agregue un número telefónico válido',
+      },
     },
-
-    address: AddressSchema,
+    birthDate: {
+      type: Date,
+      required: [true, 'Por favor, agregar fecha de nacimiento'],
+    },
+    education: {
+      type: [mongoose.Types.ObjectId],
+      ref: 'Education',
+      required: [true, 'Por favor, agregar la educación'],
+    },
+    workExperience: {
+      type: [mongoose.Types.ObjectId],
+      ref: 'WorkExperience',
+      required: [true, 'Por favor, agregar la experiencia laboral'],
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoose.model('Instructor', InstructorSchema);
