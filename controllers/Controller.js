@@ -23,7 +23,7 @@ class Controller {
       hasError: true,
       message: error.error ? error.error : error.message,
       content: {},
-    }
+    };
     logger.error('error sucedio', error);
     response.json(responseContent);
   }
@@ -42,7 +42,7 @@ class Controller {
   static collectFile(request, fieldName) {
     let uploadedFileName = '';
     if (request.files && request.files.length > 0) {
-      const fileObject = request.files.find(file => file.fieldname === fieldName);
+      const fileObject = request.files.find((file) => file.fieldname === fieldName);
       if (fileObject) {
         const fileArray = fileObject.originalname.split('.');
         const extension = fileArray.pop();
