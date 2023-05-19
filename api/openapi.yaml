@@ -10915,8 +10915,10 @@ components:
           type: string
         title:
           type: string
-        technology:
-          $ref: '#/components/schemas/Technology'
+        technologies:
+          items:
+            $ref: '#/components/schemas/Technology'
+          type: array
         languages:
           $ref: '#/components/schemas/Language'
         workExperience:
@@ -11777,8 +11779,10 @@ components:
           type: string
         address:
           $ref: '#/components/schemas/Address'
-        technology:
-          $ref: '#/components/schemas/Technology'
+        technologies:
+          items:
+            $ref: '#/components/schemas/Technology'
+          type: array
         biography:
           type: string
         email:
