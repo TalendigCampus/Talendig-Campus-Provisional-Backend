@@ -8,12 +8,12 @@ const AdminSchema = new mongoose.Schema({
   },
   languages: {
     type: [mongoose.Types.ObjectId],
-    ref: 'language',
+    ref: 'Language',
     required: [true, 'Por favor, selecciona un idioma'],
   },
-  emergencyContacts: {
+  contacts: {
     type: [mongoose.Types.ObjectId],
-    ref: 'contacts',
+    ref: 'Contact',
     required: [true, 'Por favor, selecciona un contacto de emergencia'],
   },
   birthdate: {
@@ -23,12 +23,12 @@ const AdminSchema = new mongoose.Schema({
   },
   education: {
     type: [mongoose.Types.ObjectId],
-    ref: 'education',
+    ref: 'Education',
     required: [true, 'Por favor seleccione un tipo de educacion'],
   },
   workExperience: {
     type: [mongoose.Types.ObjectId],
-    ref: 'workExperience',
+    ref: 'WorkExperience',
   },
 });
 
