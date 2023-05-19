@@ -8,6 +8,7 @@
 
 const Controller = require('./Controller');
 const service = require('../services/UsuarioService');
+
 const addUser = async (request, response) => {
   await Controller.handleRequest(request, response, service.addUser);
 };
@@ -35,7 +36,6 @@ const logOutUser = async (request, response) => {
 const updateUser = async (request, response) => {
   await Controller.handleRequest(request, response, service.updateUser);
 };
-
 
 module.exports = {
   addUser,
