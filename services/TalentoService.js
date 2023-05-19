@@ -2,7 +2,7 @@
 const { StatusCodes } = require('http-status-codes');
 const Service = require('./Service');
 const CustomAPIError = require('../errors/index');
-const { SUCCESSREPONSETYPE, SHORTTEXTREPONSE } = require('../constants/helperConstants');
+const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
 const { textResponseFormat } = require('../utils/utilsFunctions');
 
 /**
@@ -539,22 +539,22 @@ const getTalentAssingmentFileById = ({ talentAssignmentFileId }) => new Promise(
 * */
 const getTalentById = ({ talentId }) => {
 
-  const talent = null;
+  const talent = {};
   const entityName = 'Talento';
 
-  if(!talent){
+  if (!talent) {
     throw new CustomAPIError.NotFoundError(
-      textResponseFormat(entityName, SHORTTEXTREPONSE.notFound)
+      textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
     );
   }
 
-  return{
+  return {
     payload: {
       hasError: false,
       message: 'Talento encontrado',
-      content: talent
-    }
-  }
+      content: talent,
+    },
+  };
 };
 /**
 * Find a talent process with recruiter by ID

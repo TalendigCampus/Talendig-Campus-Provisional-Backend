@@ -1,5 +1,9 @@
 /* eslint-disable no-unused-vars */
 const Service = require('./Service');
+const CustomAPIError = require('../errors/index');
+const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
+const { textResponseFormat } = require('../utils/utilsFunctions');
+const UserSchema = require('../models/user');
 
 /**
 * Add a new usuario to the store
@@ -8,20 +12,21 @@ const Service = require('./Service');
 * user User Create a new usuario in the store
 * returns getUserById_200_response
 * */
-const addUser = ({ user }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        user,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const addUser = async ({ user }) => {
+  const entityName = 'Usuario';
+  const preUser = user;
+  preUser.avatar = user.name[0].toUpperCase() + user.lastName[0].toUpperCase();
+
+  const userCreated = await UserSchema.create(preUser);
+
+  return {
+    payload: {
+      hasError: false,
+      message: textResponseFormat(entityName, SHORTTEXTREPONSE.found),
+      content: userCreated,
+    },
+  };
+};
 /**
 * Deletes a usuario
 * delete a usuario

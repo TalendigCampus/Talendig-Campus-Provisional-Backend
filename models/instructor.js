@@ -4,6 +4,12 @@ const AddressSchema = require('./commons/address');
 
 const InstructorSchema = new mongoose.Schema(
   {
+    statusId: {
+      type: mongoose.Types.ObjectId,
+      trim: true,
+      ref: 'Status',
+      required: [true, 'Por favor, coloque un estado'],
+    },
     gender: {
       type: String,
       enum: ['Femenino', 'Masculino', 'Otro'],
