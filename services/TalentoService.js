@@ -538,7 +538,8 @@ const getTalentAssingmentFileById = ({ talentAssignmentFileId }) => new Promise(
 * returns getTalentById_200_response
 * */
 const getTalentById = ({ talentId }) => {
-  const talent = null;
+
+  const talent = {};
   const entityName = 'Talento';
 
   if (!talent) {
