@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
 
 const RecruiterSchema = new mongoose.Schema({
   gender: {
@@ -10,7 +9,7 @@ const RecruiterSchema = new mongoose.Schema({
 
   languages: {
     type: [mongoose.Types.ObjectId],
-    ref: 'Languaje',
+    ref: 'Language',
     required: [true, 'Por favor, selecciona un idioma'],
   },
 
@@ -20,7 +19,7 @@ const RecruiterSchema = new mongoose.Schema({
     required: [true, 'Por favor, agregar los datos de la compañia'],
   },
 
-  emergencyContacts: {
+  contacts: {
     type: [mongoose.Types.ObjectId],
     ref: 'Contact',
     required: [true, 'Por favor, agregar el contacto de emergencia'],
