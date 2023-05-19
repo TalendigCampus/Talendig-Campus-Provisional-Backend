@@ -13,7 +13,6 @@ const UserSchema = require('../models/user');
 * returns getUserById_200_response
 * */
 const addUser = async ({ user }) => {
-  const talent = null;
   const entityName = 'Usuario';
   const preUser = user;
   preUser.avatar = user.name[0].toUpperCase() + user.lastName[0].toUpperCase();
