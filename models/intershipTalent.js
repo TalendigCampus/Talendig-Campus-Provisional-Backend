@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 
-const intershipTalent = new mongoose.Schema({
+const intershipTalentSchema = new mongoose.Schema({
     internshipId:{
         type: String,
         required: [true, 'Por favor de digitar internshipId'],
@@ -34,4 +34,4 @@ const intershipTalent = new mongoose.Schema({
     {timestamps: true}
 );
 
-module.exports = mongoose.model('IntershipTalent', intershipTalent);
+module.exports = mongoose.model('intershipTalents', intershipTalentSchema);

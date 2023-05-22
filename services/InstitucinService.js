@@ -8,20 +8,25 @@ const Service = require('./Service');
 * institution Institution Created institution object (optional)
 * returns createInstitution_200_response
 * */
-const createInstitution = ({ institution }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        institution,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const createInstitution = ({ institution }) => {
+
+  const institutionData = {};
+  const entityName = 'Intership';
+
+  if (!institutionData) {
+    throw new CustomAPIError.NotFoundError(
+      textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  return {
+    payload: {
+      hasError: false,
+      message: 'Institution Creado',
+      content: institutionData,
+    },
+  };
+};
 /**
 * Create intership
 * Create intership
@@ -29,20 +34,25 @@ const createInstitution = ({ institution }) => new Promise(
 * intership Intership Created intership object (optional)
 * returns createIntership_200_response
 * */
-const createIntership = ({ intership }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        intership,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const createIntership = ({ intership }) => {
+
+  const intershipData = {};
+  const entityName = 'Intership';
+
+  if (!intershipData) {
+    throw new CustomAPIError.NotFoundError(
+      textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  return {
+    payload: {
+      hasError: false,
+      message: 'Intership Creado',
+      content: intershipData,
+    },
+  };
+};
 /**
 * Create intershipTalent
 * Create intershipTalent
@@ -50,20 +60,25 @@ const createIntership = ({ intership }) => new Promise(
 * intershipTalent IntershipTalent Created intershipTalent object (optional)
 * returns createIntershipTalent_200_response
 * */
-const createIntershipTalent = ({ intershipTalent }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        intershipTalent,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const createIntershipTalent = ({ intershipTalent }) => {
+
+  const intershipData = {};
+  const entityName = 'Intership';
+
+  if (!intershipData) {
+    throw new CustomAPIError.NotFoundError(
+      textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  return {
+    payload: {
+      hasError: false,
+      message: 'Intership Creado',
+      content: intershipData,
+    },
+  };
+}; 
 /**
 * Delete institution
 * Delete a institution by userId
