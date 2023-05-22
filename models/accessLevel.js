@@ -7,6 +7,7 @@ const AccessLevelSchema = new mongoose.Schema(
       required: [true, 'Por favor, coloque un nombre'],
       minlength: 3,
       trim: true,
+      unique: true,
     },
     description: {
       type: String,
