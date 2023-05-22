@@ -30,6 +30,12 @@ const ReportSchema = new mongoose.Schema(
         data: [String],
       },
     ],
+    statusId: {
+      type: mongoose.Types.ObjectId,
+      trim: true,
+      ref: 'Status',
+      required: [true, 'Por favor, coloque un estado'],
+    },
   },
   { timestamps: true },
 );
