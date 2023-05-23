@@ -5,7 +5,9 @@ const CustomAPIError = require('../errors/index');
 const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
 const { textResponseFormat } = require('../utils/utilsFunctions');
 const { getStatusIdByName } = require('../utils/status');
+const userFunctions = require('../utils/user');
 const UserSchema = require('../models/user');
+const Pagination = require('../utils/pagination');
 
 const userName = 'Usuario';
 
@@ -18,7 +20,7 @@ const userName = 'Usuario';
 * */
 const addUser = async ({ user }) => {
   if (!user) {
-    throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.serverError);
+    throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.noBodyRequest);
   }
 
   const preUser = user;
@@ -28,14 +30,14 @@ const addUser = async ({ user }) => {
   const userCreated = await UserSchema.create(preUser);
 
   if (!userCreated) {
-    
+    throw new Error(SHORTTEXTREPONSE.serverError);
   }
 
   return {
     code: StatusCodes.CREATED,
     payload: {
       hasError: false,
-      message: textResponseFormat(userName, SHORTTEXTREPONSE.found),
+      message: textResponseFormat(userName, SHORTTEXTREPONSE.created),
       content: userCreated,
     },
   };
@@ -48,20 +50,26 @@ const addUser = async ({ user }) => {
 * returns EmptyResponse
 * */
 const deleteUsuario = async ({ userId }) => {
-  const statusId = await getStatusIdByName('inactive');
-  const userDeleted = await UserSchema.findByIdAndUpdate(userId, { statusId });
+  const userExists = await userFunctions.getUserById(userId);
 
-  if (userDeleted) {
-
+  if (!userExists) {
+    throw new CustomAPIError.NotFoundError(textResponseFormat(userName, SHORTTEXTREPONSE.notFound));
   }
 
-  // return {
-  //   payload: {
-  //     hasError: false,
-  //     message: textResponseFormat(userName, SHORTTEXTREPONSE.deleted),
-  //     content: {},
-  //   },
-  // };
+  const statusId = await getStatusIdByName('inactive');
+  const userDeleted = await UserSchema.updateOne({ _id: userId }, { statusId });
+
+  if (userDeleted.modifiedCount !== 1) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
+  return {
+    payload: {
+      hasError: false,
+      message: textResponseFormat(userName, SHORTTEXTREPONSE.deleted),
+      content: {},
+    },
+  };
 };
 /**
 * Get all users
@@ -70,20 +78,33 @@ const deleteUsuario = async ({ userId }) => {
 * userPagination UserPagination Get list of users with filter and pagination (optional)
 * returns getAllUsers_200_response
 * */
-const getAllUsers = ({ userPagination }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        userPagination,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const getAllUsers = async ({ userPagination }) => {
+  const { filter, pagination } = userPagination;
+
+  const paginationClass = new Pagination(pagination);
+  let queryPagination = paginationClass.queryPagination();
+
+  let users = [];
+  let count = [];
+
+  try {
+    users = await UserSchema.find(filter, null, queryPagination);
+    count = await UserSchema.find(filter, null, queryPagination).countDocuments();
+  } catch (error) {
+    console.log(error);
+  }
+
+  queryPagination = { quantity: count, page: paginationClass.page };
+
+  return {
+    payload: {
+      hasError: false,
+      message: '',
+      content: users,
+      pagination: new Pagination(queryPagination),
+    },
+  };
+};
 /**
 * Find user by ID
 * Returns a single user
