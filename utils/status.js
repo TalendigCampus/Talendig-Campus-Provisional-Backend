@@ -5,6 +5,9 @@ const getStatusIdByName = async (name) => {
   return statusId.id;
 };
 
+const getStatusById = async (statusId) => StatusSchema.findById(statusId);
+
 module.exports = {
   getStatusIdByName,
+  getStatusById,
 };
