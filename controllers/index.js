@@ -19,6 +19,8 @@ const TalentoController = require('./TalentoController');
 const TecnologiaController = require('./TecnologiaController');
 const TituloController = require('./TituloController');
 const UsuarioController = require('./UsuarioController');
+const EducacionController = require('./EducacionController');
+const ExperienciaLaboralController = require('./ExperienciaLaboralController');
 
 module.exports = {
   AdministradorController,
@@ -42,4 +44,6 @@ module.exports = {
   TecnologiaController,
   TituloController,
   UsuarioController,
+  EducacionController,
+  ExperienciaLaboralController,
 };
