@@ -3,7 +3,9 @@ const Service = require('./Service');
 const CustomAPIError = require('../errors/index');
 const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
 const { textResponseFormat } = require('../utils/utilsFunctions');
+const { getStatusIdByName } = require('../utils/status');
 const UserSchema = require('../models/user');
+const userName = 'Usuario';
 
 /**
 * Add a new usuario to the store
@@ -13,16 +15,16 @@ const UserSchema = require('../models/user');
 * returns getUserById_200_response
 * */
 const addUser = async ({ user }) => {
-  const entityName = 'Usuario';
   const preUser = user;
   preUser.avatar = user.name[0].toUpperCase() + user.lastName[0].toUpperCase();
+  preUser.statusId = await getStatusIdByName('active');
 
   const userCreated = await UserSchema.create(preUser);
 
   return {
     payload: {
       hasError: false,
-      message: textResponseFormat(entityName, SHORTTEXTREPONSE.found),
+      message: textResponseFormat(userName, SHORTTEXTREPONSE.found),
       content: userCreated,
     },
   };
@@ -34,20 +36,19 @@ const addUser = async ({ user }) => {
 * userId String Usuario id to delete
 * returns EmptyResponse
 * */
-const deleteUsuario = ({ userId }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        userId,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const deleteUsuario = async ({ userId }) => {
+  const statusId = await getStatusIdByName('inactive');
+  const userDeleted = await UserSchema.findByIdAndUpdate(userId, { statusId });
+  
+
+  // return {
+  //   payload: {
+  //     hasError: false,
+  //     message: textResponseFormat(userName, SHORTTEXTREPONSE.deleted),
+  //     content: {},
+  //   },
+  // };
+};
 /**
 * Get all users
 * Get a list of users from the store

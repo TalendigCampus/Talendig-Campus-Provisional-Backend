@@ -8,7 +8,7 @@ const Service = require('./Service');
 * state State Create state object
 * returns createState_200_response
 * */
-const createState = ({ state }) => new Promise(
+const createStatus = ({ state }) => new Promise(
   async (resolve, reject) => {
     try {
       resolve(Service.successResponse({
@@ -29,7 +29,7 @@ const createState = ({ state }) => new Promise(
 * stateId String id of the state
 * returns EmptyResponse
 * */
-const deleteState = ({ stateId }) => new Promise(
+const deleteStatus = ({ stateId }) => new Promise(
   async (resolve, reject) => {
     try {
       resolve(Service.successResponse({
@@ -50,7 +50,7 @@ const deleteState = ({ stateId }) => new Promise(
 * stateId String Id of the state
 * returns createState_200_response
 * */
-const getSingleState = ({ stateId }) => new Promise(
+const getSingleStatus = ({ stateId }) => new Promise(
   async (resolve, reject) => {
     try {
       resolve(Service.successResponse({
@@ -71,7 +71,7 @@ const getSingleState = ({ stateId }) => new Promise(
 * statePagination StatePagination Created state object
 * returns getStates_200_response
 * */
-const getStates = ({ statePagination }) => new Promise(
+const getStatus = ({ statePagination }) => new Promise(
   async (resolve, reject) => {
     try {
       resolve(Service.successResponse({
@@ -93,7 +93,7 @@ const getStates = ({ statePagination }) => new Promise(
 * stateCreated StateCreated Created contact object
 * returns createState_200_response
 * */
-const updateState = ({ stateId, stateCreated }) => new Promise(
+const updateStatus = ({ stateId, stateCreated }) => new Promise(
   async (resolve, reject) => {
     try {
       resolve(Service.successResponse({
@@ -110,9 +110,9 @@ const updateState = ({ stateId, stateCreated }) => new Promise(
 );
 
 module.exports = {
-  createState,
-  deleteState,
-  getSingleState,
-  getStates,
-  updateState,
+  createStatus,
+  deleteStatus,
+  getSingleStatus,
+  getStatus,
+  updateStatus,
 };

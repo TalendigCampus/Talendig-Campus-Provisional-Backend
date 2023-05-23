@@ -19,6 +19,8 @@ const TalentoService = require('./TalentoService');
 const TecnologiaService = require('./TecnologiaService');
 const TituloService = require('./TituloService');
 const UsuarioService = require('./UsuarioService');
+const EducacionService = require('./EducacionService');
+const ExperienciaLaboralService = require('./ExperienciaLaboralService');
 
 module.exports = {
   AdministradorService,
@@ -42,4 +44,6 @@ module.exports = {
   TecnologiaService,
   TituloService,
   UsuarioService,
+  ExperienciaLaboralService,
+  EducacionService,
 };
