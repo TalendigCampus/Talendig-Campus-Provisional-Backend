@@ -3,6 +3,11 @@ const validator = require("validator");
 
 const institutionSchema = new mongoose.Schema(
   {
+    userId: {
+      type: [mongoose.Types.ObjectId],
+      ref: 'User',
+      required: [true, 'Por favor, agregar ID al que le pertenece el usuario'],
+    },
     companyDetails: {
       type: [mongoose.Types.ObjectId],
       name: {
@@ -28,44 +33,6 @@ const institutionSchema = new mongoose.Schema(
         },
       },
       address: AddressSchema,
-      accountManager: {
-        name: {
-          type: String,
-          required: [true, "Por favor, coloque un nombre"],
-          minlength: 3,
-          trim: true,
-        },
-        lastName: {
-          type: String,
-          required: [true, "Por favor, coloque un apellido"],
-          minlength: 3,
-          trim: true,
-        },
-        gender: {
-          type: String,
-          enum: ["Femenino", "Masculino", "Otros"],
-          default: "Otros",
-        },
-        phone: {
-          type: String,
-          required: [true, "Por favor, agregue el número telefónico"],
-          validate: {
-            validator(value) {
-              return validator.isMobilePhone(value, "es-DO");
-            },
-            message: "Por favor, agregue un número telefónico válido",
-          },
-        },
-        email: {
-          type: String,
-          required: [true, "Por favor, agregue el correo electronico"],
-          validate: {
-            validator: validator.isEmail,
-            message: "Por favor, agregue un correo electronico válido",
-          },
-          unique: true,
-        },
-      },
       required: [true, "Por favor, agregar los datos de la compañia"],
     },
     ownerDetails: {
