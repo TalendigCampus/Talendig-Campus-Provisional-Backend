@@ -24,7 +24,6 @@ const getPortfolios = async (request, response) => {
   await Controller.handleRequest(request, response, service.getPortfolios);
 };
 
-
 module.exports = {
   createPortfolio,
   deleteportfolio,

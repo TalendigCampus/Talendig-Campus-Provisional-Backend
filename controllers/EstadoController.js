@@ -8,31 +8,31 @@
 
 const Controller = require('./Controller');
 const service = require('../services/EstadoService');
-const createState = async (request, response) => {
-  await Controller.handleRequest(request, response, service.createState);
+const createStatus = async (request, response) => {
+  await Controller.handleRequest(request, response, service.createStatus);
 };
 
-const deleteState = async (request, response) => {
-  await Controller.handleRequest(request, response, service.deleteState);
+const deleteStatus = async (request, response) => {
+  await Controller.handleRequest(request, response, service.deleteStatus);
 };
 
-const getSingleState = async (request, response) => {
-  await Controller.handleRequest(request, response, service.getSingleState);
+const getSingleStatus = async (request, response) => {
+  await Controller.handleRequest(request, response, service.getSingleStatus);
 };
 
-const getStates = async (request, response) => {
-  await Controller.handleRequest(request, response, service.getStates);
+const getStatus = async (request, response) => {
+  await Controller.handleRequest(request, response, service.getStatus);
 };
 
-const updateState = async (request, response) => {
-  await Controller.handleRequest(request, response, service.updateState);
+const updateStatus = async (request, response) => {
+  await Controller.handleRequest(request, response, service.updateStatus);
 };
 
 
 module.exports = {
-  createState,
-  deleteState,
-  getSingleState,
-  getStates,
-  updateState,
+  createStatus,
+  deleteStatus,
+  getSingleStatus,
+  getStatus,
+  updateStatus,
 };

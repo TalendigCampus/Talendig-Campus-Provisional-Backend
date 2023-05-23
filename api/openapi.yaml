@@ -51,6 +51,10 @@ tags:
   name: titulo
 - description: manejo de los reportes - talendig campus
   name: reporte
+- description: manejo de las experiencias laborales - talendig campus
+  name: experienciaLaboral
+- description: manejo de las educaciones - talendig campus
+  name: educación
 paths:
   /user/login:
     post:
@@ -155,7 +159,7 @@ paths:
       tags:
       - usuario
       x-eov-operation-handler: controllers/UsuarioController
-  /user:
+  /user/get:
     post:
       description: Get a list of users from the store
       operationId: getAllUsers
@@ -395,7 +399,7 @@ paths:
         description: Create a new usuario in the store
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -444,7 +448,7 @@ paths:
         description: Create a new Bootcamp
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -764,7 +768,7 @@ paths:
         description: Create a new Bootcamp section in the store
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -1035,7 +1039,7 @@ paths:
         description: Create a new Bootcamp Subject in the store
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -1306,7 +1310,7 @@ paths:
         description: Create a new Bootcamp Subject File in the store
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -1577,7 +1581,7 @@ paths:
         description: Create a new Bootcamp Assignment in the store
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -1848,7 +1852,7 @@ paths:
         description: Create a new Bootcamp Assignment file in the store
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -2292,7 +2296,7 @@ paths:
         description: Create a new administrator in the store
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -2514,7 +2518,7 @@ paths:
         description: Create a new talent in the store
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -2661,7 +2665,7 @@ paths:
         description: Create talent recruiter process by filter and pagination
         required: false
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -2932,7 +2936,7 @@ paths:
         description: Create talent instructor recommendation by filter and pagination
         required: false
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -3203,7 +3207,7 @@ paths:
         description: talent institution process by filter and pagination
         required: false
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -3474,7 +3478,7 @@ paths:
         description: Create a addTalentBootcamp in the store
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -3918,7 +3922,7 @@ paths:
         description: Create a new talent assignment in the store
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -4189,7 +4193,7 @@ paths:
         description: Create a new talent assignment file in the store
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -4411,7 +4415,7 @@ paths:
         description: Create a new Instructor in the store
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -4509,7 +4513,7 @@ paths:
         description: Create a new Instructor Bootcamp in the store
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -4779,7 +4783,7 @@ paths:
               $ref: '#/components/schemas/Recruiter'
         description: Created recruiter object
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -5047,7 +5051,7 @@ paths:
               $ref: '#/components/schemas/Institution'
         description: Created institution object
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -5376,7 +5380,7 @@ paths:
               $ref: '#/components/schemas/IntershipTalent'
         description: Created intershipTalent object
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -5647,7 +5651,7 @@ paths:
               $ref: '#/components/schemas/Intership'
         description: Created intership object
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -5859,7 +5863,7 @@ paths:
         description: Created contact object
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -6112,32 +6116,32 @@ paths:
       tags:
       - contacto
       x-eov-operation-handler: controllers/ContactoController
-  /state/create:
+  /status/create:
     post:
-      description: create a new state
-      operationId: createState
+      description: create a new status
+      operationId: createStatus
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/State'
+              $ref: '#/components/schemas/Status'
           application/xml:
             schema:
-              $ref: '#/components/schemas/State'
+              $ref: '#/components/schemas/Status'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/State'
-        description: Create state object
+              $ref: '#/components/schemas/Status'
+        description: Create status object
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/createState_200_response'
+                $ref: '#/components/schemas/createStatus_200_response'
             application/xml:
               schema:
-                $ref: '#/components/schemas/createState_200_response_1'
+                $ref: '#/components/schemas/createStatus_200_response_1'
           description: successful operation
         "400":
           content:
@@ -6157,36 +6161,36 @@ paths:
               schema:
                 $ref: '#/components/schemas/EmptyResponse'
           description: Internal error
-      summary: create a state
+      summary: create a status
       tags:
       - estado
       x-eov-operation-handler: controllers/EstadoController
-  /state/get:
+  /status/get:
     post:
-      description: state info
-      operationId: getStates
+      description: status info
+      operationId: getStatus
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StatePagination'
+              $ref: '#/components/schemas/StatusPagination'
           application/xml:
             schema:
-              $ref: '#/components/schemas/StatePagination'
+              $ref: '#/components/schemas/StatusPagination'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/StatePagination'
-        description: Created state object
+              $ref: '#/components/schemas/StatusPagination'
+        description: Created status object
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/getStates_200_response'
+                $ref: '#/components/schemas/getStatus_200_response'
             application/xml:
               schema:
-                $ref: '#/components/schemas/getStates_200_response_1'
+                $ref: '#/components/schemas/getStatus_200_response_1'
           description: successful operation
         "400":
           content:
@@ -6206,19 +6210,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/EmptyResponse'
           description: Internal error
-      summary: get states info
+      summary: get status info
       tags:
       - estado
       x-eov-operation-handler: controllers/EstadoController
-  /state/{stateId}:
+  /status/{statusId}:
     delete:
-      description: delete a state
-      operationId: deleteState
+      description: delete a status
+      operationId: deleteStatus
       parameters:
-      - description: id of the state
+      - description: id of the status
         explode: false
         in: path
-        name: stateId
+        name: statusId
         required: true
         schema:
           type: string
@@ -6250,7 +6254,7 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/EmptyResponse'
-          description: state not found
+          description: status not found
         "500":
           content:
             application/json:
@@ -6260,18 +6264,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/EmptyResponse'
           description: Internal error
-      summary: delete a state
+      summary: delete a status
       tags:
       - estado
       x-eov-operation-handler: controllers/EstadoController
     get:
-      description: get state.
-      operationId: getSingleState
+      description: get status.
+      operationId: getSingleStatus
       parameters:
-      - description: Id of the state
+      - description: Id of the status
         explode: false
         in: path
-        name: stateId
+        name: statusId
         required: true
         schema:
           type: string
@@ -6281,10 +6285,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/createState_200_response'
+                $ref: '#/components/schemas/createStatus_200_response'
             application/xml:
               schema:
-                $ref: '#/components/schemas/createState_200_response_1'
+                $ref: '#/components/schemas/createStatus_200_response_1'
           description: successful operation
         "400":
           content:
@@ -6303,7 +6307,7 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/EmptyResponse'
-          description: state not found
+          description: status not found
         "500":
           content:
             application/json:
@@ -6313,18 +6317,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/EmptyResponse'
           description: Internal error
-      summary: get state for user
+      summary: get status for user
       tags:
       - estado
       x-eov-operation-handler: controllers/EstadoController
     put:
-      description: update a state
-      operationId: updateState
+      description: update a status
+      operationId: updateStatus
       parameters:
-      - description: Id of the state
+      - description: Id of the status
         explode: false
         in: path
-        name: stateId
+        name: statusId
         required: true
         schema:
           type: string
@@ -6333,13 +6337,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StateCreated'
+              $ref: '#/components/schemas/StatusCreated'
           application/xml:
             schema:
-              $ref: '#/components/schemas/StateCreated'
+              $ref: '#/components/schemas/StatusCreated'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/StateCreated'
+              $ref: '#/components/schemas/StatusCreated'
         description: Created contact object
         required: true
       responses:
@@ -6347,10 +6351,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/createState_200_response'
+                $ref: '#/components/schemas/createStatus_200_response'
             application/xml:
               schema:
-                $ref: '#/components/schemas/createState_200_response_1'
+                $ref: '#/components/schemas/createStatus_200_response_1'
           description: successful operation
         "400":
           content:
@@ -6369,7 +6373,7 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/EmptyResponse'
-          description: state not found
+          description: status not found
         "500":
           content:
             application/json:
@@ -6379,7 +6383,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/EmptyResponse'
           description: Internal error
-      summary: update a state
+      summary: update a status
       tags:
       - estado
       x-eov-operation-handler: controllers/EstadoController
@@ -6401,7 +6405,7 @@ paths:
         description: Create event object
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -6672,7 +6676,7 @@ paths:
         description: Create file object
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -6943,7 +6947,7 @@ paths:
         description: Create language object
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -7214,7 +7218,7 @@ paths:
         description: Create log object
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -7485,7 +7489,7 @@ paths:
         description: Create accessLevel object
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -7756,7 +7760,7 @@ paths:
         description: Create profile object
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -8027,7 +8031,7 @@ paths:
         description: Create technology object
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -8298,7 +8302,7 @@ paths:
         description: Create title object
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -8569,7 +8573,7 @@ paths:
         description: Create report object
         required: true
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -8888,7 +8892,7 @@ paths:
               $ref: '#/components/schemas/Project'
         description: Created project file
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -9109,7 +9113,7 @@ paths:
         description: Create portfolio
         required: false
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -9229,7 +9233,7 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/EmptyResponse'
-          description: Project not found
+          description: Portfolio not found
         "500":
           content:
             application/json:
@@ -9282,7 +9286,7 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/EmptyResponse'
-          description: Project not found
+          description: Portfolio not found
         "500":
           content:
             application/json:
@@ -9296,6 +9300,546 @@ paths:
       tags:
       - portafolio
       x-eov-operation-handler: controllers/PortafolioController
+  /workExperience/create:
+    post:
+      description: Add workExperience
+      operationId: createWorkExperience
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkExperience'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/WorkExperience'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WorkExperience'
+        description: Create workExperience
+        required: false
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createWorkExperiences_200_response'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/createWorkExperiences_200_response'
+          description: Successful operation
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: Bad request
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: Internal error
+      summary: Create workExperience
+      tags:
+      - experienciaLaboral
+      x-eov-operation-handler: controllers/ExperienciaLaboralController
+  /workExperience/get:
+    post:
+      description: Show WorkExperiences
+      operationId: getWorkExperiences
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkExperiencePagination'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/WorkExperiencePagination'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WorkExperiencePagination'
+        description: Get workExperiences
+        required: false
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getWorkExperiences_200_response'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/getWorkExperiences_200_response'
+          description: Successful operation
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: Bad request
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: Internal error
+      summary: Get workExperiences
+      tags:
+      - experienciaLaboral
+      x-eov-operation-handler: controllers/ExperienciaLaboralController
+  /workExperience/{workExperienceId}:
+    delete:
+      description: delete a workExperience
+      operationId: deleteWorkExperience
+      parameters:
+      - description: id of the workExperience
+        explode: false
+        in: path
+        name: workExperienceId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: Successful operation
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: Invalid Id provided
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: WorkExperience not found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: Internal error
+      summary: delete a workExperience
+      tags:
+      - experienciaLaboral
+      x-eov-operation-handler: controllers/ExperienciaLaboralController
+    get:
+      description: get a workExperience
+      operationId: getWorkExperience
+      parameters:
+      - description: id of the workExperience
+        explode: false
+        in: path
+        name: workExperienceId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createWorkExperiences_200_response'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/createWorkExperiences_200_response'
+          description: Successful operation
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: Invalid Id provided
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: workExperience not found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: Internal error
+      summary: get a workExperience
+      tags:
+      - experienciaLaboral
+      x-eov-operation-handler: controllers/ExperienciaLaboralController
+    put:
+      description: Update workExperience.
+      operationId: updateWorkExperience
+      parameters:
+      - description: id of the workExperience
+        explode: false
+        in: path
+        name: workExperienceId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkExperienceCreated'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/WorkExperienceCreated'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WorkExperienceCreated'
+        description: update workExperience
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createWorkExperiences_200_response'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/createWorkExperiences_200_response'
+          description: Successful operation
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: Invalid Id provided
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: WorkExperience not found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: Internal error
+      summary: Update workExperience
+      tags:
+      - experienciaLaboral
+      x-eov-operation-handler: controllers/ExperienciaLaboralController  
+  /education/create:
+    post:
+      description: Add education
+      operationId: createEducation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Education'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Education'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Education'
+        description: Create education
+        required: false
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createEducation_200_response'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/createEducation_200_response'
+          description: Successful operation
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: Bad request
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: Internal error
+      summary: Create education
+      tags:
+      - educación
+      x-eov-operation-handler: controllers/EducacionController
+  /education/get:
+    post:
+      description: Show Educations
+      operationId: getEducations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EducationPagination'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/EducationPagination'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EducationPagination'
+        description: Get educations
+        required: false
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getEducation_200_response'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/getEducation_200_response'
+          description: Successful operation
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: Bad request
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: Internal error
+      summary: Get educations
+      tags:
+      - educación
+      x-eov-operation-handler: controllers/EducacionController
+  /education/{educationId}:
+    delete:
+      description: delete a education
+      operationId: deleteEducation
+      parameters:
+      - description: id of the education
+        explode: false
+        in: path
+        name: educationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: Successful operation
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: Invalid Id provided
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: education not found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: Internal error
+      summary: delete a education
+      tags:
+      - educación
+      x-eov-operation-handler: controllers/EducacionController
+    get:
+      description: get a education
+      operationId: getEducation
+      parameters:
+      - description: id of the education
+        explode: false
+        in: path
+        name: educationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createEducation_200_response'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/createEducation_200_response'
+          description: Successful operation
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: Invalid Id provided
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: education not found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: Internal error
+      summary: get a education
+      tags:
+      - educación
+      x-eov-operation-handler: controllers/EducacionController
+    put:
+      description: Update education.
+      operationId: updateEducation
+      parameters:
+      - description: id of the education
+        explode: false
+        in: path
+        name: educationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EducationCreated'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/EducationCreated'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EducationCreated'
+        description: update education
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createEducation_200_response'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/createEducation_200_response'
+          description: Successful operation
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: Invalid Id provided
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: Education not found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: Internal error
+      summary: Update education
+      tags:
+      - educación
+      x-eov-operation-handler: controllers/EducacionController  
   /curriculum/{userId}:
     get:
       description: Show curriculum
@@ -9445,26 +9989,24 @@ components:
           example: female
           type: string
         languages:
-          items:
-            $ref: '#/components/schemas/Language'
           type: array
-        emergencyContact:
           items:
-            $ref: '#/components/schemas/Contact'
+            type: string
+        contacts:
           type: array
+          items:
+            type: string
         birthdate:
           format: date
           type: string
-        category:
-          $ref: '#/components/schemas/Administrator_category'
-        education:
-          items:
-            $ref: '#/components/schemas/Education'
+        educations:
           type: array
-        workExperience:
           items:
-            $ref: '#/components/schemas/WorkExperience'
+            type: string
+        workExperiences:
           type: array
+          items:
+            type: string
       type: object
     AdministratorCreated:
       allOf:
@@ -9573,23 +10115,23 @@ components:
           items:
             $ref: '#/components/schemas/RecommendedBootcamp'
           type: array
-        emergencyContact:
-          items:
-            $ref: '#/components/schemas/Contact'
+        contacts:
           type: array
+          items:
+            type: string
         birthdate:
           format: date
           type: string
         category:
           $ref: '#/components/schemas/Administrator_category'
-        education:
-          items:
-            $ref: '#/components/schemas/Education'
+        educations:
           type: array
-        workExperience:
           items:
-            $ref: '#/components/schemas/WorkExperience'
+            type: string
+        workExperiences:
           type: array
+          items:
+            type: string
       type: object
     TalentCreated:
       allOf:
@@ -9632,6 +10174,22 @@ components:
           $ref: '#/components/schemas/WorkExperience_directSupervisor'
         address:
           $ref: '#/components/schemas/Address'
+      type: object
+    WorkExperienceCreated:
+      allOf:
+      - $ref: '#/components/schemas/WorkExperience'
+      - $ref: '#/components/schemas/AdministratorCreated_allOf'
+    WorkExperiencePagination:
+      example:
+        filter: null
+        pagination:
+          quantity: 20
+          page: 1
+      properties:
+        filter:
+          $ref: '#/components/schemas/WorkExperienceCreated'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
       type: object
     Contact:
       example:
@@ -9687,22 +10245,20 @@ components:
         pagination:
           $ref: '#/components/schemas/Pagination'
       type: object
-    State:
+    Status:
       example:
         name: active
         id: id
       properties:
-        id:
-          type: string
         name:
           example: active
           type: string
       type: object
-    StateCreated:
+    StatusCreated:
       allOf:
-      - $ref: '#/components/schemas/State'
+      - $ref: '#/components/schemas/Status'
       - $ref: '#/components/schemas/AdministratorCreated_allOf'
-    StatePagination:
+    StatusPagination:
       example:
         filter: null
         pagination:
@@ -9710,7 +10266,7 @@ components:
           page: 1
       properties:
         filter:
-          $ref: '#/components/schemas/StateCreated'
+          $ref: '#/components/schemas/StatusCreated'
         pagination:
           $ref: '#/components/schemas/Pagination'
       type: object
@@ -9747,6 +10303,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/Event'
       - $ref: '#/components/schemas/AdministratorCreated_allOf'
+      - $ref: '#/components/schemas/EventCreated_allOf'
     EventPagination:
       example:
         filter: null
@@ -9796,8 +10353,6 @@ components:
         name: spanish
         id: id
       properties:
-        id:
-          type: string
         name:
           example: spanish
           type: string
@@ -9856,8 +10411,6 @@ components:
         description: total access
         id: id
       properties:
-        id:
-          type: string
         name:
           example: A1
           type: string
@@ -9869,6 +10422,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/AccessLevel'
       - $ref: '#/components/schemas/AdministratorCreated_allOf'
+      - $ref: '#/components/schemas/AccessLevelCreated_allOf'
     AccessLevelPagination:
       example:
         filter: null
@@ -9887,8 +10441,6 @@ components:
         description: company's owner
         id: id
       properties:
-        id:
-          type: string
         name:
           example: CEO
           type: string
@@ -9900,6 +10452,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/Profile'
       - $ref: '#/components/schemas/AdministratorCreated_allOf'
+      - $ref: '#/components/schemas/ProfileCreated_allOf'
     ProfilePagination:
       example:
         filter: null
@@ -9919,8 +10472,6 @@ components:
           \ that is designed to have as few implementation dependencies as possible."
         id: id
       properties:
-        id:
-          type: string
         name:
           example: Java
           type: string
@@ -9951,8 +10502,6 @@ components:
         id: id
         userId: 645034ad987b7f0de1009271
       properties:
-        id:
-          type: string
         name:
           example: software developer
           type: string
@@ -10018,6 +10567,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/Report'
       - $ref: '#/components/schemas/AdministratorCreated_allOf'
+      - $ref: '#/components/schemas/ReportCreated_allOf'
     ReportPagination:
       example:
         filter: null
@@ -10051,9 +10601,6 @@ components:
               isDir: true
           rootFolderId: SD1A3SD135a1sdASASD321
       properties:
-        id:
-          example: 64552cfab0f7262b24c7f89a
-          type: string
         userId:
           example: ADSF5A6SD1F31asd51fas3153D31GS3DF1G
           type: string
@@ -10073,6 +10620,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/Project'
       - $ref: '#/components/schemas/AdministratorCreated_allOf'
+      - $ref: '#/components/schemas/ProjectCreated_allOf'
     ProjectPagination:
       example:
         filter:
@@ -10130,6 +10678,22 @@ components:
           type: string
         address:
           $ref: '#/components/schemas/Address'
+      type: object
+    EducationCreated:
+      allOf:
+      - $ref: '#/components/schemas/Education'
+      - $ref: '#/components/schemas/AdministratorCreated_allOf'
+    EducationPagination:
+      example:
+        filter: null
+        pagination:
+          quantity: 20
+          page: 1
+      properties:
+        filter:
+          $ref: '#/components/schemas/EducationCreated'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
       type: object
     RecommendedBootcamp:
       type: string
@@ -10742,8 +11306,6 @@ components:
         subjectId: subjectId
         fileId: fileId
       properties:
-        id:
-          type: string
         subjectId:
           type: string
         fileId:
@@ -10794,9 +11356,9 @@ components:
           format: date
           type: string
         technologies:
-          items:
-            $ref: '#/components/schemas/Technology'
           type: array
+          items:
+            type: string
         statusId:
           type: string
         description:
@@ -10814,6 +11376,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/Bootcamp'
       - $ref: '#/components/schemas/AdministratorCreated_allOf'
+      - $ref: '#/components/schemas/BootcampCreated_allOf'
     BootcampSubjectCreated:
       allOf:
       - $ref: '#/components/schemas/BootcampSubject'
@@ -10840,9 +11403,6 @@ components:
         id: 644fca9f0aa5d55869c8756a
         instructorId: 644fca9f0aa5d55869c8756a
       properties:
-        id:
-          example: 644fca9f0aa5d55869c8756a
-          type: string
         instructorId:
           example: 644fca9f0aa5d55869c8756a
           type: string
@@ -10891,6 +11451,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/Bootcamp'
       - $ref: '#/components/schemas/AdministratorCreated_allOf'
+      - $ref: '#/components/schemas/PortfolioCreated_alOf'
     PortfolioPagination:
       example:
         filter:
@@ -10916,15 +11477,21 @@ components:
         title:
           type: string
         technologies:
-          items:
-            $ref: '#/components/schemas/Technology'
           type: array
+          items:
+            type: string
         languages:
-          $ref: '#/components/schemas/Language'
-        workExperience:
-          $ref: '#/components/schemas/WorkExperience'
-        education:
-          $ref: '#/components/schemas/Education'
+          type: array
+          items:
+            type: string
+        workExperiences:
+          type: array
+          items:
+            type: string
+        educations:
+          type: array
+          items:
+            type: string
         biography:
           type: string
         name:
@@ -10941,7 +11508,7 @@ components:
           type: string
         address:
           $ref: '#/components/schemas/Address'
-        birthday:
+        birthdate:
           format: date
           type: string
         jobReference:
@@ -10961,7 +11528,7 @@ components:
     RecruiterPagination:
       example:
         filter:
-          birthday: 2000-01-23T04:56:07.000+00:00
+          birthdate: 2000-01-23T04:56:07.000+00:00
           education:
           - address:
               numHouseOrApartment: '#21'
@@ -11068,7 +11635,7 @@ components:
       type: object
     Recruiter:
       example:
-        birthday: 2000-01-23T04:56:07.000+00:00
+        birthdate: 2000-01-23T04:56:07.000+00:00
         education:
         - address:
             numHouseOrApartment: '#21'
@@ -11174,18 +11741,18 @@ components:
           type: array
         companyDetails:
           $ref: '#/components/schemas/CompanyDetail'
-        emergencyContacts:
-          items:
-            $ref: '#/components/schemas/Contact'
+        contacts:
           type: array
-        birthday:
+          items:
+            type: string
+        birthdate:
           format: date-time
           type: string
-        education:
-          items:
-            $ref: '#/components/schemas/Education'
+        educations:
           type: array
-        workExperience:
+          items:
+            type: string
+        workExperiences:
           items:
             $ref: '#/components/schemas/WorkExperience'
           type: array
@@ -11219,6 +11786,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/Intership'
       - $ref: '#/components/schemas/AdministratorCreated_allOf'
+      - $ref: '#/components/schemas/IntershipCreated_allOf'
     IntershipPagination:
       example:
         filter:
@@ -11323,7 +11891,7 @@ components:
       example:
         foundationDate: 2000-01-23
         ownerDetails:
-        - birthday: 2000-01-23
+        - birthdate: 2000-01-23
           phoneNumber: phoneNumber
           education:
             address:
@@ -11392,7 +11960,7 @@ components:
               neighborhood: CA
             phone: phone
             name: name
-        - birthday: 2000-01-23
+        - birthdate: 2000-01-23
           phoneNumber: phoneNumber
           education:
             address:
@@ -11480,7 +12048,7 @@ components:
       type: object
     OwnerDetails:
       example:
-        birthday: 2000-01-23
+        birthdate: 2000-01-23
         phoneNumber: phoneNumber
         education:
           address:
@@ -11559,18 +12127,24 @@ components:
         gender:
           type: string
         languages:
-          $ref: '#/components/schemas/Language'
-        emergencyContact:
-          items:
-            $ref: '#/components/schemas/Contact'
           type: array
-        birthday:
+          items:
+            type: string
+        contacts:
+          type: array
+          items:
+            type: string
+        birthdate:
           format: date
           type: string
-        education:
-          $ref: '#/components/schemas/Education'
-        workExperience:
-          $ref: '#/components/schemas/WorkExperience'
+        educations:
+          type: array
+          items:
+            type: string
+        workExperiences:
+          type: array
+          items:
+            type: string
       type: object
     InstitutionCreated:
       allOf:
@@ -11581,7 +12155,7 @@ components:
         filter:
           foundationDate: 2000-01-23
           ownerDetails:
-          - birthday: 2000-01-23
+          - birthdate: 2000-01-23
             phoneNumber: phoneNumber
             education:
               address:
@@ -11650,7 +12224,7 @@ components:
                 neighborhood: CA
               phone: phone
               name: name
-          - birthday: 2000-01-23
+          - birthdate: 2000-01-23
             phoneNumber: phoneNumber
             education:
               address:
@@ -11743,7 +12317,6 @@ components:
           neighborhood: CA
         idCard: idCard
         verificationToken: verificationToken
-        avatar: avatar
         technology:
           name: Java
           description: "high-level, class-based, object-oriented programming language\
@@ -11765,6 +12338,8 @@ components:
         email: email
         refreshToken: refreshToken
       properties:
+        titleId:
+          type: string
         name:
           type: string
         lastName:
@@ -11773,16 +12348,14 @@ components:
           type: string
         idCard:
           type: string
-        avatar:
-          type: string
         phoneNumber:
           type: string
         address:
           $ref: '#/components/schemas/Address'
         technologies:
-          items:
-            $ref: '#/components/schemas/Technology'
           type: array
+          items:
+            type: string
         biography:
           type: string
         email:
@@ -11798,8 +12371,6 @@ components:
         resetPasswordToken:
           type: string
         resetPasswordExpirationDate:
-          type: string
-        statusId:
           type: string
         profileId:
           type: string
@@ -11870,6 +12441,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/User'
       - $ref: '#/components/schemas/AdministratorCreated_allOf'
+      - $ref: '#/components/schemas/UserCreated_allOf'
     CompanyDetail:
       example:
         address:
@@ -11989,13 +12561,13 @@ components:
           example: female
           type: string
         langauges:
-          items:
-            $ref: '#/components/schemas/Language'
           type: array
-        emergencyContact:
           items:
-            $ref: '#/components/schemas/Contact'
+            type: string
+        contacts:
           type: array
+          items:
+            type: string
         lastName:
           example: James
           type: string
@@ -12007,14 +12579,14 @@ components:
         birthdate:
           format: date
           type: string
-        education:
-          items:
-            $ref: '#/components/schemas/Education'
+        educations:
           type: array
-        workExperience:
           items:
-            $ref: '#/components/schemas/WorkExperience'
+            type: string
+        workExperiences:
           type: array
+          items:
+            type: string
       type: object
     InstructorCreated:
       allOf:
@@ -12559,34 +13131,34 @@ components:
       - $ref: '#/components/schemas/getUserContacts_200_response_allOf'
       xml:
         name: response
-    createState_200_response_allOf:
+    createStatus_200_response_allOf:
       properties:
         content:
-          $ref: '#/components/schemas/StateCreated'
-    createState_200_response:
+          $ref: '#/components/schemas/StatusCreated'
+    createStatus_200_response:
       allOf:
       - $ref: '#/components/schemas/NormalResponse'
-      - $ref: '#/components/schemas/createState_200_response_allOf'
-    createState_200_response_1:
+      - $ref: '#/components/schemas/createStatus_200_response_allOf'
+    createStatus_200_response_1:
       allOf:
       - $ref: '#/components/schemas/NormalResponse'
-      - $ref: '#/components/schemas/createState_200_response_allOf'
+      - $ref: '#/components/schemas/createStatus_200_response_allOf'
       xml:
         name: response
-    getStates_200_response_allOf:
+    getStatus_200_response_allOf:
       properties:
         content:
           items:
-            $ref: '#/components/schemas/StateCreated'
+            $ref: '#/components/schemas/StatusCreated'
           type: array
-    getStates_200_response:
+    getStatus_200_response:
       allOf:
       - $ref: '#/components/schemas/ExtendedResponse'
-      - $ref: '#/components/schemas/getStates_200_response_allOf'
-    getStates_200_response_1:
+      - $ref: '#/components/schemas/getStatus_200_response_allOf'
+    getStatus_200_response_1:
       allOf:
       - $ref: '#/components/schemas/ExtendedResponse'
-      - $ref: '#/components/schemas/getStates_200_response_allOf'
+      - $ref: '#/components/schemas/getStatus_200_response_allOf'
       xml:
         name: response
     createEvent_200_response_allOf:
@@ -12895,6 +13467,42 @@ components:
       allOf:
       - $ref: '#/components/schemas/ExtendedResponse'
       - $ref: '#/components/schemas/getPortfolios_200_response_allOf'
+    createWorkExperiences_200_response_allOf:
+      properties:
+        content:
+          $ref: '#/components/schemas/WorkExperienceCreated'
+    createWorkExperiences_200_response:
+      allOf:
+      - $ref: '#/components/schemas/NormalResponse'
+      - $ref: '#/components/schemas/createWorkExperiences_200_response_allOf'
+    getWorkExperiences_200_response_allOf:
+      properties:
+        content:
+          items:
+            $ref: '#/components/schemas/WorkExperienceCreated'
+          type: array
+    getWorkExperiences_200_response:
+      allOf:
+      - $ref: '#/components/schemas/ExtendedResponse'
+      - $ref: '#/components/schemas/getWorkExperiences_200_response_allOf'
+    createEducation_200_response_allOf:
+      properties:
+        content:
+          $ref: '#/components/schemas/EducationCreated'
+    createEducation_200_response:
+      allOf:
+      - $ref: '#/components/schemas/NormalResponse'
+      - $ref: '#/components/schemas/createEducation_200_response_allOf'
+    getEducation_200_response_allOf:
+      properties:
+        content:
+          items:
+            $ref: '#/components/schemas/EducationCreated'
+          type: array
+    getEducation_200_response:
+      allOf:
+      - $ref: '#/components/schemas/ExtendedResponse'
+      - $ref: '#/components/schemas/getEducation_200_response_allOf'
     getCurriculum_200_response_allOf:
       properties:
         content:
@@ -12921,6 +13529,54 @@ components:
           example: 644fca9f0aa5d55869c8756a
           type: string
       example: null
+    UserCreated_allOf:
+      properties:
+        avatar:
+          example: AM
+          type: string
+        statusId:
+          example: 644fca9f0aa5d55869c8756a
+          type: string
+    EventCreated_allOf:
+      properties:
+        statusId:
+          example: 644fca9f0aa5d55869c8756a
+          type: string
+    AccessLevelCreated_allOf:
+      properties:
+        statusId:
+          example: 644fca9f0aa5d55869c8756a
+          type: string
+    BootcampCreated_allOf:
+      properties:
+        statusId:
+          example: 644fca9f0aa5d55869c8756a
+          type: string
+    ProfileCreated_allOf:
+      properties:
+        statusId:
+          example: 644fca9f0aa5d55869c8756a
+          type: string
+    ReportCreated_allOf:
+      properties:
+        statusId:
+          example: 644fca9f0aa5d55869c8756a
+          type: string
+    ProjectCreated_allOf:
+      properties:
+        statusId:
+          example: 644fca9f0aa5d55869c8756a
+          type: string
+    IntershipCreated_allOf:
+      properties:
+        statusId:
+          example: 644fca9f0aa5d55869c8756a
+          type: string
+    PortfolioCreated_alOf:
+      properties:
+        statusId:
+          example: 644fca9f0aa5d55869c8756a
+          type: string
     WorkExperience_directSupervisor:
       example:
         lastName: Rodriguez
@@ -12942,14 +13598,9 @@ components:
         size: 2.3 KB
         lastModifiedDate: 2000-01-23
         name: example_file.txt
-        lastModified: 2000-01-23
-        type: .txt
       properties:
         name:
           example: example_file.txt
-          type: string
-        lastModified:
-          format: date
           type: string
         lastModifiedDate:
           format: date
