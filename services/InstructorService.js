@@ -1,6 +1,9 @@
 /* eslint-disable no-unused-vars */
 const Service = require('./Service');
 const InstructorSchema = require('../models/instructor');
+const instructorName = 'Instructor';
+const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
+const { textResponseFormat } = require('../utils/utilsFunctions');
 
 /**
  * Add a new Instructor to the store
@@ -10,16 +13,14 @@ const InstructorSchema = require('../models/instructor');
  * returns getInstructorById_200_response
  * */
 const addInstructor = async ({ instructor }) => {
-  const entityName = 'Usuario';
-  const preUser = instructor;
-  preUser.avatar = user.name[0].toUpperCase() + user.lastName[0].toUpperCase();
+  const preInstructor = instructor;
 
-  const userCreated = await UserSchema.create(preUser);
+  const userCreated = await InstructorSchema.create(preInstructor);
 
   return {
     payload: {
       hasError: false,
-      message: textResponseFormat(entityName, SHORTTEXTREPONSE.found),
+      message: textResponseFormat(instructorName, SHORTTEXTREPONSE.found),
       content: userCreated,
     },
   };

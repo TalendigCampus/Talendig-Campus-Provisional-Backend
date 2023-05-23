@@ -4,11 +4,10 @@ const AddressSchema = require('./commons/address');
 
 const InstructorSchema = new mongoose.Schema(
   {
-    statusId: {
-      type: mongoose.Types.ObjectId,
-      trim: true,
-      ref: 'Status',
-      required: [true, 'Por favor, coloque un estado'],
+    userId: {
+      type: [mongoose.Types.ObjectId],
+      ref: 'User',
+      required: [true, 'Por favor, agregar ID al que le pertenece el usuario'],
     },
     gender: {
       type: String,
@@ -57,7 +56,7 @@ const InstructorSchema = new mongoose.Schema(
       required: [true, 'Por favor, agregar la experiencia laboral'],
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 module.exports = mongoose.model('Instructor', InstructorSchema);
