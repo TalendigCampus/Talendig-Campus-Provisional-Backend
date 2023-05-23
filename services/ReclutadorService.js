@@ -1,10 +1,13 @@
 /* eslint-disable no-unused-vars */
 const { StatusCodes } = require('http-status-codes');
+const { deleteUsuario } = require('./UsuarioService');
 const Service = require('./Service');
 const Recruiter = require('../models/recruiter');
 const CustomAPIError = require('../errors/index');
 const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
-const { textResponseFormat } = require('../utils/utilsFunctions');
+const utility = require('../utils');
+
+const userName = 'Reclutador';
 /**
  * Create recruiter
  * The creation of a new recruiter.
@@ -13,11 +16,12 @@ const { textResponseFormat } = require('../utils/utilsFunctions');
  * returns createRecruiter_200_response
  * */
 const createRecruiter = async ({ recruiter }) => {
-  const entityName = 'Reclutador';
-
   if (!recruiter) {
     throw new CustomAPIError.BadRequestError(
-      textResponseFormat(entityName, SHORTTEXTREPONSE.noBodyRequest),
+      utility.utilsFunctions.textResponseFormat(
+        userName,
+        SHORTTEXTREPONSE.noBodyRequest,
+      ),
     );
   }
 
@@ -27,7 +31,7 @@ const createRecruiter = async ({ recruiter }) => {
     code: StatusCodes.CREATED,
     payload: {
       hasError: false,
-      message: 'Reclutador creado',
+      message: utility.utilsFunctions.textResponseFormat(userName, SHORTTEXTREPONSE.created),
       content: recuiter,
     },
   };
@@ -40,23 +44,24 @@ const createRecruiter = async ({ recruiter }) => {
  * returns EmptyResponse
  * */
 const deleteRecruiter = async ({ recruiterId }) => {
-  const entityName = 'Reclutador';
+  const user = await utility.recruiterUtils.getUserByRecruiterId(recruiterId);
 
-  const recruiter = await Recruiter.findOne({ _id: recruiterId });
-
-  if (!recruiter) {
+  if (!user) {
     throw new CustomAPIError.NotFoundError(
-      textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
+      utility.utilsFunctions.textResponseFormat(
+        userName,
+        SHORTTEXTREPONSE.notFound,
+      ),
     );
   }
 
-  await recruiter.remove();
+  deleteUsuario({ userId: user._id });
 
   return {
     payload: {
       hasError: false,
-      message: 'Reclutador eliminado',
-      content: recuiter,
+      message: utility.utilsFunctions.textResponseFormat(userName, SHORTTEXTREPONSE.deleted),
+      content: {},
     },
   };
 };
