@@ -16,4 +16,4 @@ const TechnologySchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-module.exports = mongoose.model('AccessLevel', TechnologySchema);
+module.exports = mongoose.model('Technology', TechnologySchema);

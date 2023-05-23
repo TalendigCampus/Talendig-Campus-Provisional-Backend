@@ -23,6 +23,12 @@ const EventSchema = new mongoose.Schema(
       type: [mongoose.Types.ObjectId],
       required: [true, 'Por favor, coloque los perfiles'],
     },
+    statusId: {
+      type: mongoose.Types.ObjectId,
+      trim: true,
+      ref: 'Status',
+      required: [true, 'Por favor, coloque un estado'],
+    },
   },
   { timestamps: true },
 );
