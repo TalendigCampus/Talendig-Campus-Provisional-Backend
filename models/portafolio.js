@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 
-const portfolio = new mongoose.Schema({
+const portfolioSchema = new mongoose.Schema({
         userId:{
             type: String,
             required: [true, 'Por favor de digitar userId'],
@@ -22,4 +22,4 @@ const portfolio = new mongoose.Schema({
     {timestamps: true}
 );
 
-module.exports = mongoose.model('Portfolio', portfolio);
+module.exports = mongoose.model('portfolios', portfolioSchema);

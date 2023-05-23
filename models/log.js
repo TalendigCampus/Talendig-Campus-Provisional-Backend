@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 
-const log = new mongoose.Schema({
+const logSchema = new mongoose.Schema({
     datetime:{
         type: Date,
         required: [true, 'Por favor de digitar fecha'],
@@ -18,4 +18,4 @@ const log = new mongoose.Schema({
     {timestamps: true}
 );
 
-module.exports = mongoose.model('log', log);
+module.exports = mongoose.model('logs', logSchema);
