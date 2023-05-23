@@ -9322,10 +9322,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/createWorkExperience_200_response'
+                $ref: '#/components/schemas/createWorkExperiences_200_response'
             application/xml:
               schema:
-                $ref: '#/components/schemas/createWorkExperience_200_response'
+                $ref: '#/components/schemas/createWorkExperiences_200_response'
           description: Successful operation
         "400":
           content:
@@ -9348,7 +9348,7 @@ paths:
       summary: Create workExperience
       tags:
       - experienciaLaboral
-      x-eov-operation-handler: controllers/WorkExperienceController
+      x-eov-operation-handler: controllers/ExperienciaLaboralController
   /workExperience/get:
     post:
       description: Show WorkExperiences
@@ -9397,7 +9397,7 @@ paths:
       summary: Get workExperiences
       tags:
       - experienciaLaboral
-      x-eov-operation-handler: controllers/WorkExperienceController
+      x-eov-operation-handler: controllers/ExperienciaLaboralController
   /workExperience/{workExperienceId}:
     delete:
       description: delete a workExperience
@@ -9451,7 +9451,7 @@ paths:
       summary: delete a workExperience
       tags:
       - experienciaLaboral
-      x-eov-operation-handler: controllers/WorkExperienceController
+      x-eov-operation-handler: controllers/ExperienciaLaboralController
     get:
       description: get a workExperience
       operationId: getWorkExperience
@@ -9469,10 +9469,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/createWorkExperience_200_response'
+                $ref: '#/components/schemas/createWorkExperiences_200_response'
             application/xml:
               schema:
-                $ref: '#/components/schemas/createWorkExperience_200_response'
+                $ref: '#/components/schemas/createWorkExperiences_200_response'
           description: Successful operation
         "400":
           content:
@@ -9504,7 +9504,7 @@ paths:
       summary: get a workExperience
       tags:
       - experienciaLaboral
-      x-eov-operation-handler: controllers/WorkExperienceController
+      x-eov-operation-handler: controllers/ExperienciaLaboralController
     put:
       description: Update workExperience.
       operationId: updateWorkExperience
@@ -9521,23 +9521,23 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/WorkExperinceCreated'
+              $ref: '#/components/schemas/WorkExperienceCreated'
           application/xml:
             schema:
-              $ref: '#/components/schemas/WorkExperinceCreated'
+              $ref: '#/components/schemas/WorkExperienceCreated'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/WorkExperinceCreated'
+              $ref: '#/components/schemas/WorkExperienceCreated'
         description: update workExperience
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/createWorkExperience_200_response'
+                $ref: '#/components/schemas/createWorkExperiences_200_response'
             application/xml:
               schema:
-                $ref: '#/components/schemas/createWorkExperience_200_response'
+                $ref: '#/components/schemas/createWorkExperiences_200_response'
           description: Successful operation
         "400":
           content:
@@ -9569,7 +9569,7 @@ paths:
       summary: Update workExperience
       tags:
       - experienciaLaboral
-      x-eov-operation-handler: controllers/WorkExperienceController  
+      x-eov-operation-handler: controllers/ExperienciaLaboralController  
   /education/create:
     post:
       description: Add education
@@ -9618,7 +9618,7 @@ paths:
       summary: Create education
       tags:
       - educación
-      x-eov-operation-handler: controllers/EducationController
+      x-eov-operation-handler: controllers/EducacionController
   /education/get:
     post:
       description: Show Educations
@@ -9667,7 +9667,7 @@ paths:
       summary: Get educations
       tags:
       - educación
-      x-eov-operation-handler: controllers/EducationController
+      x-eov-operation-handler: controllers/EducacionController
   /education/{educationId}:
     delete:
       description: delete a education
@@ -9721,7 +9721,7 @@ paths:
       summary: delete a education
       tags:
       - educación
-      x-eov-operation-handler: controllers/EducationController
+      x-eov-operation-handler: controllers/EducacionController
     get:
       description: get a education
       operationId: getEducation
@@ -9774,7 +9774,7 @@ paths:
       summary: get a education
       tags:
       - educación
-      x-eov-operation-handler: controllers/EducationController
+      x-eov-operation-handler: controllers/EducacionController
     put:
       description: Update education.
       operationId: updateEducation
@@ -9839,7 +9839,7 @@ paths:
       summary: Update education
       tags:
       - educación
-      x-eov-operation-handler: controllers/EducationController  
+      x-eov-operation-handler: controllers/EducacionController  
   /curriculum/{userId}:
     get:
       description: Show curriculum
@@ -12338,6 +12338,8 @@ components:
         email: email
         refreshToken: refreshToken
       properties:
+        titleId:
+          type: string
         name:
           type: string
         lastName:
@@ -13465,25 +13467,25 @@ components:
       allOf:
       - $ref: '#/components/schemas/ExtendedResponse'
       - $ref: '#/components/schemas/getPortfolios_200_response_allOf'
-    createWorkExperience_200_allOf:
+    createWorkExperiences_200_response_allOf:
       properties:
         content:
           $ref: '#/components/schemas/WorkExperienceCreated'
-    createWorkExperience_200_response:
+    createWorkExperiences_200_response:
       allOf:
       - $ref: '#/components/schemas/NormalResponse'
-      - $ref: '#/components/schemas/createWorkExperience_200_response_allOf'
-    getWorkExperience_200_response_allOf:
+      - $ref: '#/components/schemas/createWorkExperiences_200_response_allOf'
+    getWorkExperiences_200_response_allOf:
       properties:
         content:
           items:
             $ref: '#/components/schemas/WorkExperienceCreated'
           type: array
-    getWorkExperience_200_response:
+    getWorkExperiences_200_response:
       allOf:
       - $ref: '#/components/schemas/ExtendedResponse'
-      - $ref: '#/components/schemas/getWorkExperience_200_response_allOf'
-    createEducation_200_allOf:
+      - $ref: '#/components/schemas/getWorkExperiences_200_response_allOf'
+    createEducation_200_response_allOf:
       properties:
         content:
           $ref: '#/components/schemas/EducationCreated'
@@ -13540,7 +13542,7 @@ components:
         statusId:
           example: 644fca9f0aa5d55869c8756a
           type: string
-    AccessLevel_allOf:
+    AccessLevelCreated_allOf:
       properties:
         statusId:
           example: 644fca9f0aa5d55869c8756a
@@ -13565,7 +13567,7 @@ components:
         statusId:
           example: 644fca9f0aa5d55869c8756a
           type: string
-    IntershipCreated_alOf:
+    IntershipCreated_allOf:
       properties:
         statusId:
           example: 644fca9f0aa5d55869c8756a

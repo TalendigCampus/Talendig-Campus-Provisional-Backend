@@ -135,3 +135,26 @@
 {"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-19T20:57:36.039Z"}
 {"level":"error","message":"error sucedio Cannot read properties of undefined (reading 'code')","service":"user-service","stack":"TypeError: Cannot read properties of undefined (reading 'code')\n    at Function.sendResponse (C:\\Users\\styve\\Desktop\\Pasantia\\Pasantia 3\\talendig-campus-provisional-backend\\controllers\\Controller.js:14:29)\n    at Function.handleRequest (C:\\Users\\styve\\Desktop\\Pasantia\\Pasantia 3\\talendig-campus-provisional-backend\\controllers\\Controller.js:106:18)\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)\n    at async deleteUsuario (C:\\Users\\styve\\Desktop\\Pasantia\\Pasantia 3\\talendig-campus-provisional-backend\\controllers\\UsuarioController.js:17:3)","timestamp":"2023-05-19T20:58:50.305Z"}
 {"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-19T21:13:08.593Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T17:29:31.222Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T17:30:46.108Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T17:35:54.712Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T17:36:42.730Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T17:37:36.316Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T17:38:40.899Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T17:39:21.590Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T17:40:32.644Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T17:41:40.289Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T17:44:36.459Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T17:45:57.518Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T17:46:42.653Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T17:51:06.254Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T17:57:21.026Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T18:03:58.424Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T18:09:17.758Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T18:09:35.441Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T18:12:03.610Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T18:12:51.856Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T18:14:11.528Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T18:14:24.951Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T18:17:48.783Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T18:19:20.890Z"}

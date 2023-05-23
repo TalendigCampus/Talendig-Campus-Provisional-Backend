@@ -8,11 +8,6 @@ const TitleSchema = new mongoose.Schema(
       minlength: 3,
       trim: true,
     },
-    userId: {
-      type: [mongoose.Types.ObjectId],
-      ref: 'User',
-      required: [true, 'Por favor, agregar ID al que le pertenece el titulo'],
-    },
   },
   { timestamps: true },
 );
