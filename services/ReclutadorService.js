@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 const { StatusCodes } = require('http-status-codes');
-const { deleteUsuario } = require('./UsuarioService');
 const Service = require('./Service');
 const Recruiter = require('../models/recruiter');
 const CustomAPIError = require('../errors/index');
@@ -44,9 +43,9 @@ const createRecruiter = async ({ recruiter }) => {
  * returns EmptyResponse
  * */
 const deleteRecruiter = async ({ recruiterId }) => {
-  const user = await utility.recruiterUtils.getUserByRecruiterId(recruiterId);
+  const recruiter = await utility.recruiterUtils.getRecruiterById(recruiterId);
 
-  if (!user) {
+  if (!recruiter) {
     throw new CustomAPIError.NotFoundError(
       utility.utilsFunctions.textResponseFormat(
         userName,
@@ -55,7 +54,7 @@ const deleteRecruiter = async ({ recruiterId }) => {
     );
   }
 
-  deleteUsuario({ userId: user._id });
+  await utility.userUtils.deleteUserById(recruiter.userId);
 
   return {
     payload: {

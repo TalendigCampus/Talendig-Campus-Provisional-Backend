@@ -12,7 +12,7 @@ class Controller {
     * send 200 and the payload as received in this method.
     */
     response.status(payload.code || 200);
-    const responsePayload = payload;
+    const responsePayload = payload.payload;
 
     response.json(responsePayload);
   }
