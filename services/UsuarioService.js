@@ -1,10 +1,12 @@
 /* eslint-disable no-unused-vars */
+const { StatusCodes } = require('http-status-codes');
 const Service = require('./Service');
 const CustomAPIError = require('../errors/index');
 const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
 const { textResponseFormat } = require('../utils/utilsFunctions');
 const { getStatusIdByName } = require('../utils/status');
 const UserSchema = require('../models/user');
+
 const userName = 'Usuario';
 
 /**
@@ -15,13 +17,22 @@ const userName = 'Usuario';
 * returns getUserById_200_response
 * */
 const addUser = async ({ user }) => {
+  if (!user) {
+    throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.serverError);
+  }
+
   const preUser = user;
   preUser.avatar = user.name[0].toUpperCase() + user.lastName[0].toUpperCase();
   preUser.statusId = await getStatusIdByName('active');
 
   const userCreated = await UserSchema.create(preUser);
 
+  if (!userCreated) {
+    
+  }
+
   return {
+    code: StatusCodes.CREATED,
     payload: {
       hasError: false,
       message: textResponseFormat(userName, SHORTTEXTREPONSE.found),
@@ -39,7 +50,10 @@ const addUser = async ({ user }) => {
 const deleteUsuario = async ({ userId }) => {
   const statusId = await getStatusIdByName('inactive');
   const userDeleted = await UserSchema.findByIdAndUpdate(userId, { statusId });
-  
+
+  if (userDeleted) {
+
+  }
 
   // return {
   //   payload: {
