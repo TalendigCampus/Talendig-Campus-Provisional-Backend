@@ -112,20 +112,21 @@ const getAllUsers = async ({ userPagination }) => {
 * userId String ID of user to return
 * returns getUserById_200_response
 * */
-const getUserById = ({ userId }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        userId,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const getUserById = async ({ userId }) => {
+  const user = await userFunctions.getUserById(userId);
+
+  if (!user) {
+    throw new CustomAPIError.NotFoundError(textResponseFormat(userName, SHORTTEXTREPONSE.notFound));
+  }
+
+  return {
+    payload: {
+      hasError: false,
+      message: '',
+      content: user,
+    },
+  };
+};
 /**
 * Login user
 * Log an user in
