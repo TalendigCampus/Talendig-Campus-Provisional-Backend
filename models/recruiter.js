@@ -4,7 +4,7 @@ const AddressSchema = require('./commons/address');
 const RecruiterSchema = new mongoose.Schema(
   {
     userId: {
-      type: [mongoose.Types.ObjectId],
+      type: mongoose.Types.ObjectId,
       ref: 'User',
       required: [true, 'Por favor, agregar ID al que le pertenece el usuario'],
     },
@@ -32,7 +32,6 @@ const RecruiterSchema = new mongoose.Schema(
         trim: true,
         required: [true, 'Por favor, coloque la rnc de la empresa'],
         minlength: 5,
-        unique: true,
       },
       address: AddressSchema,
     },
