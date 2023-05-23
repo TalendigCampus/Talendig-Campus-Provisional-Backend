@@ -56,7 +56,7 @@ const InstructorSchema = new mongoose.Schema(
       required: [true, 'Por favor, agregar la experiencia laboral'],
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoose.model('Instructor', InstructorSchema);
