@@ -4,6 +4,11 @@ const AddressSchema = require('./commons/address');
 
 const UserSchema = new mongoose.Schema(
   {
+    title: {
+      type: mongoose.Types.ObjectId,
+      ref: 'Title',
+      required: [true, 'Por favor, agregar ID del title'],
+    },
     name: {
       type: String,
       required: [true, 'Por favor, coloque un nombre'],
@@ -16,7 +21,7 @@ const UserSchema = new mongoose.Schema(
       minlength: 3,
       trim: true,
     },
-    prhotoUrl: {
+    photoUrl: {
       type: String,
       trim: true,
       validate: {

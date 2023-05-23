@@ -7,10 +7,17 @@ const AccessLevelSchema = new mongoose.Schema(
       required: [true, 'Por favor, coloque un nombre'],
       minlength: 3,
       trim: true,
+      unique: true,
     },
     description: {
       type: String,
       trim: true,
+    },
+    statusId: {
+      type: mongoose.Types.ObjectId,
+      trim: true,
+      ref: 'Status',
+      required: [true, 'Por favor, coloque un estado'],
     },
   },
   { timestamps: true },
