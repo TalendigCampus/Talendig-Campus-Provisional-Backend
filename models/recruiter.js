@@ -32,7 +32,6 @@ const RecruiterSchema = new mongoose.Schema(
         trim: true,
         required: [true, 'Por favor, coloque la rnc de la empresa'],
         minlength: 5,
-        unique: true,
       },
       address: AddressSchema,
     },

@@ -11753,9 +11753,9 @@ components:
           items:
             type: string
         workExperiences:
-          items:
-            $ref: '#/components/schemas/WorkExperience'
           type: array
+          items:
+            type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
       type: object
