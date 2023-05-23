@@ -266,3 +266,7 @@
 {"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T20:29:41.441Z"}
 {"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T20:32:35.302Z"}
 {"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T20:34:29.775Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T21:28:19.297Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T21:37:37.160Z"}
+{"code":404,"level":"error","message":"error sucedio Usuario no encontrado.","service":"user-service","stack":"Error: Usuario no encontrado.\n    at getUserById (C:\\Users\\styve\\Desktop\\Pasantia\\Pasantia 3\\talendig-campus-provisional-backend\\services\\UsuarioService.js:119:11)\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)\n    at async Function.handleRequest (C:\\Users\\styve\\Desktop\\Pasantia\\Pasantia 3\\talendig-campus-provisional-backend\\controllers\\Controller.js:105:31)\n    at async getUserById (C:\\Users\\styve\\Desktop\\Pasantia\\Pasantia 3\\talendig-campus-provisional-backend\\controllers\\UsuarioController.js:25:3)","timestamp":"2023-05-23T21:40:51.650Z"}
+{"level":"info","message":"Express server running","service":"user-service","timestamp":"2023-05-23T22:07:33.185Z"}
