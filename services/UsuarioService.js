@@ -186,27 +186,24 @@ const logOutUser = ({ userToken }) => ({
 * returns getUserById_200_response
 * */
 const updateUser = async ({ userId, userCreated }) => {
-  const user = await userFunctions.getUserById(userId);
-
-  // eslint-disable-next-line no-underscore-dangle
   if (userId !== userCreated._id) {
     throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.errorId);
   }
 
-  if (!user) {
+  const { _id, ...values } = userCreated;
+
+  const updated = await UserSchema.updateOne({ _id }, values);
+
+  if (updated.modifiedCount !== 1) {
     throw new CustomAPIError.NotFoundError(textResponseFormat(userName, SHORTTEXTREPONSE.notFound));
   }
 
-  const userUpdated = await UserSchema.updateOne(userCreated);
-
-  if (userUpdated.modifiedCount !== 1) {
-    throw new Error(SHORTTEXTREPONSE.serverError);
-  }
+  const userUpdated = await userFunctions.getUserById(userId);
 
   return {
     payload: {
       hasError: false,
-      message: '',
+      message: textResponseFormat(userName, SHORTTEXTREPONSE.updated),
       content: userUpdated,
     },
   };
