@@ -4,7 +4,7 @@ const AddressSchema = require('./commons/address');
 
 const UserSchema = new mongoose.Schema(
   {
-    title: {
+    titleId: {
       type: mongoose.Types.ObjectId,
       ref: 'Title',
       required: [true, 'Por favor, agregar ID del title'],
