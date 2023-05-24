@@ -17,8 +17,7 @@ const TalentSchema = new mongoose.Schema({
     required: [true, 'Por favor, selecciona un contacto de emergencia'],
   },
   birthdate: {
-    type: String,
-    format: Date,
+    type: Date,
     required: [true, 'Por favor seleccione una fecha de nacimiento'],
   },
   education: {

@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 const { StatusCodes } = require('http-status-codes');
+const { isEmail } = require('validator');
 const Service = require('./Service');
 const CustomAPIError = require('../errors/index');
 const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
@@ -134,20 +135,34 @@ const getUserById = async ({ userId }) => {
 * credentials Credentials Log users in to use the app (optional)
 * returns EmptyResponse
 * */
-const logInUser = ({ credentials }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        credentials,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const logInUser = async ({ credentials }) => {
+  const { email, password } = credentials;
+
+  if (!email || !password) {
+    throw new CustomAPIError.BadRequestError('Todos los campos son obligatorios');
+  }
+
+  if (!isEmail(email)) {
+    throw new CustomAPIError.BadRequestError('Introduzca un correo valido');
+  }
+
+  const user = await UserSchema.findOne({ email, password });
+
+  if (!user) {
+    throw new CustomAPIError.NotFoundError('Estas credenciales no coinciden con un usuario registrado');
+  }
+
+  return {
+    payload: {
+      hasError: false,
+      message: '',
+      content: {
+        email: user.email,
+        fullName: `${user.name} ${user.lastName}`,
+      },
+    },
+  };
+};
 /**
 * Logout user
 * Log an user out
@@ -155,20 +170,13 @@ const logInUser = ({ credentials }) => new Promise(
 * userToken String userToken of user that need to be Logged Out
 * returns EmptyResponse
 * */
-const logOutUser = ({ userToken }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        userToken,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
+const logOutUser = ({ userToken }) => ({
+  payload: {
+    hasError: false,
+    message: '',
+    content: 'Se ha cerrado la sesión del usuario',
   },
-);
+});
 /**
 * Update an existing user
 * Update an existing user by Id
@@ -177,21 +185,32 @@ const logOutUser = ({ userToken }) => new Promise(
 * userCreated UserCreated Update an existent user in the store
 * returns getUserById_200_response
 * */
-const updateUser = ({ userId, userCreated }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        userId,
-        userCreated,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const updateUser = async ({ userId, userCreated }) => {
+  const user = await userFunctions.getUserById(userId);
+
+  // eslint-disable-next-line no-underscore-dangle
+  if (userId !== userCreated._id) {
+    throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.errorId);
+  }
+
+  if (!user) {
+    throw new CustomAPIError.NotFoundError(textResponseFormat(userName, SHORTTEXTREPONSE.notFound));
+  }
+
+  const userUpdated = await UserSchema.updateOne(userCreated);
+
+  if (userUpdated.modifiedCount !== 1) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
+  return {
+    payload: {
+      hasError: false,
+      message: '',
+      content: userUpdated,
+    },
+  };
+};
 
 module.exports = {
   addUser,
