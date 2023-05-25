@@ -1,10 +1,15 @@
 /* eslint-disable no-unused-vars */
+const { StatusCodes } = require('http-status-codes');
+const { isEmail } = require('validator');
 const Service = require('./Service');
 const CustomAPIError = require('../errors/index');
 const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
 const { textResponseFormat } = require('../utils/utilsFunctions');
 const { getStatusIdByName } = require('../utils/status');
+const userFunctions = require('../utils/user');
 const UserSchema = require('../models/user');
+const Pagination = require('../utils/pagination');
+
 const userName = 'Usuario';
 
 /**
@@ -15,16 +20,25 @@ const userName = 'Usuario';
 * returns getUserById_200_response
 * */
 const addUser = async ({ user }) => {
+  if (!user) {
+    throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.noBodyRequest);
+  }
+
   const preUser = user;
   preUser.avatar = user.name[0].toUpperCase() + user.lastName[0].toUpperCase();
   preUser.statusId = await getStatusIdByName('active');
 
   const userCreated = await UserSchema.create(preUser);
 
+  if (!userCreated) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
   return {
+    code: StatusCodes.CREATED,
     payload: {
       hasError: false,
-      message: textResponseFormat(userName, SHORTTEXTREPONSE.found),
+      message: textResponseFormat(userName, SHORTTEXTREPONSE.created),
       content: userCreated,
     },
   };
@@ -37,17 +51,26 @@ const addUser = async ({ user }) => {
 * returns EmptyResponse
 * */
 const deleteUsuario = async ({ userId }) => {
-  const statusId = await getStatusIdByName('inactive');
-  const userDeleted = await UserSchema.findByIdAndUpdate(userId, { statusId });
-  
+  const userExists = await userFunctions.getUserById(userId);
 
-  // return {
-  //   payload: {
-  //     hasError: false,
-  //     message: textResponseFormat(userName, SHORTTEXTREPONSE.deleted),
-  //     content: {},
-  //   },
-  // };
+  if (!userExists) {
+    throw new CustomAPIError.NotFoundError(textResponseFormat(userName, SHORTTEXTREPONSE.notFound));
+  }
+
+  const statusId = await getStatusIdByName('inactive');
+  const userDeleted = await UserSchema.updateOne({ _id: userId }, { statusId });
+
+  if (userDeleted.modifiedCount !== 1) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
+  return {
+    payload: {
+      hasError: false,
+      message: textResponseFormat(userName, SHORTTEXTREPONSE.deleted),
+      content: {},
+    },
+  };
 };
 /**
 * Get all users
@@ -56,20 +79,33 @@ const deleteUsuario = async ({ userId }) => {
 * userPagination UserPagination Get list of users with filter and pagination (optional)
 * returns getAllUsers_200_response
 * */
-const getAllUsers = ({ userPagination }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        userPagination,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const getAllUsers = async ({ userPagination }) => {
+  const { filter, pagination } = userPagination;
+
+  const paginationClass = new Pagination(pagination);
+  let queryPagination = paginationClass.queryPagination();
+
+  let users = [];
+  let count = [];
+
+  try {
+    users = await UserSchema.find(filter, null, queryPagination);
+    count = await UserSchema.find(filter, null, queryPagination).countDocuments();
+  } catch (error) {
+    console.log(error);
+  }
+
+  queryPagination = { quantity: count, page: paginationClass.page };
+
+  return {
+    payload: {
+      hasError: false,
+      message: '',
+      content: users,
+      pagination: new Pagination(queryPagination),
+    },
+  };
+};
 /**
 * Find user by ID
 * Returns a single user
@@ -77,20 +113,21 @@ const getAllUsers = ({ userPagination }) => new Promise(
 * userId String ID of user to return
 * returns getUserById_200_response
 * */
-const getUserById = ({ userId }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        userId,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const getUserById = async ({ userId }) => {
+  const user = await userFunctions.getUserById(userId);
+
+  if (!user) {
+    throw new CustomAPIError.NotFoundError(textResponseFormat(userName, SHORTTEXTREPONSE.notFound));
+  }
+
+  return {
+    payload: {
+      hasError: false,
+      message: '',
+      content: user,
+    },
+  };
+};
 /**
 * Login user
 * Log an user in
@@ -98,20 +135,34 @@ const getUserById = ({ userId }) => new Promise(
 * credentials Credentials Log users in to use the app (optional)
 * returns EmptyResponse
 * */
-const logInUser = ({ credentials }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        credentials,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const logInUser = async ({ credentials }) => {
+  const { email, password } = credentials;
+
+  if (!email || !password) {
+    throw new CustomAPIError.BadRequestError('Todos los campos son obligatorios');
+  }
+
+  if (!isEmail(email)) {
+    throw new CustomAPIError.BadRequestError('Introduzca un correo valido');
+  }
+
+  const user = await UserSchema.findOne({ email, password });
+
+  if (!user) {
+    throw new CustomAPIError.NotFoundError('Estas credenciales no coinciden con un usuario registrado');
+  }
+
+  return {
+    payload: {
+      hasError: false,
+      message: '',
+      content: {
+        email: user.email,
+        fullName: `${user.name} ${user.lastName}`,
+      },
+    },
+  };
+};
 /**
 * Logout user
 * Log an user out
@@ -119,20 +170,13 @@ const logInUser = ({ credentials }) => new Promise(
 * userToken String userToken of user that need to be Logged Out
 * returns EmptyResponse
 * */
-const logOutUser = ({ userToken }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        userToken,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
+const logOutUser = ({ userToken }) => ({
+  payload: {
+    hasError: false,
+    message: '',
+    content: 'Se ha cerrado la sesión del usuario',
   },
-);
+});
 /**
 * Update an existing user
 * Update an existing user by Id
@@ -141,21 +185,32 @@ const logOutUser = ({ userToken }) => new Promise(
 * userCreated UserCreated Update an existent user in the store
 * returns getUserById_200_response
 * */
-const updateUser = ({ userId, userCreated }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        userId,
-        userCreated,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const updateUser = async ({ userId, userCreated }) => {
+  const user = await userFunctions.getUserById(userId);
+
+  // eslint-disable-next-line no-underscore-dangle
+  if (userId !== userCreated._id) {
+    throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.errorId);
+  }
+
+  if (!user) {
+    throw new CustomAPIError.NotFoundError(textResponseFormat(userName, SHORTTEXTREPONSE.notFound));
+  }
+
+  const userUpdated = await UserSchema.updateOne(userCreated);
+
+  if (userUpdated.modifiedCount !== 1) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
+  return {
+    payload: {
+      hasError: false,
+      message: '',
+      content: userUpdated,
+    },
+  };
+};
 
 module.exports = {
   addUser,
