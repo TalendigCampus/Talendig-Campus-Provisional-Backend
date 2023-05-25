@@ -121,20 +121,25 @@ const deleteInstitutionById = async ({ institutionId }) => {
 * intershipId String Id that need to be deleted
 * returns EmptyResponse
 * */
-const deleteIntershipById = ({ intershipId }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        intershipId,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const deleteIntershipById = async ({ intershipId }) => {
+  const intership = await utility.intershipUtils.getIntershipById(intershipId);
+  const entityName = 'Intership';
+
+  if (!intership) {
+    throw new CustomAPIError.NotFoundError(
+      textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+  await utility.userUtils.deleteUserById(intership.id);
+
+  return {
+    payload: {
+      hasError: false,
+      message: utility.utilsFunctions.textResponseFormat(entityName,SHORTTEXTREPONSE.deleted),
+      content: {},
+    },
+  };
+};
 /**
 * Delete intershipTalent
 * Delete a intershipTalent by userId
