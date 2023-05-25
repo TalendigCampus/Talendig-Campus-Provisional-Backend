@@ -6,6 +6,8 @@ const IntershipTalent = require('../models/intershipTalent.js');
 const CustomAPIError = require('../errors/index');
 const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
 const { textResponseFormat } = require('../utils/utilsFunctions');
+const utility = require('../utils');
+
 /**
 * Create institution
 * add a new instritution
@@ -91,25 +93,26 @@ const createIntershipTalent = ({ intershipTalent }) => {
 * institutionId String Id of institution that need to be deleted
 * returns createInstitution_200_response
 * */
-const deleteInstitutionById = ({ institutionId }) => {
+const deleteInstitutionById = async ({ institutionId }) => {
 
-  const intershipTalendigData = {};
+  const institution = await utility.institutionUtils.getInstitutionById(institutionId);
   const entityName = 'Intership';
 
-  if (!intershipTalent) {
+  if (!institution) {
     throw new CustomAPIError.NotFoundError(
       textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
     );
   }
-  intershipTalendigData = IntershipTalent.findByIdAndDelete(institutionId);
+  await utility.userUtils.deleteUserById(institution.userId);
 
   return {
     payload: {
       hasError: false,
-      message: 'Intership Creado',
-      content: intershipTalendigData,
+      message: utility.utilsFunctions.textResponseFormat(entityName,SHORTTEXTREPONSE.deleted),
+      content: {},
     },
   };
+  
 }; 
 /**
 * Delete intership
