@@ -1,14 +1,12 @@
-/* eslint-disable no-unused-vars */
 const { StatusCodes } = require('http-status-codes');
 const { isEmail } = require('validator');
-const Service = require('./Service');
+// const Service = require('./Service');
 const CustomAPIError = require('../errors/index');
 const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
-const { textResponseFormat } = require('../utils/utilsFunctions');
-const { getStatusIdByName } = require('../utils/status');
-const userFunctions = require('../utils/user');
+const {
+  userUtils, Pagination, statusUtils, utilsFunctions,
+} = require('../utils/index');
 const UserSchema = require('../models/user');
-const Pagination = require('../utils/pagination');
 
 const userName = 'Usuario';
 
@@ -26,7 +24,7 @@ const addUser = async ({ user }) => {
 
   const preUser = user;
   preUser.avatar = user.name[0].toUpperCase() + user.lastName[0].toUpperCase();
-  preUser.statusId = await getStatusIdByName('active');
+  preUser.statusId = await statusUtils.getStatusIdByName('active');
 
   const userCreated = await UserSchema.create(preUser);
 
@@ -38,7 +36,7 @@ const addUser = async ({ user }) => {
     code: StatusCodes.CREATED,
     payload: {
       hasError: false,
-      message: textResponseFormat(userName, SHORTTEXTREPONSE.created),
+      message: utilsFunctions.textResponseFormat(userName, SHORTTEXTREPONSE.created),
       content: userCreated,
     },
   };
@@ -50,14 +48,15 @@ const addUser = async ({ user }) => {
 * userId String Usuario id to delete
 * returns EmptyResponse
 * */
-const deleteUsuario = async ({ userId }) => {
-  const userExists = await userFunctions.getUserById(userId);
+const deleteUser = async ({ userId }) => {
+  const userExists = await userUtils.getUserById(userId);
 
   if (!userExists) {
-    throw new CustomAPIError.NotFoundError(textResponseFormat(userName, SHORTTEXTREPONSE.notFound));
+    throw new CustomAPIError.NotFoundError(utilsFunctions
+      .textResponseFormat(userName, SHORTTEXTREPONSE.notFound));
   }
 
-  const statusId = await getStatusIdByName('inactive');
+  const statusId = await statusUtils.getStatusIdByName('inactive');
   const userDeleted = await UserSchema.updateOne({ _id: userId }, { statusId });
 
   if (userDeleted.modifiedCount !== 1) {
@@ -67,7 +66,7 @@ const deleteUsuario = async ({ userId }) => {
   return {
     payload: {
       hasError: false,
-      message: textResponseFormat(userName, SHORTTEXTREPONSE.deleted),
+      message: utilsFunctions.textResponseFormat(userName, SHORTTEXTREPONSE.deleted),
       content: {},
     },
   };
@@ -114,10 +113,11 @@ const getAllUsers = async ({ userPagination }) => {
 * returns getUserById_200_response
 * */
 const getUserById = async ({ userId }) => {
-  const user = await userFunctions.getUserById(userId);
+  const user = await userUtils.getUserById(userId);
 
   if (!user) {
-    throw new CustomAPIError.NotFoundError(textResponseFormat(userName, SHORTTEXTREPONSE.notFound));
+    throw new CustomAPIError.NotFoundError(utilsFunctions
+      .textResponseFormat(userName, SHORTTEXTREPONSE.notFound));
   }
 
   return {
@@ -195,15 +195,15 @@ const updateUser = async ({ userId, userCreated }) => {
   const updated = await UserSchema.updateOne({ _id }, values);
 
   if (updated.modifiedCount !== 1) {
-    throw new CustomAPIError.NotFoundError(textResponseFormat(userName, SHORTTEXTREPONSE.notFound));
+    throw new Error(SHORTTEXTREPONSE.serverError);
   }
 
-  const userUpdated = await userFunctions.getUserById(userId);
+  const userUpdated = await userUtils.getUserById(userId);
 
   return {
     payload: {
       hasError: false,
-      message: textResponseFormat(userName, SHORTTEXTREPONSE.updated),
+      message: utilsFunctions.textResponseFormat(userName, SHORTTEXTREPONSE.updated),
       content: userUpdated,
     },
   };
@@ -211,7 +211,7 @@ const updateUser = async ({ userId, userCreated }) => {
 
 module.exports = {
   addUser,
-  deleteUsuario,
+  deleteUser,
   getAllUsers,
   getUserById,
   logInUser,

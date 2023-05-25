@@ -211,7 +211,7 @@ paths:
   /user/{userId}:
     delete:
       description: delete a usuario
-      operationId: deleteUsuario
+      operationId: deleteUser
       parameters:
       - description: Usuario id to delete
         explode: false
@@ -10137,6 +10137,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/Talent'
       - $ref: '#/components/schemas/AdministratorCreated_allOf'
+      - $ref: '#/components/schemas/UserId_allOf'
     WorkExperience:
       example:
         address:
@@ -10303,7 +10304,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/Event'
       - $ref: '#/components/schemas/AdministratorCreated_allOf'
-      - $ref: '#/components/schemas/EventCreated_allOf'
+      - $ref: '#/components/schemas/StatusId_allOf'
     EventPagination:
       example:
         filter: null
@@ -10422,7 +10423,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/AccessLevel'
       - $ref: '#/components/schemas/AdministratorCreated_allOf'
-      - $ref: '#/components/schemas/AccessLevelCreated_allOf'
+      - $ref: '#/components/schemas/StatusId_allOf'
     AccessLevelPagination:
       example:
         filter: null
@@ -10452,7 +10453,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/Profile'
       - $ref: '#/components/schemas/AdministratorCreated_allOf'
-      - $ref: '#/components/schemas/ProfileCreated_allOf'
+      - $ref: '#/components/schemas/StatusId_allOf'
     ProfilePagination:
       example:
         filter: null
@@ -10567,7 +10568,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/Report'
       - $ref: '#/components/schemas/AdministratorCreated_allOf'
-      - $ref: '#/components/schemas/ReportCreated_allOf'
+      - $ref: '#/components/schemas/StatusId_allOf'
     ReportPagination:
       example:
         filter: null
@@ -10620,7 +10621,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/Project'
       - $ref: '#/components/schemas/AdministratorCreated_allOf'
-      - $ref: '#/components/schemas/ProjectCreated_allOf'
+      - $ref: '#/components/schemas/StatusId_allOf'
     ProjectPagination:
       example:
         filter:
@@ -10861,6 +10862,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/TalentRecruiter'
       - $ref: '#/components/schemas/AdministratorCreated_allOf'
+      - $ref: '#/components/schemas/StatusId_allOf'
     TalentRecruiterPagination:
       example:
         filter:
@@ -11376,7 +11378,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/Bootcamp'
       - $ref: '#/components/schemas/AdministratorCreated_allOf'
-      - $ref: '#/components/schemas/BootcampCreated_allOf'
+      - $ref: '#/components/schemas/StatusId_allOf'
     BootcampSubjectCreated:
       allOf:
       - $ref: '#/components/schemas/BootcampSubject'
@@ -11451,7 +11453,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/Bootcamp'
       - $ref: '#/components/schemas/AdministratorCreated_allOf'
-      - $ref: '#/components/schemas/PortfolioCreated_alOf'
+      - $ref: '#/components/schemas/StatusId_allOf'
     PortfolioPagination:
       example:
         filter:
@@ -11786,7 +11788,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/Intership'
       - $ref: '#/components/schemas/AdministratorCreated_allOf'
-      - $ref: '#/components/schemas/IntershipCreated_allOf'
+      - $ref: '#/components/schemas/StatusId_allOf'
     IntershipPagination:
       example:
         filter:
@@ -13523,6 +13525,11 @@ components:
           - noRated
           type: string
       type: object
+    StatusId_allOf:
+      properties:
+        statusId:
+          example: 644fca9f0aa5d55869c8756a
+          type: string
     AdministratorCreated_allOf:
       properties:
         id:
@@ -13530,53 +13537,18 @@ components:
           type: string
       example: null
     UserCreated_allOf:
+      allOf:
+        - $ref: '#/components/schemas/StatusId_allOf'
       properties:
         avatar:
           example: AM
           type: string
-        statusId:
-          example: 644fca9f0aa5d55869c8756a
-          type: string
-    EventCreated_allOf:
+    UserId_allOf:
       properties:
-        statusId:
+        userId:
           example: 644fca9f0aa5d55869c8756a
           type: string
-    AccessLevelCreated_allOf:
-      properties:
-        statusId:
-          example: 644fca9f0aa5d55869c8756a
-          type: string
-    BootcampCreated_allOf:
-      properties:
-        statusId:
-          example: 644fca9f0aa5d55869c8756a
-          type: string
-    ProfileCreated_allOf:
-      properties:
-        statusId:
-          example: 644fca9f0aa5d55869c8756a
-          type: string
-    ReportCreated_allOf:
-      properties:
-        statusId:
-          example: 644fca9f0aa5d55869c8756a
-          type: string
-    ProjectCreated_allOf:
-      properties:
-        statusId:
-          example: 644fca9f0aa5d55869c8756a
-          type: string
-    IntershipCreated_allOf:
-      properties:
-        statusId:
-          example: 644fca9f0aa5d55869c8756a
-          type: string
-    PortfolioCreated_alOf:
-      properties:
-        statusId:
-          example: 644fca9f0aa5d55869c8756a
-          type: string
+      example: null
     WorkExperience_directSupervisor:
       example:
         lastName: Rodriguez
@@ -13718,7 +13690,7 @@ components:
         comments: comments
         selction: selction
       properties:
-        selction:
+        selection:
           type: string
         comments:
           type: string
