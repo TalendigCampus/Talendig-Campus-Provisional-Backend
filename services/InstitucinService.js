@@ -1,6 +1,11 @@
 /* eslint-disable no-unused-vars */
 const Service = require('./Service');
-
+const Institution = require('../models/institution.js');
+const Intership = require('../models/intership.js');
+const IntershipTalent = require('../models/intershipTalent.js');
+const CustomAPIError = require('../errors/index');
+const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
+const { textResponseFormat } = require('../utils/utilsFunctions');
 /**
 * Create institution
 * add a new instritution
@@ -11,108 +16,13 @@ const Service = require('./Service');
 const createInstitution = ({ institution }) => {
 
   const institutionData = {};
-  const entityName = 'Institution';
 
-  // Check if the name is not empty
-  if (!institutionData.name) {
-    throw new Error('El nombre de la institución es obligatorio');
+  if (!institution) {
+    throw new CustomAPIError.BadRequestError(
+      textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
+    );
   }
-
-  // Check if the address is not empty
-  if (!institutionData.address) {
-    throw new Error('La dirección de la institución es obligatoria');
-  }
-
-  // Check if the phone number is not empty
-  if (!institutionData.phone) {
-    throw new Error('El teléfono de la institución es obligatorio');
-  }
-
-  // Check if the website is not empty
-  if (!institutionData.website) {
-    throw new Error('La página web de la institución es obligatoria');
-  }
-
-  // Check if the email is not empty
-  if (!institutionData.email) {
-    throw new Error('El correo electrónico de la institución es obligatorio');
-  }
-
-  // Check if the companyDetails is not empty
-  if (!institutionData.companyDetails) {
-    throw new Error('Los datos de la compañia son obligatorios');
-  }
-
-  // Check if the foundationDate is not empty
-  if (!institutionData.companyDetails.foundationDate) {
-    throw new Error('La fecha de fundación de la institución es obligatoria');
-  }
-
-  // Check if the rnc is not empty
-  if (!institutionData.companyDetails.rnc) {
-    throw new Error('El RNC es obligatorio');
-  }
-
-  // Check if the address is not empty
-  if (!institutionData.companyDetails.address) {
-    throw new Error('Los datos de la dirección son obligatorios');
-  }
-
-  // Check if the ownerDetails is not empty
-  if (!institutionData.ownerDetails) {
-    throw new Error('Los datos del propietario son obligatorios');
-  }
-
-  // Check if the name is not empty
-  if (!institutionData.ownerDetails.name) {
-    throw new Error('El nombre del propietario es obligatorio');
-  }
-
-  // Check if the lastName is not empty
-  if (!institutionData.ownerDetails.lastName) {
-    throw new Error('El apellido del propietario es obligatorio');
-  }
-
-  // Check if the phoneNumber is not empty
-  if (!institutionData.ownerDetails.phoneNumber) {
-    throw new Error('El número de teléfono del propietario es obligatorio');
-  }
-
-  // Check if the rnc is not empty
-  if (!institutionData.ownerDetails.rnc) {
-    throw new Error('El RNC del propietario es obligatorio');
-  }
-
-  // Check if the gender is not empty
-  if (!institutionData.ownerDetails.gender) {
-    throw new Error('El género del propietario es obligatorio');
-  }
-
-  // Check if the languages is not empty
-  if (!institutionData.ownerDetails.languages) {
-    throw new Error('Los idiomas que domina el propietario son obligatorios');
-  }
-
-  // Check if the contact is not empty
-  if (!institutionData.ownerDetails.contact) {
-    throw new Error('Los contactos de emergencia del propietario son obligatorios');
-  }
-
-  // Check if the birthday is not empty
-  if (!institutionData.ownerDetails.birthday) {
-    throw new Error('La fecha de nacimiento del propietario es obligatoria');
-  }
-
-  // Check if the education is not empty
-  if (!institutionData.ownerDetails.education) {
-    throw new Error('La educación del propietario es obligatoria');
-  }
-
-  // Check if the workExperience is not empty
-  if (!institutionData.ownerDetails.workExperience) {
-    throw new Error('La experiencia laboral del propietario es obligatoria');
-  }
-
+    institutionData = Institution.create(institution);
   return {
     payload: {
       hasError: false,
@@ -133,12 +43,12 @@ const createIntership = ({ intership }) => {
   const intershipData = {};
   const entityName = 'Intership';
 
-  if (!intershipData) {
-    throw new CustomAPIError.NotFoundError(
+  if (!intership) {
+    throw new CustomAPIError.BadRequestError(
       textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
     );
   }
-
+  intershipData = Intership.create(intership);
   return {
     payload: {
       hasError: false,
@@ -159,11 +69,12 @@ const createIntershipTalent = ({ intershipTalent }) => {
   const intershipTalendigData = {};
   const entityName = 'Intership';
 
-  if (!intershipTalendigData) {
-    throw new CustomAPIError.NotFoundError(
+  if (!intershipTalent) {
+    throw new CustomAPIError.BadRequestError(
       textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
     );
   }
+  intershipTalendigData = IntershipTalent.create(intershipTalent);
 
   return {
     payload: {
@@ -180,20 +91,26 @@ const createIntershipTalent = ({ intershipTalent }) => {
 * institutionId String Id of institution that need to be deleted
 * returns createInstitution_200_response
 * */
-const deleteInstitutionById = ({ institutionId }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        institutionId,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const deleteInstitutionById = ({ institutionId }) => {
+
+  const intershipTalendigData = {};
+  const entityName = 'Intership';
+
+  if (!intershipTalent) {
+    throw new CustomAPIError.NotFoundError(
+      textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+  intershipTalendigData = IntershipTalent.findByIdAndDelete(institutionId);
+
+  return {
+    payload: {
+      hasError: false,
+      message: 'Intership Creado',
+      content: intershipTalendigData,
+    },
+  };
+}; 
 /**
 * Delete intership
 * Delete a intership by userId
@@ -248,11 +165,13 @@ const getInstitutionById = ({ institutionId }) => {
   const institutionData = {};
   const entityName = 'Institution';
 
-  if (!institutionData) {
+  if (!institutionId) {
     throw new CustomAPIError.NotFoundError(
       textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
     );
   }
+
+  institutionData = institutionId;
 
   return {
     payload: {

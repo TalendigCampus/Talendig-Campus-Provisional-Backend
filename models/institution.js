@@ -28,7 +28,7 @@ const institutionSchema = new mongoose.Schema(
         required: [true, "Por favor de digitar RNC"],
         minlength: 9,
         validate: {
-          validator: validator.isNumeric(str[no_symbols]),
+          validator: validator.isNumeric(),
           message: "Please provide a valid RNC",
         },
       },
