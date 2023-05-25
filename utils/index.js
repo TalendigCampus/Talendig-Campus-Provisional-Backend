@@ -4,7 +4,8 @@ const statusUtils = require('./status');
 const recruiterUtils = require('./recruiter');
 const institutionUtils = require('./institution');
 const intershipUtils = require('./intership');
-const pagination = require('./pagination');
+const talentUtils = require('./talent');
+const Pagination = require('./pagination');
 
 module.exports = {
   userUtils,
@@ -13,5 +14,6 @@ module.exports = {
   intershipUtils,
   utilsFunctions,
   statusUtils,
-  pagination,
+  Pagination,
+  talentUtils,
 };
