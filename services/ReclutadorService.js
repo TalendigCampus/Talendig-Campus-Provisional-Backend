@@ -6,7 +6,7 @@ const CustomAPIError = require('../errors/index');
 const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
 const utility = require('../utils');
 
-const userName = 'Reclutador';
+const recruiterName = 'Reclutador';
 /**
  * Create recruiter
  * The creation of a new recruiter.
@@ -16,22 +16,17 @@ const userName = 'Reclutador';
  * */
 const createRecruiter = async ({ recruiter }) => {
   if (!recruiter) {
-    throw new CustomAPIError.BadRequestError(
-      utility.utilsFunctions.textResponseFormat(
-        userName,
-        SHORTTEXTREPONSE.noBodyRequest,
-      ),
-    );
+    throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.noBodyRequest);
   }
 
-  const recuiter = await Recruiter.create(recruiter);
+  const newRecruiter = await Recruiter.create(recruiter);
 
   return {
     code: StatusCodes.CREATED,
     payload: {
       hasError: false,
-      message: utility.utilsFunctions.textResponseFormat(userName, SHORTTEXTREPONSE.created),
-      content: recuiter,
+      message: utility.utilsFunctions.textResponseFormat(recruiterName, SHORTTEXTREPONSE.created),
+      content: newRecruiter,
     },
   };
 };
@@ -48,7 +43,7 @@ const deleteRecruiter = async ({ recruiterId }) => {
   if (!recruiter) {
     throw new CustomAPIError.NotFoundError(
       utility.utilsFunctions.textResponseFormat(
-        userName,
+        recruiterName,
         SHORTTEXTREPONSE.notFound,
       ),
     );
@@ -59,7 +54,7 @@ const deleteRecruiter = async ({ recruiterId }) => {
   return {
     payload: {
       hasError: false,
-      message: utility.utilsFunctions.textResponseFormat(userName, SHORTTEXTREPONSE.deleted),
+      message: utility.utilsFunctions.textResponseFormat(recruiterName, SHORTTEXTREPONSE.deleted),
       content: {},
     },
   };
