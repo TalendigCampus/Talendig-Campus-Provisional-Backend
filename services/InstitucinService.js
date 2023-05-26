@@ -130,7 +130,7 @@ const deleteIntershipById = async ({ intershipId }) => {
       textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
     );
   }
-  await utility.userUtils.deleteUserById(intership.id);
+  await utility.intershipUtils.deleteIntershipById(intership._id);
 
   return {
     payload: {
@@ -147,20 +147,25 @@ const deleteIntershipById = async ({ intershipId }) => {
 * intershipTalentId String Id that need to be deleted
 * returns EmptyResponse
 * */
-const deleteIntershipTalentById = ({ intershipTalentId }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        intershipTalentId,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const deleteIntershipTalentById = async ({ intershipTalentId }) => {
+  const intershipTalent = await utility.intershipUtils.getIntershipTalentById(intershipTalentId);
+  const entityName = 'IntershipTalent';
+
+  if (!intershipTalent) {
+    throw new CustomAPIError.NotFoundError(
+      textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+  await utility.intershipUtils.deleteIntershipTalentById(intershipTalent._id);
+
+  return {
+    payload: {
+      hasError: false,
+      message: utility.utilsFunctions.textResponseFormat(entityName,SHORTTEXTREPONSE.deleted),
+      content: {},
+    },
+  };
+};
 /**
 * Find institution by ID
 * Returns a single institution
@@ -168,9 +173,9 @@ const deleteIntershipTalentById = ({ intershipTalentId }) => new Promise(
 * institutionId String ID of institution to return
 * returns createInstitution_200_response
 * */
-const getInstitutionById = ({ institutionId }) => {
+const getInstitutionById = async ({ institutionId }) => {
 
-  const institutionData = {};
+  const institutionData = await utility.institutionUtils.getInstitutionById(institutionId);
   const entityName = 'Institution';
 
   if (!institutionId) {
@@ -179,12 +184,10 @@ const getInstitutionById = ({ institutionId }) => {
     );
   }
 
-  institutionData = institutionId;
-
   return {
     payload: {
       hasError: false,
-      message: 'Institution obtenido',
+      message: '',
       content: institutionData,
     },
   };
@@ -243,20 +246,25 @@ const getIntership = ({ intershipPagination }) => new Promise(
 * intershipId String ID of institution to return
 * returns createIntership_200_response
 * */
-const getIntershipById = ({ intershipId }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        intershipId,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const getIntershipById = ({ intershipId }) => {
+
+  const intershipData = utility.intershipUtils.getIntershipById(intershipId);
+  const entityName = 'Intership';
+
+  if (!intershipData) {
+    throw new CustomAPIError.NotFoundError(
+      textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  return {
+    payload: {
+      hasError: false,
+      message: '',
+      content: intershipData,
+    },
+  };
+};
 /**
 * Get intershipTalent
 * Get intershipTalent
@@ -285,20 +293,25 @@ const getIntershipTalent = ({ intershipTalentPagination }) => new Promise(
 * intershipTalentId String ID of intershipTalent to return
 * returns createIntershipTalent_200_response
 * */
-const getIntershipTalentCreatedById = ({ intershipTalentId }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        intershipTalentId,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const getIntershipTalentCreatedById = ({ intershipTalentId }) => {
+
+  const intershipTalentData = utility.intershipUtils.getIntershipTalentById(intershipTalentId);
+  const entityName = 'IntershipTalent';
+
+  if (!intershipTalentData) {
+    throw new CustomAPIError.NotFoundError(
+      textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  return {
+    payload: {
+      hasError: false,
+      message: '',
+      content: intershipTalentData,
+    },
+  };
+};
 /**
 * Update an existing institution
 * Update an existing institution by Id
@@ -307,21 +320,32 @@ const getIntershipTalentCreatedById = ({ intershipTalentId }) => new Promise(
 * institutionCreated InstitutionCreated Update an existent institution in the store
 * returns createInstitution_200_response
 * */
-const updateInstitution = ({ institutionId, institutionCreated }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        institutionId,
-        institutionCreated,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const updateInstitution = async ({ institutionId, institutionCreated }) => {
+
+  const entityName = 'Institution';
+
+  if (institutionId !== institutionCreated._id) {
+    throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.errorId);
+  }
+
+  const { _id, ...values } = institutionCreated;
+
+  const updated = await Institution.updateOne({ _id }, values);
+
+  if (updated.modifiedCount !== 1) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
+  const institutionUpdated = await utility.institutionUtils.getInstitutionById(institutionId);
+
+  return {
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(entityName, SHORTTEXTREPONSE.updated),
+      content: institutionUpdated,
+    },
+  };
+};
 /**
 * Update an existing intership
 * Update an existing intership by Id
@@ -330,21 +354,32 @@ const updateInstitution = ({ institutionId, institutionCreated }) => new Promise
 * intershipCreated IntershipCreated Update an existent intership in the store (optional)
 * returns createIntership_200_response
 * */
-const updateIntershipId = ({ intershipId, intershipCreated }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        intershipId,
-        intershipCreated,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const updateIntershipId = async ({ intershipId, intershipCreated }) => {
+
+  const entityName = 'Instership';
+
+  if (intershipId !== intershipCreated._id) {
+    throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.errorId);
+  }
+
+  const { _id, ...values } = intershipCreated;
+
+  const updated = await Intership.updateOne({ _id }, values);
+
+  if (updated.modifiedCount !== 1) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
+  const intershipUpdated = await utility.intershipUtils.getIntershipById(intershipId);
+
+  return {
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(entityName, SHORTTEXTREPONSE.updated),
+      content: intershipUpdated,
+    },
+  };
+};
 /**
 * Update an existing intershipTalent
 * Update an existing intershipTalent by Id
@@ -353,21 +388,32 @@ const updateIntershipId = ({ intershipId, intershipCreated }) => new Promise(
 * intershipTalentCreated IntershipTalentCreated Update an existent intershipTalent in the store (optional)
 * returns createIntershipTalent_200_response
 * */
-const updateIntershipTalentId = ({ intershipTalentId, intershipTalentCreated }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        intershipTalentId,
-        intershipTalentCreated,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const updateIntershipTalentId = async ({ intershipTalentId, intershipTalentCreated }) => {
+
+  const entityName = 'IntershipTalent';
+
+  if (intershipTalentId !== intershipTalentCreated._id) {
+    throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.errorId);
+  }
+
+  const { _id, ...values } = intershipTalentCreated;
+
+  const updated = await IntershipTalent.updateOne({ _id }, values);
+
+  if (updated.modifiedCount !== 1) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
+  const intershipTalentUpdated = await utility.intershipUtils.getIntershipTalentById(intershipTalentId);
+
+  return {
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(entityName, SHORTTEXTREPONSE.updated),
+      content: intershipTalentUpdated,
+    },
+  };
+};
 
 module.exports = {
   createInstitution,

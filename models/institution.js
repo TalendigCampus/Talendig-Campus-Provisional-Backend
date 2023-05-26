@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const AddressSchema = require('./commons/address');
+
 
 const institutionSchema = new mongoose.Schema(
   {
@@ -28,7 +30,7 @@ const institutionSchema = new mongoose.Schema(
         required: [true, "Por favor de digitar RNC"],
         minlength: 9,
         validate: {
-          validator: validator.isNumeric(),
+          validator: (value) => /^\d{10}$/.test(value),
           message: "Please provide a valid RNC",
         },
       },
@@ -59,7 +61,7 @@ const institutionSchema = new mongoose.Schema(
         required: [true, "Por favor de digitar RNC"],
         minlength: 9,
         validate: {
-          validator: validator.isNumeric(str[no_symbols]),
+          validator: (value) => /^\d{10}$/.test(value),
           message: "Please provide a valid RNC",
         },
       },
