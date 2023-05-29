@@ -1,10 +1,15 @@
 /* eslint-disable no-unused-vars */
 const { StatusCodes } = require('http-status-codes');
 const Service = require('./Service');
-const Recruiter = require('../models/recruiter');
+const RecruiterSchema = require('../models/recruiter');
 const CustomAPIError = require('../errors/index');
 const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
-const utility = require('../utils');
+const {
+  utilsFunctions,
+  recruiterUtils,
+  userUtils,
+  Pagination,
+} = require('../utils');
 
 const recruiterName = 'Reclutador';
 /**
@@ -19,13 +24,16 @@ const createRecruiter = async ({ recruiter }) => {
     throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.noBodyRequest);
   }
 
-  const newRecruiter = await Recruiter.create(recruiter);
+  const newRecruiter = await RecruiterSchema.create(recruiter);
 
   return {
     code: StatusCodes.CREATED,
     payload: {
       hasError: false,
-      message: utility.utilsFunctions.textResponseFormat(recruiterName, SHORTTEXTREPONSE.created),
+      message: utilsFunctions.textResponseFormat(
+        recruiterName,
+        SHORTTEXTREPONSE.created,
+      ),
       content: newRecruiter,
     },
   };
@@ -38,23 +46,26 @@ const createRecruiter = async ({ recruiter }) => {
  * returns EmptyResponse
  * */
 const deleteRecruiter = async ({ recruiterId }) => {
-  const recruiter = await utility.recruiterUtils.getRecruiterById(recruiterId);
+  const recruiter = await recruiterUtils.getRecruiterById(recruiterId);
 
   if (!recruiter) {
     throw new CustomAPIError.NotFoundError(
-      utility.utilsFunctions.textResponseFormat(
+      utilsFunctions.textResponseFormat(
         recruiterName,
         SHORTTEXTREPONSE.notFound,
       ),
     );
   }
 
-  await utility.userUtils.deleteUserById(recruiter.userId);
+  await userUtils.deleteUserById(recruiter.userId);
 
   return {
     payload: {
       hasError: false,
-      message: utility.utilsFunctions.textResponseFormat(recruiterName, SHORTTEXTREPONSE.deleted),
+      message: utilsFunctions.textResponseFormat(
+        recruiterName,
+        SHORTTEXTREPONSE.deleted,
+      ),
       content: {},
     },
   };
@@ -66,20 +77,36 @@ const deleteRecruiter = async ({ recruiterId }) => {
  * recruiterPagination RecruiterPagination Get recruiter object (optional)
  * returns getRecruiter_200_response
  * */
-const getRecruiter = ({ recruiterPagination }) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      resolve(
-        Service.successResponse({
-          recruiterPagination,
-        })
-      );
-    } catch (e) {
-      reject(
-        Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
-      );
-    }
-  });
+const getRecruiter = async ({ recruiterPagination }) => {
+  const { filter, pagination } = recruiterPagination;
+
+  const paginationClass = new Pagination(pagination);
+  let queryPagination = paginationClass.queryPagination();
+
+  let recruiters = [];
+  let count = 0;
+
+  try {
+    recruiters = await RecruiterSchema.find(filter, null, queryPagination);
+    count = await RecruiterSchema.countDocuments(filter);
+  } catch (error) {
+    console.log(error);
+  }
+
+  queryPagination = { quantity: count, page: paginationClass.page };
+
+  return {
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(
+        recruiterName,
+        SHORTTEXTREPONSE.found,
+      ),
+      content: recruiters,
+      pagination: new Pagination(queryPagination),
+    },
+  };
+};
 /**
  * Get recruiter by recruiterId
  * get a single recruiter
@@ -93,11 +120,11 @@ const getRecruiterById = ({ recruiterId }) =>
       resolve(
         Service.successResponse({
           recruiterId,
-        })
+        }),
       );
     } catch (e) {
       reject(
-        Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+        Service.rejectResponse(e.message || 'Invalid input', e.status || 405),
       );
     }
   });
@@ -116,11 +143,11 @@ const updateRecruiter = ({ recruiterId, recruiterCreated }) =>
         Service.successResponse({
           recruiterId,
           recruiterCreated,
-        })
+        }),
       );
     } catch (e) {
       reject(
-        Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+        Service.rejectResponse(e.message || 'Invalid input', e.status || 405),
       );
     }
   });
