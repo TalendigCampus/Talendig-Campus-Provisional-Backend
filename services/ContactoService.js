@@ -146,21 +146,48 @@ const getUserContacts = async ({ contactPagination }) => {
  * contactCreated ContactCreated Created contact object
  * returns createUserContact_200_response
  * */
-const updateUserContact = ({ contactId, contactCreated }) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      resolve(
-        Service.successResponse({
-          contactId,
-          contactCreated,
-        }),
-      );
-    } catch (e) {
-      reject(
-        Service.rejectResponse(e.message || 'Invalid input', e.status || 405),
-      );
-    }
-  });
+const updateUserContact = async ({ contactId, contactCreated }) => {
+  if (contactId !== contactCreated._id) {
+    throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.errorId);
+  }
+
+  const contact = await ContactSchema.findById(contactId);
+
+  if (!contact) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(contactName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  const isContactActive = await statusUtils.isActive(contact.statusId);
+
+  if (!isContactActive) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(contactName, SHORTTEXTREPONSE.userDeleted),
+    );
+  }
+
+  const { _id, ...values } = contactCreated;
+
+  const updated = await ContactSchema.updateOne({ _id }, values);
+
+  if (updated.modifiedCount !== 1) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
+  const contactUpdated = await ContactSchema.findById(contactId);
+
+  return {
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(
+        contactName,
+        SHORTTEXTREPONSE.updated,
+      ),
+      content: contactUpdated,
+    },
+  };
+};
 
 module.exports = {
   createUserContact,
