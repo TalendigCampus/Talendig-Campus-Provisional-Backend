@@ -1,5 +1,12 @@
 /* eslint-disable no-unused-vars */
+const { StatusCodes } = require('http-status-codes');
 const Service = require('./Service');
+const Lenguaje = require('../models/lenguaje');
+const CustomAPIError = require('../errors/index');
+const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
+const utility = require('../utils');
+
+const languageName = 'Language';
 
 /**
 * Create language
@@ -8,20 +15,24 @@ const Service = require('./Service');
 * language Language Create language object
 * returns createLanguage_200_response
 * */
-const createLanguage = ({ language }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        language,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const createLanguage = ({ language }) => {
+  if(!language) {
+    throw new CustomAPIError.BadRequestError(
+      SHORTTEXTREPONSE.noBodyRequest,
+    );
+  }
+
+  const languageCreated = await language.create(language);
+
+  return {
+    code: StatusCodes.CREATED,
+    payload: {
+      hasError: false,
+      message: textResponseFormat(languageName, SHORTTEXTREPONSE.created),
+      content: languageCreated,
+    },
+  };
+};
 /**
 * Delete language
 * delete language
