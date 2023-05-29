@@ -1,6 +1,6 @@
 class Pagination {
   constructor({ quantity, page }) {
-    this.quantity = quantity;
+    this.quantity = quantity || 20;
     this.page = page <= 0 ? 1 : page;
   }
 

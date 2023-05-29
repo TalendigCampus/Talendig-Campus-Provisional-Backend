@@ -7,13 +7,31 @@ const logger = require('../logger');
 class Controller {
   static sendResponse(response, payload) {
     /**
-    * The default response-code is 200. We want to allow to change that. in That case,
-    * payload will be an object consisting of a code and a payload. If not customized
-    * send 200 and the payload as received in this method.
-    */
+     * The default response-code is 200. We want to allow to change that. in That case,
+     * payload will be an object consisting of a code and a payload. If not customized
+     * send 200 and the payload as received in this method.
+     */
     response.status(payload.code || 200);
     const responsePayload = payload.payload;
 
+    const {
+      req: {
+        _parsedUrl: { href },
+        method,
+        openapi: {
+          schema: { description, operationId },
+        },
+      },
+    } = response;
+
+    const result = {
+      href,
+      method,
+      description,
+      operationId,
+    };
+
+    logger.info(result, payload);
     response.json(responsePayload);
   }
 
@@ -29,40 +47,47 @@ class Controller {
   }
 
   /**
-  * Files have been uploaded to the directory defined by config.js as upload directory
-  * Files have a temporary name, that was saved as 'filename' of the file object that is
-  * referenced in request.files array.
-  * This method finds the file and changes it to the file name that was originally called
-  * when it was uploaded. To prevent files from being overwritten, a timestamp is added between
-  * the filename and its extension
-  * @param request
-  * @param fieldName
-  * @returns {string}
-  */
+   * Files have been uploaded to the directory defined by config.js as upload directory
+   * Files have a temporary name, that was saved as 'filename' of the file object that is
+   * referenced in request.files array.
+   * This method finds the file and changes it to the file name that was originally called
+   * when it was uploaded. To prevent files from being overwritten, a timestamp is added between
+   * the filename and its extension
+   * @param request
+   * @param fieldName
+   * @returns {string}
+   */
   static collectFile(request, fieldName) {
     let uploadedFileName = '';
     if (request.files && request.files.length > 0) {
-      const fileObject = request.files.find((file) => file.fieldname === fieldName);
+      const fileObject = request.files.find(
+        (file) => file.fieldname === fieldName
+      );
       if (fileObject) {
         const fileArray = fileObject.originalname.split('.');
         const extension = fileArray.pop();
         fileArray.push(`_${Date.now()}`);
         uploadedFileName = `${fileArray.join('')}.${extension}`;
-        fs.renameSync(path.join(config.FILE_UPLOAD_PATH, fileObject.filename),
-          path.join(config.FILE_UPLOAD_PATH, uploadedFileName));
+        fs.renameSync(
+          path.join(config.FILE_UPLOAD_PATH, fileObject.filename),
+          path.join(config.FILE_UPLOAD_PATH, uploadedFileName)
+        );
       }
     }
     return uploadedFileName;
   }
 
   static getRequestBodyName(request) {
-    const codeGenDefinedBodyName = request.openapi.schema['x-codegen-request-body-name'];
+    const codeGenDefinedBodyName =
+      request.openapi.schema['x-codegen-request-body-name'];
     if (codeGenDefinedBodyName !== undefined) {
       return codeGenDefinedBodyName;
     }
-    const refObjectPath = request.openapi.schema.requestBody.content['application/json'].schema.$ref;
+    const refObjectPath =
+      request.openapi.schema.requestBody.content['application/json'].schema
+        .$ref;
     if (refObjectPath !== undefined && refObjectPath.length > 0) {
-      return (refObjectPath.substr(refObjectPath.lastIndexOf('/') + 1));
+      return refObjectPath.substr(refObjectPath.lastIndexOf('/') + 1);
     }
     return 'body';
   }
@@ -77,13 +102,17 @@ class Controller {
       } else if (content['multipart/form-data'] !== undefined) {
         Object.keys(content['multipart/form-data'].schema.properties).forEach(
           (property) => {
-            const propertyObject = content['multipart/form-data'].schema.properties[property];
-            if (propertyObject.format !== undefined && propertyObject.format === 'binary') {
+            const propertyObject =
+              content['multipart/form-data'].schema.properties[property];
+            if (
+              propertyObject.format !== undefined &&
+              propertyObject.format === 'binary'
+            ) {
               requestParams[property] = this.collectFile(request, property);
             } else {
               requestParams[property] = request.body[property];
             }
-          },
+          }
         );
       }
     }
@@ -102,7 +131,9 @@ class Controller {
 
   static async handleRequest(request, response, serviceOperation) {
     try {
-      const serviceResponse = await serviceOperation(this.collectRequestParams(request));
+      const serviceResponse = await serviceOperation(
+        this.collectRequestParams(request)
+      );
       Controller.sendResponse(response, serviceResponse);
     } catch (error) {
       Controller.sendError(response, error);

@@ -5,7 +5,7 @@ const AddressSchema = require('./commons/address');
 const ContactSchema = new mongoose.Schema(
   {
     userId: {
-      type: [mongoose.Types.ObjectId],
+      type: mongoose.Types.ObjectId,
       ref: 'User',
       required: [true, 'Por favor, agregar ID al que le pertenece el usuario'],
     },
@@ -16,7 +16,6 @@ const ContactSchema = new mongoose.Schema(
         validator: validator.isEmail,
         message: 'Por favor, agregue un correo electronico válido',
       },
-      unique: true,
     },
     contactType: {
       type: String,
@@ -47,6 +46,12 @@ const ContactSchema = new mongoose.Schema(
       },
     },
     address: AddressSchema,
+    statusId: {
+      type: mongoose.Types.ObjectId,
+      trim: true,
+      ref: 'Status',
+      required: [true, 'Por favor, coloque un estado'],
+    },
   },
   { timestamps: true },
 );
