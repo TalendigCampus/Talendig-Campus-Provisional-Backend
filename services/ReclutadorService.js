@@ -83,15 +83,8 @@ const getRecruiter = async ({ recruiterPagination }) => {
   const paginationClass = new Pagination(pagination);
   let queryPagination = paginationClass.queryPagination();
 
-  let recruiters = [];
-  let count = 0;
-
-  try {
-    recruiters = await RecruiterSchema.find(filter, null, queryPagination);
-    count = await RecruiterSchema.countDocuments(filter);
-  } catch (error) {
-    console.log(error);
-  }
+  const recruiters = await RecruiterSchema.find(filter, null, queryPagination);
+  const count = await RecruiterSchema.countDocuments(filter);
 
   queryPagination = { quantity: count, page: paginationClass.page };
 

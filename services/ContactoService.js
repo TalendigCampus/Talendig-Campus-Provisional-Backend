@@ -4,19 +4,16 @@ const Service = require('./Service');
 const ContactSchema = require('../models/contact');
 const CustomAPIError = require('../errors/index');
 const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
-const {
-  utilsFunctions,
-  statusUtils,
-} = require('../utils');
+const { utilsFunctions, statusUtils, Pagination } = require('../utils');
 
 const contactName = 'Contacto';
 /**
-* Create contact for user
-* The creation of a new contact.
-*
-* contact Contact Created contact object
-* returns createUserContact_200_response
-* */
+ * Create contact for user
+ * The creation of a new contact.
+ *
+ * contact Contact Created contact object
+ * returns createUserContact_200_response
+ * */
 const createUserContact = async ({ contact }) => {
   if (!contact) {
     throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.noBodyRequest);
@@ -37,26 +34,26 @@ const createUserContact = async ({ contact }) => {
   };
 };
 /**
-* Delete contact for user
-* delete of user contact.
-*
-* contactId String Id of the contact
-* returns EmptyResponse
-* */
+ * Delete contact for user
+ * delete of user contact.
+ *
+ * contactId String Id of the contact
+ * returns EmptyResponse
+ * */
 const deleteUserContact = async ({ contactId }) => {
   const contact = await ContactSchema.findById(contactId);
 
   if (!contact) {
     throw new CustomAPIError.NotFoundError(
-      utilsFunctions.textResponseFormat(
-        contactName,
-        SHORTTEXTREPONSE.notFound,
-      ),
+      utilsFunctions.textResponseFormat(contactName, SHORTTEXTREPONSE.notFound),
     );
   }
 
   const statusId = await statusUtils.getStatusIdByName('inactive');
-  const contactDeleted = await ContactSchema.updateOne({ _id: contactId }, { statusId });
+  const contactDeleted = await ContactSchema.updateOne(
+    { _id: contactId },
+    { statusId },
+  );
 
   if (contactDeleted.modifiedCount !== 1) {
     throw new Error(SHORTTEXTREPONSE.serverError);
@@ -74,21 +71,18 @@ const deleteUserContact = async ({ contactId }) => {
   };
 };
 /**
-* get contacts for user
-* get user contacts.
-*
-* contactId String Id of the contact
-* returns createUserContact_200_response
-* */
+ * get contacts for user
+ * get user contacts.
+ *
+ * contactId String Id of the contact
+ * returns createUserContact_200_response
+ * */
 const getUserContact = async ({ contactId }) => {
   const contact = await ContactSchema.findById(contactId);
 
   if (!contact) {
     throw new CustomAPIError.NotFoundError(
-      utilsFunctions.textResponseFormat(
-        contactName,
-        SHORTTEXTREPONSE.notFound,
-      ),
+      utilsFunctions.textResponseFormat(contactName, SHORTTEXTREPONSE.notFound),
     );
   }
 
@@ -115,49 +109,58 @@ const getUserContact = async ({ contactId }) => {
   };
 };
 /**
-* get contacts for user
-* get user contacts.
-*
-* contactPagination ContactPagination Created contact object
-* returns getUserContacts_200_response
-* */
-const getUserContacts = ({ contactPagination }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        contactPagination,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+ * get contacts for user
+ * get user contacts.
+ *
+ * contactPagination ContactPagination Created contact object
+ * returns getUserContacts_200_response
+ * */
+const getUserContacts = async ({ contactPagination }) => {
+  const { filter, pagination } = contactPagination;
+
+  const paginationClass = new Pagination(pagination);
+  let queryPagination = paginationClass.queryPagination();
+
+  const contacts = await ContactSchema.find(filter, null, queryPagination);
+  const count = await ContactSchema.countDocuments(filter);
+
+  queryPagination = { quantity: count, page: paginationClass.page };
+
+  return {
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(
+        contactName,
+        SHORTTEXTREPONSE.found,
+      ),
+      content: contacts,
+      pagination: new Pagination(queryPagination),
+    },
+  };
+};
 /**
-* update contact for user
-* update user contact.
-*
-* contactId String Id of the contact
-* contactCreated ContactCreated Created contact object
-* returns createUserContact_200_response
-* */
-const updateUserContact = ({ contactId, contactCreated }) => new Promise(
-  async (resolve, reject) => {
+ * update contact for user
+ * update user contact.
+ *
+ * contactId String Id of the contact
+ * contactCreated ContactCreated Created contact object
+ * returns createUserContact_200_response
+ * */
+const updateUserContact = ({ contactId, contactCreated }) =>
+  new Promise(async (resolve, reject) => {
     try {
-      resolve(Service.successResponse({
-        contactId,
-        contactCreated,
-      }));
+      resolve(
+        Service.successResponse({
+          contactId,
+          contactCreated,
+        }),
+      );
     } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
+      reject(
+        Service.rejectResponse(e.message || 'Invalid input', e.status || 405),
+      );
     }
-  },
-);
+  });
 
 module.exports = {
   createUserContact,
