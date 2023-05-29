@@ -1,6 +1,15 @@
 /* eslint-disable no-unused-vars */
+const { StatusCodes } = require('http-status-codes');
 const Service = require('./Service');
+const ContactSchema = require('../models/contact');
+const CustomAPIError = require('../errors/index');
+const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
+const {
+  utilsFunctions,
+  statusUtils,
+} = require('../utils');
 
+const contactName = 'Contacto';
 /**
 * Create contact for user
 * The creation of a new contact.
@@ -8,20 +17,25 @@ const Service = require('./Service');
 * contact Contact Created contact object
 * returns createUserContact_200_response
 * */
-const createUserContact = ({ contact }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        contact,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const createUserContact = async ({ contact }) => {
+  if (!contact) {
+    throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.noBodyRequest);
+  }
+
+  const newContact = await ContactSchema.create(contact);
+
+  return {
+    code: StatusCodes.CREATED,
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(
+        contactName,
+        SHORTTEXTREPONSE.created,
+      ),
+      content: newContact,
+    },
+  };
+};
 /**
 * Delete contact for user
 * delete of user contact.
@@ -29,20 +43,36 @@ const createUserContact = ({ contact }) => new Promise(
 * contactId String Id of the contact
 * returns EmptyResponse
 * */
-const deleteUserContact = ({ contactId }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        contactId,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const deleteUserContact = async ({ contactId }) => {
+  const contact = await ContactSchema.findById(contactId);
+
+  if (!contact) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(
+        contactName,
+        SHORTTEXTREPONSE.notFound,
+      ),
+    );
+  }
+
+  const statusId = await statusUtils.getStatusIdByName('inactive');
+  const contactDeleted = await ContactSchema.updateOne({ _id: contactId }, { statusId });
+
+  if (contactDeleted.modifiedCount !== 1) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
+  return {
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(
+        contactName,
+        SHORTTEXTREPONSE.deleted,
+      ),
+      content: {},
+    },
+  };
+};
 /**
 * get contacts for user
 * get user contacts.
@@ -50,20 +80,40 @@ const deleteUserContact = ({ contactId }) => new Promise(
 * contactId String Id of the contact
 * returns createUserContact_200_response
 * */
-const getUserContact = ({ contactId }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        contactId,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const getUserContact = async ({ contactId }) => {
+  const contact = await ContactSchema.findById(contactId);
+
+  if (!contact) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(
+        contactName,
+        SHORTTEXTREPONSE.notFound,
+      ),
+    );
+  }
+
+  const isContactActive = await statusUtils.isActive(contact.statusId);
+
+  if (!isContactActive) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(
+        contactName,
+        SHORTTEXTREPONSE.userDeleted,
+      ),
+    );
+  }
+
+  return {
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(
+        contactName,
+        SHORTTEXTREPONSE.found,
+      ),
+      content: contact,
+    },
+  };
+};
 /**
 * get contacts for user
 * get user contacts.

@@ -1,9 +1,13 @@
-/* eslint-disable no-unused-vars */
 const { StatusCodes } = require('http-status-codes');
-const Service = require('./Service');
+// const Service = require('./Service');
 const CustomAPIError = require('../errors/index');
 const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
-const { textResponseFormat } = require('../utils/utilsFunctions');
+const {
+  userUtils, Pagination, statusUtils, utilsFunctions, talentUtils
+} = require('../utils/index');
+const TalentSchema = require('../models/talent');
+
+const talentName = 'Talento';
 
 /**
 * Add a new talent to the store
@@ -12,20 +16,28 @@ const { textResponseFormat } = require('../utils/utilsFunctions');
 * talent Talent Create a new talent in the store
 * returns getTalentById_200_response
 * */
-const addTalent = ({ talent }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        talent,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const addTalent = async ({ talent }) => {
+  const user = await userUtils.getUserById(talent.userId);
+
+  if (!user) {
+    throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.userNotFound);
+  }
+
+  const talentCreated = await TalentSchema.create(talent);
+
+  if (!talentCreated) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
+  return {
+    code: StatusCodes.CREATED,
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(talentName, SHORTTEXTREPONSE.created),
+      content: talentCreated,
+    },
+  };
+};
 /**
 * Add a new talent assignment to the store
 * Add a new talent assignment to the store
@@ -222,20 +234,28 @@ const deleteAllTalentinstitutionProcess = ({ talentInstitutionId }) => new Promi
 * talentId String Talent id to delete
 * returns EmptyResponse
 * */
-const deleteTalent = ({ talentId }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        talentId,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const deleteTalent = async ({ talentId }) => {
+  const talent = await userUtils.recruiterUtils.getRecruiterById(talentId);
+
+  if (!talent) {
+    throw new CustomAPIError.NotFoundError(
+      userUtils.utilsFunctions.textResponseFormat(
+        talentName,
+        SHORTTEXTREPONSE.notFound,
+      ),
+    );
+  }
+
+  await userUtils.userUtils.deleteUserById(talent.userId);
+
+  return {
+    payload: {
+      hasError: false,
+      message: userUtils.utilsFunctions.textResponseFormat(talentName, SHORTTEXTREPONSE.deleted),
+      content: {},
+    },
+  };
+};
 /**
 * Deletes a talent assignment
 * delete a talent assignment
@@ -453,20 +473,33 @@ const getAllTalentRecruiterProcess = ({ talentRecruiterPagination }) => new Prom
 * talentPagination TalentPagination Get list of talents with filter and pagination (optional)
 * returns getAllTalents_200_response
 * */
-const getAllTalents = ({ talentPagination }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        talentPagination,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const getAllTalents = async ({ talentPagination }) => {
+  const { filter, pagination } = talentPagination;
+
+  const paginationClass = new Pagination(pagination);
+  let queryPagination = paginationClass.queryPagination();
+
+  let talents = [];
+  let count = [];
+
+  try {
+    talents = await TalentSchema.find(filter, null, queryPagination);
+    count = await TalentSchema.find(filter, null, queryPagination).countDocuments();
+  } catch (error) {
+    console.log(error);
+  }
+
+  queryPagination = { quantity: count, page: paginationClass.page };
+
+  return {
+    payload: {
+      hasError: false,
+      message: '',
+      content: talents,
+      pagination: new Pagination(queryPagination),
+    },
+  };
+};
 /**
 * Find talent bootcamp by ID
 * Returns a single talent bootcamp
@@ -537,14 +570,20 @@ const getTalentAssingmentFileById = ({ talentAssignmentFileId }) => new Promise(
 * talentId String ID of talent to return
 * returns getTalentById_200_response
 * */
-const getTalentById = ({ talentId }) => {
-
-  const talent = {};
-  const entityName = 'Talento';
+const getTalentById = async ({ talentId }) => {
+  const talent = await TalentSchema.findById(talentId);
 
   if (!talent) {
     throw new CustomAPIError.NotFoundError(
-      textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
+      utilsFunctions.textResponseFormat(talentName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  const user = await userUtils.isUserActive();
+
+  if (!user) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(SHORTTEXTREPONSE.userDeleted),
     );
   }
 
@@ -629,21 +668,45 @@ const updateATalentInstructorRecommendationById = ({ talentInstructorId, talentI
 * talentCreated TalentCreated Update an existent talent in the store
 * returns getTalentById_200_response
 * */
-const updateTalent = ({ talentId, talentCreated }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        talentId,
-        talentCreated,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const updateTalent = async ({ talentId, talentCreated }) => {
+  if (talentId !== talentCreated._id) {
+    throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.errorId);
+  }
+
+  const talent = await TalentSchema.findById(talentId);
+
+  if (!talent) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(talentName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  const user = await userUtils.isUserActive();
+
+  if (!user) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(SHORTTEXTREPONSE.userDeleted),
+    );
+  }
+
+  const { _id, ...values } = talentCreated;
+
+  const updated = await TalentSchema.updateOne({ _id }, values);
+
+  if (updated.modifiedCount !== 1) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
+  const talentUpdated = await talentUtils.getTalentById(talentId);
+
+  return {
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(talentName, SHORTTEXTREPONSE.updated),
+      content: talentUpdated,
+    },
+  };
+}
 /**
 * Update an existing talent assignment
 * Update an existing talent assingment by Id

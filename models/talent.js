@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const TalentSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Types.ObjectId,
+    ref: 'User',
+    required: [true, 'Por favor, agregar ID al que le pertenece el usuario'],
+  },
   gender: {
     type: String,
     enum: ['Femenino', 'Masculino', 'Otros'],

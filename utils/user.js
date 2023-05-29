@@ -20,7 +20,20 @@ const deleteUserById = async (userId) => {
   return true;
 };
 
+const isUserActive = async (userId) => {
+  const user = await getUserById(userId);
+
+  if (!user) {
+    return false;
+  }
+
+  const status = await statusFunctions.getStatusById(user.statusId);
+
+  return status.name === 'active';
+};
+
 module.exports = {
   getUserById,
   deleteUserById,
+  isUserActive,
 };
