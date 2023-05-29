@@ -114,20 +114,40 @@ const getRecruiter = async ({ recruiterPagination }) => {
  * recruiterId String The Id of the recruiter to be fetched.
  * returns createRecruiter_200_response
  * */
-const getRecruiterById = ({ recruiterId }) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      resolve(
-        Service.successResponse({
-          recruiterId,
-        }),
-      );
-    } catch (e) {
-      reject(
-        Service.rejectResponse(e.message || 'Invalid input', e.status || 405),
-      );
-    }
-  });
+const getRecruiterById = async ({ recruiterId }) => {
+  const recruiter = await RecruiterSchema.findById(recruiterId);
+
+  if (!recruiter) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(
+        recruiterName,
+        SHORTTEXTREPONSE.notFound,
+      ),
+    );
+  }
+
+  const isUserActive = await userUtils.isUserActive(recruiter.userId);
+
+  if (!isUserActive) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(
+        recruiterName,
+        SHORTTEXTREPONSE.userDeleted,
+      ),
+    );
+  }
+
+  return {
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(
+        recruiterName,
+        SHORTTEXTREPONSE.found,
+      ),
+      content: recruiter,
+    },
+  };
+};
 /**
  * Update recruiter by recruiterId
  * Update the recruiter by their Id.
@@ -136,21 +156,48 @@ const getRecruiterById = ({ recruiterId }) =>
  * recruiterCreated RecruiterCreated Update an existent recruiter (optional)
  * returns createRecruiter_200_response
  * */
-const updateRecruiter = ({ recruiterId, recruiterCreated }) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      resolve(
-        Service.successResponse({
-          recruiterId,
-          recruiterCreated,
-        }),
-      );
-    } catch (e) {
-      reject(
-        Service.rejectResponse(e.message || 'Invalid input', e.status || 405),
-      );
-    }
-  });
+const updateRecruiter = async ({ recruiterId, recruiterCreated }) => {
+  if (recruiterId !== recruiterCreated._id) {
+    throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.errorId);
+  }
+
+  const recruiter = await RecruiterSchema.findById(recruiterId);
+
+  if (!recruiter) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(recruiterName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  const isUserActive = await userUtils.isUserActive(recruiter.userId);
+
+  if (!isUserActive) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(SHORTTEXTREPONSE.userDeleted),
+    );
+  }
+
+  const { _id, ...values } = recruiterCreated;
+
+  const updated = await RecruiterSchema.updateOne({ _id }, values);
+
+  if (updated.modifiedCount !== 1) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
+  const recruiterUpdated = await recruiterUtils.getRecruiterById(recruiterId);
+
+  return {
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(
+        recruiterName,
+        SHORTTEXTREPONSE.updated,
+      ),
+      content: recruiterUpdated,
+    },
+  };
+};
 
 module.exports = {
   createRecruiter,
