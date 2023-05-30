@@ -40,8 +40,8 @@ const deleteATalentInstructorRecommendationById = async (request, response) => {
   await Controller.handleRequest(request, response, service.deleteATalentInstructorRecommendationById);
 };
 
-const deleteAllTalentRecruiterProcess = async (request, response) => {
-  await Controller.handleRequest(request, response, service.deleteAllTalentRecruiterProcess);
+const deleteTalentRecruiterProcess = async (request, response) => {
+  await Controller.handleRequest(request, response, service.deleteTalentRecruiterProcess);
 };
 
 const deleteAllTalentinstitutionProcess = async (request, response) => {
@@ -158,7 +158,7 @@ module.exports = {
   createATalentInstructorRecommendation,
   createATalentRecruiterProcess,
   deleteATalentInstructorRecommendationById,
-  deleteAllTalentRecruiterProcess,
+  deleteTalentRecruiterProcess,
   deleteAllTalentinstitutionProcess,
   deleteTalent,
   deleteTalentAssingment,

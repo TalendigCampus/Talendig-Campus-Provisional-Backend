@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const TalentSchema = new mongoose.Schema({
+const TalentRecruiterSchema = new mongoose.Schema({
   talentId: {
     type: mongoose.Types.ObjectId,
     ref: 'Talent',
@@ -38,6 +38,12 @@ const TalentSchema = new mongoose.Schema({
       trim: true,
     },
   },
+  statusId: {
+    type: mongoose.Types.ObjectId,
+    trim: true,
+    ref: 'Status',
+    required: [true, 'Por favor, coloque un estado'],
+  },
 });
 
-module.exports = mongoose.model('Talent', TalentSchema);
+module.exports = mongoose.model('TalentRecruiter', TalentRecruiterSchema);

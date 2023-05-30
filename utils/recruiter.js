@@ -10,7 +10,20 @@ const getUserByRecruiterId = async (recruiterId) => {
   return userFunctions.getUserById(recruiter.userId);
 };
 
+const isRecruiterActive = async (talentId) => {
+  const recruiter = await getRecruiterById(talentId);
+
+  if (!recruiter) {
+    return false;
+  }
+
+  const status = await userFunctions.isUserActive(recruiter.statusId);
+
+  return status;
+};
+
 module.exports = {
   getRecruiterById,
   getUserByRecruiterId,
+  isRecruiterActive,
 };

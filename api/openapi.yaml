@@ -2699,7 +2699,7 @@ paths:
   /talent/recruiter/{talentRecruiterId}:
     delete:
       description: Delete a talent process with recruiter
-      operationId: deleteAllTalentRecruiterProcess
+      operationId: deleteTalentRecruiterProcess
       parameters:
       - description: Talent recruiter id to delete
         explode: false
@@ -11017,6 +11017,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/TalentBootcamp'
       - $ref: '#/components/schemas/AdministratorCreated_allOf'
+      - $ref: '#/components/schemas/StatusId_allOf'
     TalentBootcampPagination:
       example:
         filter:

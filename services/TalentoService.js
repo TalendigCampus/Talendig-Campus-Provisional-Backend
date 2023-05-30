@@ -3,11 +3,17 @@ const { StatusCodes } = require('http-status-codes');
 const CustomAPIError = require('../errors/index');
 const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
 const {
-  userUtils, Pagination, statusUtils, utilsFunctions, talentUtils
+  userUtils, Pagination, utilsFunctions, talentUtils, recruiterUtils, statusUtils,
 } = require('../utils/index');
 const TalentSchema = require('../models/talent');
+const TalentRecruiterSchema = require('../models/talentRecruiter');
+const TalentBootcampSchema = require('../models/talentBootcamp');
 
 const talentName = 'Talento';
+const talentRecruiterName = 'Proceso talento reclutador';
+const recruiterName = 'Recruiter';
+const bootcampName = 'Bootcamp';
+const talentBootcampName = 'Talento en bootcamp';
 
 /**
 * Add a new talent to the store
@@ -87,20 +93,38 @@ const addTalentAssingmentFile = ({ talentAssignmentFile }) => new Promise(
 * talentBootcamp TalentBootcamp Create a addTalentBootcamp in the store
 * returns addTalentBootcamp_200_response
 * */
-const addTalentBootcamp = ({ talentBootcamp }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        talentBootcamp,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const addTalentBootcamp = async ({ talentBootcamp }) => {
+  const talent = await talentUtils.isTalentActive(talentBootcamp.talendId);
+
+  if (!talent) {
+    throw new CustomAPIError.BadRequestError(utilsFunctions.textResponseFormat(
+      talentName, SHORTTEXTREPONSE.notFound,
+    ));
+  }
+
+  const bootcamp = await recruiterUtils.isBootcampActive(talentBootcamp.bootcampId); // Terminar cuando el schema bootcamp este creado.
+
+  if (!bootcamp) {
+    throw new CustomAPIError.BadRequestError(utilsFunctions.textResponseFormat(
+      bootcampName, SHORTTEXTREPONSE.notFound,
+    ));
+  }
+
+  const talentBootcampCreated = await TalentBootcampSchema.create(talentBootcamp);
+
+  if (!talentBootcampCreated) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
+  return {
+    code: StatusCodes.CREATED,
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(talentBootcampName, SHORTTEXTREPONSE.created),
+      content: talentBootcampCreated,
+    },
+  };
+};
 /**
 * Create a talent process with institution
 * Create a talent process from the store
@@ -150,20 +174,38 @@ const createATalentInstructorRecommendation = ({ talentInstructor }) => new Prom
 * talentRecruiter TalentRecruiter Create talent recruiter process by filter and pagination (optional)
 * returns createATalentRecruiterProcess_200_response
 * */
-const createATalentRecruiterProcess = ({ talentRecruiter }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        talentRecruiter,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const createATalentRecruiterProcess = async ({ talentRecruiter }) => {
+  const talent = await talentUtils.isTalentActive(talentRecruiter.talendId);
+
+  if (!talent) {
+    throw new CustomAPIError.BadRequestError(utilsFunctions.textResponseFormat(
+      talentName, SHORTTEXTREPONSE.notFound,
+    ));
+  }
+
+  const recruiter = await recruiterUtils.isRecruiterActive(talentRecruiter.recruiterId);
+
+  if (!recruiter) {
+    throw new CustomAPIError.BadRequestError(utilsFunctions.textResponseFormat(
+      recruiterName, SHORTTEXTREPONSE.notFound,
+    ));
+  }
+
+  const talentRecruiterCreated = await TalentRecruiterSchema.create(talentRecruiter);
+
+  if (!talentRecruiterCreated) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
+  return {
+    code: StatusCodes.CREATED,
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(talentRecruiterName, SHORTTEXTREPONSE.created),
+      content: talentRecruiterCreated,
+    },
+  };
+};
 /**
 * Delete a talent instructor recommendation with recruiter by Id
 * Delete a talent instructor recommendation with recruiter by Id
@@ -192,20 +234,34 @@ const deleteATalentInstructorRecommendationById = ({ talentInstructorId }) => ne
 * talentRecruiterId String Talent recruiter id to delete
 * returns EmptyResponse
 * */
-const deleteAllTalentRecruiterProcess = ({ talentRecruiterId }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        talentRecruiterId,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const deleteTalentRecruiterProcess = async ({ talentRecruiterId }) => {
+  const talentRecruiter = await TalentRecruiterSchema.findById(talentRecruiterId);
+
+  if (!talentRecruiter) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(
+        talentRecruiterName,
+        SHORTTEXTREPONSE.notFound,
+      ),
+    );
+  }
+
+  const statusId = await statusUtils.getStatusIdByName('inactive');
+  const talentRecruiterDeleted = await TalentRecruiterSchema
+    .updateOne({ _id: talentRecruiterId }, { statusId });
+
+  if (talentRecruiterDeleted.modifiedCount !== 1) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
+  return {
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(talentRecruiterName, SHORTTEXTREPONSE.deleted),
+      content: {},
+    },
+  };
+};
 /**
 * Delete a talent process with institution
 * Delete a talent process with institution
@@ -235,23 +291,23 @@ const deleteAllTalentinstitutionProcess = ({ talentInstitutionId }) => new Promi
 * returns EmptyResponse
 * */
 const deleteTalent = async ({ talentId }) => {
-  const talent = await userUtils.recruiterUtils.getRecruiterById(talentId);
+  const talent = await talentUtils.isTalentActive(talentId);
 
   if (!talent) {
     throw new CustomAPIError.NotFoundError(
-      userUtils.utilsFunctions.textResponseFormat(
+      utilsFunctions.textResponseFormat(
         talentName,
         SHORTTEXTREPONSE.notFound,
       ),
     );
   }
 
-  await userUtils.userUtils.deleteUserById(talent.userId);
+  await userUtils.deleteUserById(talent.userId);
 
   return {
     payload: {
       hasError: false,
-      message: userUtils.utilsFunctions.textResponseFormat(talentName, SHORTTEXTREPONSE.deleted),
+      message: utilsFunctions.textResponseFormat(talentName, SHORTTEXTREPONSE.deleted),
       content: {},
     },
   };
@@ -305,20 +361,34 @@ const deleteTalentAssingmentFile = ({ talentAssignmentFileId }) => new Promise(
 * talentBootcampId String talent bootcamp id to delete
 * returns EmptyResponse
 * */
-const deleteTalentBootcamp = ({ talentBootcampId }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        talentBootcampId,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const deleteTalentBootcamp = async ({ talentBootcampId }) => {
+  const talentBootcamp = await TalentBootcampSchema.findById(talentBootcampId);
+
+  if (!talentBootcamp) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(
+        talentBootcampName,
+        SHORTTEXTREPONSE.notFound,
+      ),
+    );
+  }
+
+  const statusId = await statusUtils.getStatusIdByName('inactive');
+  const talentBootcampDeleted = await TalentBootcampSchema
+    .updateOne({ _id: talentBootcampId }, { statusId });
+
+  if (talentBootcampDeleted.modifiedCount !== 1) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
+  return {
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(talentBootcampName, SHORTTEXTREPONSE.deleted),
+      content: {},
+    },
+  };
+};
 /**
 * Find a talent instructor recommendation with recruiter by Id
 * Returns a single talent instructor
@@ -389,20 +459,33 @@ const getAllTalentAssignments = ({ talentAssignmentPagination }) => new Promise(
 * talentBootcampPagination TalentBootcampPagination Get talent bootcamp by filter and pagination (optional)
 * returns getAllBootcampTalent_200_response
 * */
-const getAllTalentBootcamp = ({ talentBootcampPagination }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        talentBootcampPagination,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const getAllTalentBootcamp = async ({ talentBootcampPagination }) => {
+  const { filter, pagination } = talentBootcampPagination;
+
+  const paginationClass = new Pagination(pagination);
+  let queryPagination = paginationClass.queryPagination();
+
+  let talentBootcamps = [];
+  let count = [];
+
+  try {
+    talentBootcamps = await TalentBootcampSchema.find(filter, null, queryPagination);
+    count = await TalentBootcampSchema.countDocuments(filter);
+  } catch (error) {
+    throw new Error(error);
+  }
+
+  queryPagination = { quantity: count, page: paginationClass.page };
+
+  return {
+    payload: {
+      hasError: false,
+      message: '',
+      content: talentBootcamps,
+      pagination: new Pagination(queryPagination),
+    },
+  };
+};
 /**
 * Get all talent process with institution
 * Get a list of talents process from the store
@@ -452,20 +535,33 @@ const getAllTalentInstructorRecommendation = ({ talentInstructorPagination }) =>
 * talentRecruiterPagination TalentRecruiterPagination Get talent recruiter process by filter and pagination (optional)
 * returns getAllTalentRecruiterProcess_200_response
 * */
-const getAllTalentRecruiterProcess = ({ talentRecruiterPagination }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        talentRecruiterPagination,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const getAllTalentRecruiterProcess = async ({ talentRecruiterPagination }) => {
+  const { filter, pagination } = talentRecruiterPagination;
+
+  const paginationClass = new Pagination(pagination);
+  let queryPagination = paginationClass.queryPagination();
+
+  let talentRecruiters = [];
+  let count = [];
+
+  try {
+    talentRecruiters = await TalentRecruiterSchema.find(filter, null, queryPagination);
+    count = await TalentRecruiterSchema.countDocuments(filter);
+  } catch (error) {
+    throw new Error(error);
+  }
+
+  queryPagination = { quantity: count, page: paginationClass.page };
+
+  return {
+    payload: {
+      hasError: false,
+      message: '',
+      content: talentRecruiters,
+      pagination: new Pagination(queryPagination),
+    },
+  };
+};
 /**
 * Get all talents
 * Get a list of talents from the store
@@ -484,9 +580,9 @@ const getAllTalents = async ({ talentPagination }) => {
 
   try {
     talents = await TalentSchema.find(filter, null, queryPagination);
-    count = await TalentSchema.find(filter, null, queryPagination).countDocuments();
+    count = await TalentSchema.countDocuments(filter);
   } catch (error) {
-    console.log(error);
+    throw new Error(error);
   }
 
   queryPagination = { quantity: count, page: paginationClass.page };
@@ -507,20 +603,39 @@ const getAllTalents = async ({ talentPagination }) => {
 * talentBootcampId String ID of talent bootcamp to return
 * returns addTalentBootcamp_200_response
 * */
-const getSingleTalentBootcamp = ({ talentBootcampId }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        talentBootcampId,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const getSingleTalentBootcamp = async ({ talentBootcampId }) => {
+  const talentBootcamp = await TalentBootcampSchema.findById(talentBootcampId);
+
+  if (!talentBootcamp) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(talentBootcampName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  const talent = await talentUtils.isTalentActive(talentBootcamp.talentId);
+
+  if (!talent) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(talentName, SHORTTEXTREPONSE.deleted),
+    );
+  }
+
+  const bootcamp = await recruiterUtils.isBootcampActive(talentBootcamp.talentId);
+
+  if (!recruiter) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(recruiterName, SHORTTEXTREPONSE.deleted),
+    );
+  }
+
+  return {
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(talentBootcampName, SHORTTEXTREPONSE.found),
+      content: talent,
+    },
+  };
+}
 /**
 * Find talent assignment by ID
 * Returns a single talent assignment
@@ -579,18 +694,16 @@ const getTalentById = async ({ talentId }) => {
     );
   }
 
-  const user = await userUtils.isUserActive();
+  const user = await userUtils.isUserActive(talent.userId);
 
   if (!user) {
-    throw new CustomAPIError.NotFoundError(
-      utilsFunctions.textResponseFormat(SHORTTEXTREPONSE.userDeleted),
-    );
+    throw new CustomAPIError.NotFoundError(SHORTTEXTREPONSE.userDeleted);
   }
 
   return {
     payload: {
       hasError: false,
-      message: 'Talento encontrado',
+      message: utilsFunctions.textResponseFormat(talentName, SHORTTEXTREPONSE.found),
       content: talent,
     },
   };
@@ -602,20 +715,39 @@ const getTalentById = async ({ talentId }) => {
 * talentRecruiterId String ID of talent recuiter to return
 * returns createATalentRecruiterProcess_200_response
 * */
-const getTalentRecruiterProcessById = ({ talentRecruiterId }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        talentRecruiterId,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const getTalentRecruiterProcessById = async ({ talentRecruiterId }) => {
+  const talentRecruiter = await TalentRecruiterSchema.findById(talentRecruiterId);
+
+  if (!talentRecruiter) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(talentRecruiterName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  const talent = await talentUtils.isTalentActive(talentRecruiter.talentId);
+
+  if (!talent) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(talentName, SHORTTEXTREPONSE.deleted),
+    );
+  }
+
+  const recruiter = await recruiterUtils.isRecruiterActive(talentRecruiter.talentId);
+
+  if (!recruiter) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(recruiterName, SHORTTEXTREPONSE.deleted),
+    );
+  }
+
+  return {
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(talentRecruiterName, SHORTTEXTREPONSE.found),
+      content: talent,
+    },
+  };
+};
 /**
 * Find a talent process with institution by ID
 * Returns a single talent
@@ -681,12 +813,10 @@ const updateTalent = async ({ talentId, talentCreated }) => {
     );
   }
 
-  const user = await userUtils.isUserActive();
+  const user = await userUtils.isUserActive(talentCreated.userId);
 
   if (!user) {
-    throw new CustomAPIError.NotFoundError(
-      utilsFunctions.textResponseFormat(SHORTTEXTREPONSE.userDeleted),
-    );
+    throw new CustomAPIError.NotFoundError(SHORTTEXTREPONSE.userDeleted);
   }
 
   const { _id, ...values } = talentCreated;
@@ -706,7 +836,7 @@ const updateTalent = async ({ talentId, talentCreated }) => {
       content: talentUpdated,
     },
   };
-}
+};
 /**
 * Update an existing talent assignment
 * Update an existing talent assingment by Id
@@ -784,21 +914,53 @@ const updateTalentBootcamp = ({ talentBootcampId, talentBootcampCreated }) => ne
 * talentRecruiterCreated TalentRecruiterCreated Update an existent talent recruiter in the store
 * returns createATalentRecruiterProcess_200_response
 * */
-const updateTalentRecruiterProcess = ({ talentRecruiterId, talentRecruiterCreated }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        talentRecruiterId,
-        talentRecruiterCreated,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const updateTalentRecruiterProcess = async ({ talentRecruiterId, talentRecruiterCreated }) => {
+  if (talentRecruiterId !== talentRecruiterCreated._id) {
+    throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.errorId);
+  }
+
+  const talentRecruiter = await TalentRecruiterSchema.findById(talentRecruiterId);
+
+  if (!talentRecruiter) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(talentRecruiterName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  const talent = await talentUtils.isTalentActive(talentRecruiter.talentId);
+
+  if (!talent) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(talentName, SHORTTEXTREPONSE.deleted),
+    );
+  }
+
+  const recruiter = await recruiterUtils.isRecruiterActive(talentRecruiter.talentId);
+
+  if (!recruiter) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(recruiterName, SHORTTEXTREPONSE.deleted),
+    );
+  }
+
+  const { _id, ...values } = talentRecruiterCreated;
+
+  const updated = await TalentRecruiterSchema.updateOne({ _id }, values);
+
+  if (updated.modifiedCount !== 1) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
+  const talentRecruiterUpdated = await TalentRecruiterSchema.findById(talentRecruiterId);
+
+  return {
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(talentName, SHORTTEXTREPONSE.updated),
+      content: talentRecruiterUpdated,
+    },
+  };
+};
 /**
 * Update a talent process with institution by ID
 * Update an existing talent by Id
@@ -832,7 +994,7 @@ module.exports = {
   createATalentInstructorRecommendation,
   createATalentRecruiterProcess,
   deleteATalentInstructorRecommendationById,
-  deleteAllTalentRecruiterProcess,
+  deleteTalentRecruiterProcess,
   deleteAllTalentinstitutionProcess,
   deleteTalent,
   deleteTalentAssingment,
