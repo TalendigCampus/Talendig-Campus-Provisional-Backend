@@ -6,7 +6,7 @@ const RecruiterSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Types.ObjectId,
       ref: 'User',
-      required: [true, 'Por favor, agregar ID al que le pertenece el usuario'],
+      required: [true, 'Por favor, agregar ID al que le pertenece el reclutador'],
     },
     gender: {
       type: String,

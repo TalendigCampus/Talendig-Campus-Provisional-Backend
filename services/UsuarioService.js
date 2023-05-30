@@ -85,13 +85,13 @@ const getAllUsers = async ({ userPagination }) => {
   let queryPagination = paginationClass.queryPagination();
 
   let users = [];
-  let count = [];
+  let count = 0;
 
   try {
     users = await UserSchema.find(filter, null, queryPagination);
-    count = await UserSchema.find(filter, null, queryPagination).countDocuments();
+    count = await UserSchema.countDocuments(filter);
   } catch (error) {
-    console.log(error);
+    throw new Error(error);
   }
 
   queryPagination = { quantity: count, page: paginationClass.page };
