@@ -28,7 +28,6 @@ const updateUserContact = async (request, response) => {
   await Controller.handleRequest(request, response, service.updateUserContact);
 };
 
-
 module.exports = {
   createUserContact,
   deleteUserContact,

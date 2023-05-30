@@ -28,7 +28,6 @@ const updateAccessLevel = async (request, response) => {
   await Controller.handleRequest(request, response, service.updateAccessLevel);
 };
 
-
 module.exports = {
   createAccessLevel,
   deleteAccessLevel,
