@@ -12,8 +12,8 @@ const SHORTTEXTREPONSE = {
   noBodyRequest: 'Esta solicitud necesita un cuerpo.',
   created: '{placeholder} creado.',
   errorId: 'El id de la ruta no coincide con el id en el cuerpo.',
-  userNotFound: 'Este usuario no se encuentra.',
-  userDeleted: 'Este usuario esta inactivo.',
+  userNotFound: '{placeholder} no se encuentra.',
+  userDeleted: '{placeholder} esta inactivo.',
 };
 
 module.exports = {
