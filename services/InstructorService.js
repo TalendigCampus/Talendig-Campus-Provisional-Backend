@@ -3,10 +3,17 @@ const { StatusCodes } = require('http-status-codes');
 const Service = require('./Service');
 const Instructor = require('../models/instructor');
 const CustomAPIError = require('../errors/index');
+const InstructorSchema = require('../models/instructor');
 const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
 const utility = require('../utils');
+const {
+  utilsFunctions,
+  recruiterUtils,
+  userUtils,
+  Pagination,
+} = require('../utils');
 
-const userName = 'Instructor';
+const instructorName = 'Instructor';
 
 /**
  * Add a new Instructor to the store
@@ -15,18 +22,22 @@ const userName = 'Instructor';
  * instructor Instructor Create a new Instructor in the store
  * returns getInstructorById_200_response
  * */
+
 const addInstructor = async ({ instructor }) => {
   if (!instructor) {
     throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.noBodyRequest);
   }
 
-  const instructorCreated = await Instructor.create(instructor);
+  const instructorCreated = await InstructorSchema.create(instructor);
 
   return {
     code: StatusCodes.CREATED,
     payload: {
       hasError: false,
-      message: textResponseFormat(instructorName, SHORTTEXTREPONSE.created),
+      message: utilsFunctions.textResponseFormat(
+        instructorName,
+        SHORTTEXTREPONSE.created,
+      ),
       content: instructorCreated,
     },
   };
@@ -52,6 +63,7 @@ const addInstructorBootcamp = ({ instructorBootcamp }) =>
       );
     }
   });
+
 /**
  * Delete instructor by ID
  * Deletes instructor based on their ID
