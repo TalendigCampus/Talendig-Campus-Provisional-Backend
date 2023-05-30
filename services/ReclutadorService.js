@@ -158,7 +158,10 @@ const updateRecruiter = async ({ recruiterId, recruiterCreated }) => {
 
   if (!recruiter) {
     throw new CustomAPIError.NotFoundError(
-      utilsFunctions.textResponseFormat(recruiterName, SHORTTEXTREPONSE.notFound),
+      utilsFunctions.textResponseFormat(
+        recruiterName,
+        SHORTTEXTREPONSE.notFound,
+      ),
     );
   }
 
