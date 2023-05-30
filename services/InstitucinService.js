@@ -6,7 +6,7 @@ const IntershipTalent = require('../models/intershipTalent');
 const CustomAPIError = require('../errors/index');
 const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
 const { textResponseFormat } = require('../utils/utilsFunctions');
-const {institutionUtils, intershipUtils, userUtils, statusUtils} = require('../utils');
+const {institutionUtils, intershipUtils, userUtils, statusUtils, Pagination} = require('../utils');
 /**
 * Create institution
 * add a new instritution
@@ -171,7 +171,7 @@ const deleteIntershipTalentById = async ({ intershipTalentId }) => {
   return {
     payload: {
       hasError: false,
-      message: utilsFunctions.textResponseFormat(entityName,SHORTTEXTREPONSE.deleted),
+      message: textResponseFormat(entityName,SHORTTEXTREPONSE.deleted),
       content: {},
     },
   };
@@ -209,22 +209,28 @@ const getInstitutionById = async ({ institutionId }) => {
 * institutionPagination InstitutionPagination Get institutions object (optional)
 * returns getInstitutions_200_response
 * */
-const getInstitutions = ({ institutionPagination }) => {
-
-  const institutionData = {};
+const getInstitutions = async ({ institutionPagination }) => {
   const entityName = 'Institution';
 
-  if (!institutionData) {
-    throw new CustomAPIError.NotFoundError(
-      textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
-    );
-  }
+  const { filter, pagination } = institutionPagination;
+
+  const paginationClass = new Pagination(pagination);
+  let queryPagination = paginationClass.queryPagination();
+
+  const institutions = await Institution.find(filter, null, queryPagination);
+  const count = await Institution.countDocuments(filter);
+
+  queryPagination = { quantity: count, page: paginationClass.page };
 
   return {
     payload: {
       hasError: false,
-      message: 'Institutions obtenidos',
-      content: institutionData,
+      message: textResponseFormat(
+        entityName,
+        SHORTTEXTREPONSE.found,
+      ),
+      content: institutions,
+      pagination: new Pagination(queryPagination),
     },
   };
 };
@@ -235,20 +241,31 @@ const getInstitutions = ({ institutionPagination }) => {
 * intershipPagination IntershipPagination Get intership object (optional)
 * returns getIntership_200_response
 * */
-const getIntership = ({ intershipPagination }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        intershipPagination,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const getIntership = async ({ intershipPagination }) => {
+  const entityName = 'Intership';
+
+  const { filter, pagination } = intershipPagination;
+
+  const paginationClass = new Pagination(pagination);
+  let queryPagination = paginationClass.queryPagination();
+
+  const interships = await Intership.find(filter, null, queryPagination);
+  const count = await Intership.countDocuments(filter);
+
+  queryPagination = { quantity: count, page: paginationClass.page };
+
+  return {
+    payload: {
+      hasError: false,
+      message: textResponseFormat(
+        entityName,
+        SHORTTEXTREPONSE.found,
+      ),
+      content: interships,
+      pagination: new Pagination(queryPagination),
+    },
+  };
+};
 /**
 * Find intership by ID
 * Returns a single intership
@@ -282,20 +299,31 @@ const getIntershipById = async ({ intershipId }) => {
 * intershipTalentPagination IntershipTalentPagination Get intershipTalent object (optional)
 * returns getIntershipTalent_200_response
 * */
-const getIntershipTalent = ({ intershipTalentPagination }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        intershipTalentPagination,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const getIntershipTalent = async ({ intershipTalentPagination }) => {
+  const entityName = 'IntershipTalent';
+
+  const { filter, pagination } = intershipTalentPagination;
+
+  const paginationClass = new Pagination(pagination);
+  let queryPagination = paginationClass.queryPagination();
+
+  const intershipTalents = await IntershipTalent.find(filter, null, queryPagination);
+  const count = await IntershipTalent.countDocuments(filter);
+
+  queryPagination = { quantity: count, page: paginationClass.page };
+
+  return {
+    payload: {
+      hasError: false,
+      message: textResponseFormat(
+        entityName,
+        SHORTTEXTREPONSE.found,
+      ),
+      content: intershipTalents,
+      pagination: new Pagination(queryPagination),
+    },
+  };
+};
 /**
 * Find intershipTalent by ID
 * Returns a single intership
@@ -303,9 +331,9 @@ const getIntershipTalent = ({ intershipTalentPagination }) => new Promise(
 * intershipTalentId String ID of intershipTalent to return
 * returns createIntershipTalent_200_response
 * */
-const getIntershipTalentCreatedById = ({ intershipTalentId }) => {
+const getIntershipTalentCreatedById = async ({ intershipTalentId }) => {
 
-  const intershipTalentData = intershipUtils.getIntershipTalentById(intershipTalentId);
+  const intershipTalentData = await intershipUtils.getIntershipTalentById(intershipTalentId);
   const entityName = 'IntershipTalent';
 
   if (!intershipTalentData) {
@@ -337,7 +365,8 @@ const updateInstitution = async ({ institutionId, institutionCreated }) => {
   if (institutionId !== institutionCreated._id) {
     throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.errorId);
   }
-  console.log(institutionCreated);
+  
+
 
   const { _id, ...values } = institutionCreated;
 
@@ -352,11 +381,12 @@ const updateInstitution = async ({ institutionId, institutionCreated }) => {
   return {
     payload: {
       hasError: false,
-      message: utilsFunctions.textResponseFormat(entityName, SHORTTEXTREPONSE.updated),
+      message: textResponseFormat(entityName, SHORTTEXTREPONSE.updated),
       content: institutionUpdated,
     },
   };
 };
+
 /**
 * Update an existing intership
 * Update an existing intership by Id
@@ -365,6 +395,7 @@ const updateInstitution = async ({ institutionId, institutionCreated }) => {
 * intershipCreated IntershipCreated Update an existent intership in the store (optional)
 * returns createIntership_200_response
 * */
+
 const updateIntershipId = async ({ intershipId, intershipCreated }) => {
 
   const entityName = 'Instership';
@@ -386,7 +417,7 @@ const updateIntershipId = async ({ intershipId, intershipCreated }) => {
   return {
     payload: {
       hasError: false,
-      message: utilsFunctions.textResponseFormat(entityName, SHORTTEXTREPONSE.updated),
+      message: textResponseFormat(entityName, SHORTTEXTREPONSE.updated),
       content: intershipUpdated,
     },
   };
@@ -420,7 +451,7 @@ const updateIntershipTalentId = async ({ intershipTalentId, intershipTalentCreat
   return {
     payload: {
       hasError: false,
-      message: utilsFunctions.textResponseFormat(entityName, SHORTTEXTREPONSE.updated),
+      message: textResponseFormat(entityName, SHORTTEXTREPONSE.updated),
       content: intershipTalentUpdated,
     },
   };
