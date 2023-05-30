@@ -2,12 +2,11 @@
 const Service = require('./Service');
 const Institution = require('../models/institution.js');
 const Intership = require('../models/intership.js');
-const IntershipTalent = require('../models/intershipTalent.js');
+const IntershipTalent = require('../models/intershipTalent');
 const CustomAPIError = require('../errors/index');
 const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
 const { textResponseFormat } = require('../utils/utilsFunctions');
-const utility = require('../utils');
-
+const {institutionUtils, intershipUtils, userUtils, statusUtils} = require('../utils');
 /**
 * Create institution
 * add a new instritution
@@ -17,14 +16,12 @@ const utility = require('../utils');
 * */
 const createInstitution = ({ institution }) => {
 
-  const institutionData = {};
-
+  const institutionData = Institution.create(institution);
   if (!institution) {
     throw new CustomAPIError.BadRequestError(
       textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
     );
   }
-    institutionData = Institution.create(institution);
   return {
     payload: {
       hasError: false,
@@ -42,7 +39,7 @@ const createInstitution = ({ institution }) => {
 * */
 const createIntership = ({ intership }) => {
 
-  const intershipData = {};
+  const intershipData = Intership.create(intership);
   const entityName = 'Intership';
 
   if (!intership) {
@@ -50,7 +47,7 @@ const createIntership = ({ intership }) => {
       textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
     );
   }
-  intershipData = Intership.create(intership);
+
   return {
     payload: {
       hasError: false,
@@ -66,18 +63,18 @@ const createIntership = ({ intership }) => {
 * intershipTalent IntershipTalent Created intershipTalent object (optional)
 * returns createIntershipTalent_200_response
 * */
-const createIntershipTalent = ({ intershipTalent }) => {
-
-  const intershipTalendigData = {};
-  const entityName = 'Intership';
+const createIntershipTalent = async ({ intershipTalent }) => {
 
   if (!intershipTalent) {
     throw new CustomAPIError.BadRequestError(
       textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
     );
   }
-  intershipTalendigData = IntershipTalent.create(intershipTalent);
 
+  const intershipTalendigData = await IntershipTalent.create(intershipTalent);
+  const entityName = 'Intership';
+
+  
   return {
     payload: {
       hasError: false,
@@ -95,7 +92,7 @@ const createIntershipTalent = ({ intershipTalent }) => {
 * */
 const deleteInstitutionById = async ({ institutionId }) => {
 
-  const institution = await utility.institutionUtils.getInstitutionById(institutionId);
+  const institution = await institutionUtils.getInstitutionById(institutionId);
   const entityName = 'Intership';
 
   if (!institution) {
@@ -103,12 +100,12 @@ const deleteInstitutionById = async ({ institutionId }) => {
       textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
     );
   }
-  await utility.userUtils.deleteUserById(institution.userId);
+  await userUtils.deleteUserById(institution.userId);
 
   return {
     payload: {
       hasError: false,
-      message: utility.utilsFunctions.textResponseFormat(entityName,SHORTTEXTREPONSE.deleted),
+      message: textResponseFormat(entityName,SHORTTEXTREPONSE.deleted),
       content: {},
     },
   };
@@ -122,20 +119,29 @@ const deleteInstitutionById = async ({ institutionId }) => {
 * returns EmptyResponse
 * */
 const deleteIntershipById = async ({ intershipId }) => {
-  const intership = await utility.intershipUtils.getIntershipById(intershipId);
+  const intership = await intershipUtils.getIntershipById(intershipId);
   const entityName = 'Intership';
 
   if (!intership) {
     throw new CustomAPIError.NotFoundError(
-      textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
+      utilsFunctions.textResponseFormat(
+        entityName,
+        SHORTTEXTREPONSE.notFound,
+      ),
     );
   }
-  await utility.intershipUtils.deleteIntershipById(intership._id);
+
+  const statusId = await statusUtils.getStatusIdByName('inactive');
+  const instershipDeleted = await Intership.updateOne({ _id: intershipId }, { statusId });
+
+  if (instershipDeleted.modifiedCount !== 1) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
 
   return {
     payload: {
       hasError: false,
-      message: utility.utilsFunctions.textResponseFormat(entityName,SHORTTEXTREPONSE.deleted),
+      message: textResponseFormat(entityName,SHORTTEXTREPONSE.deleted),
       content: {},
     },
   };
@@ -148,7 +154,7 @@ const deleteIntershipById = async ({ intershipId }) => {
 * returns EmptyResponse
 * */
 const deleteIntershipTalentById = async ({ intershipTalentId }) => {
-  const intershipTalent = await utility.intershipUtils.getIntershipTalentById(intershipTalentId);
+  const intershipTalent = await intershipUtils.getIntershipTalentById(intershipTalentId);
   const entityName = 'IntershipTalent';
 
   if (!intershipTalent) {
@@ -156,12 +162,16 @@ const deleteIntershipTalentById = async ({ intershipTalentId }) => {
       textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
     );
   }
-  await utility.intershipUtils.deleteIntershipTalentById(intershipTalent._id);
+  const statusId = await statusUtils.getStatusIdByName('inactive');
+  const intershipTalentDeleted = await IntershipTalent.updateOne({ _id: intershipTalentId }, { statusId });
 
+  if (intershipTalentDeleted.modifiedCount !== 1) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
   return {
     payload: {
       hasError: false,
-      message: utility.utilsFunctions.textResponseFormat(entityName,SHORTTEXTREPONSE.deleted),
+      message: utilsFunctions.textResponseFormat(entityName,SHORTTEXTREPONSE.deleted),
       content: {},
     },
   };
@@ -175,9 +185,9 @@ const deleteIntershipTalentById = async ({ intershipTalentId }) => {
 * */
 const getInstitutionById = async ({ institutionId }) => {
 
-  const institutionData = await utility.institutionUtils.getInstitutionById(institutionId);
+  const institutionData = await institutionUtils.getInstitutionById(institutionId);
   const entityName = 'Institution';
-
+  console.log(institutionData.userId);
   if (!institutionId) {
     throw new CustomAPIError.NotFoundError(
       textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
@@ -246,9 +256,9 @@ const getIntership = ({ intershipPagination }) => new Promise(
 * intershipId String ID of institution to return
 * returns createIntership_200_response
 * */
-const getIntershipById = ({ intershipId }) => {
+const getIntershipById = async ({ intershipId }) => {
 
-  const intershipData = utility.intershipUtils.getIntershipById(intershipId);
+  const intershipData = await intershipUtils.getIntershipById(intershipId);
   const entityName = 'Intership';
 
   if (!intershipData) {
@@ -256,7 +266,7 @@ const getIntershipById = ({ intershipId }) => {
       textResponseFormat(entityName, SHORTTEXTREPONSE.notFound),
     );
   }
-
+  console.log(intershipData)
   return {
     payload: {
       hasError: false,
@@ -295,7 +305,7 @@ const getIntershipTalent = ({ intershipTalentPagination }) => new Promise(
 * */
 const getIntershipTalentCreatedById = ({ intershipTalentId }) => {
 
-  const intershipTalentData = utility.intershipUtils.getIntershipTalentById(intershipTalentId);
+  const intershipTalentData = intershipUtils.getIntershipTalentById(intershipTalentId);
   const entityName = 'IntershipTalent';
 
   if (!intershipTalentData) {
@@ -327,6 +337,7 @@ const updateInstitution = async ({ institutionId, institutionCreated }) => {
   if (institutionId !== institutionCreated._id) {
     throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.errorId);
   }
+  console.log(institutionCreated);
 
   const { _id, ...values } = institutionCreated;
 
@@ -336,7 +347,7 @@ const updateInstitution = async ({ institutionId, institutionCreated }) => {
     throw new Error(SHORTTEXTREPONSE.serverError);
   }
 
-  const institutionUpdated = await utility.institutionUtils.getInstitutionById(institutionId);
+  const institutionUpdated = await institutionUtils.getInstitutionById(institutionId);
 
   return {
     payload: {
@@ -370,7 +381,7 @@ const updateIntershipId = async ({ intershipId, intershipCreated }) => {
     throw new Error(SHORTTEXTREPONSE.serverError);
   }
 
-  const intershipUpdated = await utility.intershipUtils.getIntershipById(intershipId);
+  const intershipUpdated = await intershipUtils.getIntershipById(intershipId);
 
   return {
     payload: {
@@ -404,7 +415,7 @@ const updateIntershipTalentId = async ({ intershipTalentId, intershipTalentCreat
     throw new Error(SHORTTEXTREPONSE.serverError);
   }
 
-  const intershipTalentUpdated = await utility.intershipUtils.getIntershipTalentById(intershipTalentId);
+  const intershipTalentUpdated = await intershipUtils.getIntershipTalentById(intershipTalentId);
 
   return {
     payload: {
