@@ -1,9 +1,12 @@
 /* eslint-disable no-unused-vars */
+const { StatusCodes } = require('http-status-codes');
 const Service = require('./Service');
-const InstructorSchema = require('../models/instructor');
-const instructorName = 'Instructor';
+const Instructor = require('../models/instructor');
+const CustomAPIError = require('../errors/index');
 const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
-const { textResponseFormat } = require('../utils/utilsFunctions');
+const utility = require('../utils');
+
+const userName = 'Instructor';
 
 /**
  * Add a new Instructor to the store
@@ -13,15 +16,18 @@ const { textResponseFormat } = require('../utils/utilsFunctions');
  * returns getInstructorById_200_response
  * */
 const addInstructor = async ({ instructor }) => {
-  const preInstructor = instructor;
+  if (!instructor) {
+    throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.noBodyRequest);
+  }
 
-  const userCreated = await InstructorSchema.create(preInstructor);
+  const instructorCreated = await Instructor.create(instructor);
 
   return {
+    code: StatusCodes.CREATED,
     payload: {
       hasError: false,
-      message: textResponseFormat(instructorName, SHORTTEXTREPONSE.found),
-      content: userCreated,
+      message: textResponseFormat(instructorName, SHORTTEXTREPONSE.created),
+      content: instructorCreated,
     },
   };
 };
@@ -38,11 +44,11 @@ const addInstructorBootcamp = ({ instructorBootcamp }) =>
       resolve(
         Service.successResponse({
           instructorBootcamp,
-        })
+        }),
       );
     } catch (e) {
       reject(
-        Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+        Service.rejectResponse(e.message || 'Invalid input', e.status || 405),
       );
     }
   });
@@ -53,20 +59,33 @@ const addInstructorBootcamp = ({ instructorBootcamp }) =>
  * instructorId String Deletes instructor by ID
  * returns EmptyResponse
  * */
-const deleteBootcampinstructor = ({ instructorId }) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      resolve(
-        Service.successResponse({
-          instructorId,
-        })
-      );
-    } catch (e) {
-      reject(
-        Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
-      );
-    }
-  });
+const deleteBootcampinstructor = async ({ instructorId }) => {
+  const instructor = await utility.instructorUtils.getInstructorById(
+    instructorId,
+  );
+
+  if (!instructor) {
+    throw new CustomAPIError.NotFoundError(
+      utility.utilsFunctions.textResponseFormat(
+        userName,
+        SHORTTEXTREPONSE.notFound,
+      ),
+    );
+  }
+
+  await utility.userUtils.deleteUserById(instructor.userId);
+
+  return {
+    payload: {
+      hasError: false,
+      message: utility.utilsFunctions.textResponseFormat(
+        instructorName,
+        SHORTTEXTREPONSE.deleted,
+      ),
+      content: {},
+    },
+  };
+};
 /**
  * Delete instructor bootcamp by ID
  * Deletes instructor from bootcamps based on their ID
@@ -80,11 +99,11 @@ const deleteInstructorBootcamp = ({ instructorBootcampId }) =>
       resolve(
         Service.successResponse({
           instructorBootcampId,
-        })
+        }),
       );
     } catch (e) {
       reject(
-        Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+        Service.rejectResponse(e.message || 'Invalid input', e.status || 405),
       );
     }
   });
@@ -101,11 +120,11 @@ const getAllInstructor = ({ instructorPagination }) =>
       resolve(
         Service.successResponse({
           instructorPagination,
-        })
+        }),
       );
     } catch (e) {
       reject(
-        Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+        Service.rejectResponse(e.message || 'Invalid input', e.status || 405),
       );
     }
   });
@@ -122,11 +141,11 @@ const getAllInstructorBootcamp = ({ instructorBootcampPagination }) =>
       resolve(
         Service.successResponse({
           instructorBootcampPagination,
-        })
+        }),
       );
     } catch (e) {
       reject(
-        Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+        Service.rejectResponse(e.message || 'Invalid input', e.status || 405),
       );
     }
   });
@@ -143,11 +162,11 @@ const getInstructorBootcampById = ({ instructorBootcampId }) =>
       resolve(
         Service.successResponse({
           instructorBootcampId,
-        })
+        }),
       );
     } catch (e) {
       reject(
-        Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+        Service.rejectResponse(e.message || 'Invalid input', e.status || 405),
       );
     }
   });
@@ -164,11 +183,11 @@ const getInstructorById = ({ instructorId }) =>
       resolve(
         Service.successResponse({
           instructorId,
-        })
+        }),
       );
     } catch (e) {
       reject(
-        Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+        Service.rejectResponse(e.message || 'Invalid input', e.status || 405),
       );
     }
   });
@@ -187,11 +206,11 @@ const updateInstructor = ({ instructorId, instructorCreated }) =>
         Service.successResponse({
           instructorId,
           instructorCreated,
-        })
+        }),
       );
     } catch (e) {
       reject(
-        Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+        Service.rejectResponse(e.message || 'Invalid input', e.status || 405),
       );
     }
   });
@@ -213,11 +232,11 @@ const updateInstructorBootcamp = ({
         Service.successResponse({
           instructorBootcampId,
           instructorBootcamp,
-        })
+        }),
       );
     } catch (e) {
       reject(
-        Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+        Service.rejectResponse(e.message || 'Invalid input', e.status || 405),
       );
     }
   });
