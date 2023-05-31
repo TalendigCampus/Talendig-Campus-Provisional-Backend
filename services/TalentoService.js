@@ -8,12 +8,18 @@ const {
 const TalentSchema = require('../models/talent');
 const TalentRecruiterSchema = require('../models/talentRecruiter');
 const TalentBootcampSchema = require('../models/talentBootcamp');
+const TalentAssignmentSchema = require('../models/talentAssignment');
+const TalentAssignmentFileSchema = require('../models/talentAssignmentFile');
 
 const talentName = 'Talento';
 const talentRecruiterName = 'Proceso talento reclutador';
 const recruiterName = 'Recruiter';
 const bootcampName = 'Bootcamp';
 const talentBootcampName = 'Talento en bootcamp';
+const assignmentName = 'Tarea';
+const talentAssignmentName = 'Tarea del talento';
+const fileName = 'Archivo';
+const talentAssignmentFileName = 'Archivo de la tarea del talento';
 
 /**
 * Add a new talent to the store
@@ -51,20 +57,38 @@ const addTalent = async ({ talent }) => {
 * talentAssignment TalentAssignment Create a new talent assignment in the store
 * returns getTalentAssingmentById_200_response
 * */
-const addTalentAssingment = ({ talentAssignment }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        talentAssignment,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const addTalentAssingment = async ({ talentAssignment }) => {
+  const talent = await talentUtils.isTalentActive(talentAssignment.talentId);
+
+  if (!talent) {
+    throw new CustomAPIError.BadRequestError(utilsFunctions.textResponseFormat(
+      talentName, SHORTTEXTREPONSE.notFound,
+    ));
+  }
+
+  const assignment = await assignmentUtils.isAssignmentActive(talentAssignment.bootcampId); // Terminar cuando el schema assignment este creado.
+
+  if (!assignment) {
+    throw new CustomAPIError.BadRequestError(utilsFunctions.textResponseFormat(
+      assignmentName, SHORTTEXTREPONSE.notFound,
+    ));
+  }
+
+  const talentAssignmentCreated = await TalentAssignmentSchema.create(talentAssignment);
+
+  if (!talentAssignmentCreated) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
+  return {
+    code: StatusCodes.CREATED,
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(talentAssignmentName, SHORTTEXTREPONSE.created),
+      content: talentAssignmentCreated,
+    },
+  };
+};
 /**
 * Add a new talent assignment file to the store
 * Add a new talent assignment file to the store
@@ -72,20 +96,38 @@ const addTalentAssingment = ({ talentAssignment }) => new Promise(
 * talentAssignmentFile TalentAssignmentFile Create a new talent assignment file in the store
 * returns updateTalentAssignmentFile_200_response
 * */
-const addTalentAssingmentFile = ({ talentAssignmentFile }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        talentAssignmentFile,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const addTalentAssingmentFile = async ({ talentAssignmentFile }) => {
+  const talentAssignment = await talentAssignmentUtils.isTalentAssignmentActive(talentAssignmentFile.talentAssingmentId);
+
+  if (!talentAssignment) {
+    throw new CustomAPIError.BadRequestError(utilsFunctions.textResponseFormat(
+      talentAssignmentName, SHORTTEXTREPONSE.notFound,
+    ));
+  }
+
+  const file = await fileUtils.isFileActive(talentAssignment.fileId); // Terminar cuando el schema file este creado.
+
+  if (!file) {
+    throw new CustomAPIError.BadRequestError(utilsFunctions.textResponseFormat(
+      fileName, SHORTTEXTREPONSE.notFound,
+    ));
+  }
+
+  const talentAssignmentFileCreated = await TalentAssignmentFileSchema.create(talentAssignmentFile);
+
+  if (!talentAssignmentFileCreated) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
+  return {
+    code: StatusCodes.CREATED,
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(talentAssignmentFileName, SHORTTEXTREPONSE.created),
+      content: talentAssignmentFileCreated,
+    },
+  };
+};
 /**
 * create a talentBootcamp relationship
 * Add a new talentBootcamp to the store
@@ -94,7 +136,7 @@ const addTalentAssingmentFile = ({ talentAssignmentFile }) => new Promise(
 * returns addTalentBootcamp_200_response
 * */
 const addTalentBootcamp = async ({ talentBootcamp }) => {
-  const talent = await talentUtils.isTalentActive(talentBootcamp.talendId);
+  const talent = await talentUtils.isTalentActive(talentBootcamp.talentId);
 
   if (!talent) {
     throw new CustomAPIError.BadRequestError(utilsFunctions.textResponseFormat(
@@ -102,7 +144,7 @@ const addTalentBootcamp = async ({ talentBootcamp }) => {
     ));
   }
 
-  const bootcamp = await recruiterUtils.isBootcampActive(talentBootcamp.bootcampId); // Terminar cuando el schema bootcamp este creado.
+  const bootcamp = await bootcampUtils.isBootcampActive(talentBootcamp.bootcampId); // Terminar cuando el schema bootcamp este creado.
 
   if (!bootcamp) {
     throw new CustomAPIError.BadRequestError(utilsFunctions.textResponseFormat(
@@ -175,7 +217,7 @@ const createATalentInstructorRecommendation = ({ talentInstructor }) => new Prom
 * returns createATalentRecruiterProcess_200_response
 * */
 const createATalentRecruiterProcess = async ({ talentRecruiter }) => {
-  const talent = await talentUtils.isTalentActive(talentRecruiter.talendId);
+  const talent = await talentUtils.isTalentActive(talentRecruiter.talentId);
 
   if (!talent) {
     throw new CustomAPIError.BadRequestError(utilsFunctions.textResponseFormat(
@@ -319,20 +361,34 @@ const deleteTalent = async ({ talentId }) => {
 * talentAssignmentId String Talent Assignment id to delete
 * returns EmptyResponse
 * */
-const deleteTalentAssingment = ({ talentAssignmentId }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        talentAssignmentId,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const deleteTalentAssingment = async ({ talentAssignmentId }) => {
+  const talentAssignment = await TalentAssignmentSchema.findById(talentAssignmentId);
+
+  if (!talentAssignment) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(
+        talentAssignmentName,
+        SHORTTEXTREPONSE.notFound,
+      ),
+    );
+  }
+
+  const statusId = await statusUtils.getStatusIdByName('inactive');
+  const talentAssignmentDeleted = await TalentAssignmentSchema
+    .updateOne({ _id: talentAssignmentId }, { statusId });
+
+  if (talentAssignmentDeleted.modifiedCount !== 1) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
+  return {
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(talentAssignmentName, SHORTTEXTREPONSE.deleted),
+      content: {},
+    },
+  };
+};
 /**
 * Deletes a talent assignment file
 * delete a talent assignment file
@@ -438,20 +494,33 @@ const getAllTalentAssignmentFiles = ({ talentAssignmentFilePagination }) => new 
 * talentAssignmentPagination TalentAssignmentPagination Get talent assignment by filter and pagination (optional)
 * returns getAllTalentAssignments_200_response
 * */
-const getAllTalentAssignments = ({ talentAssignmentPagination }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        talentAssignmentPagination,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const getAllTalentAssignments = async ({ talentAssignmentPagination }) => {
+  const { filter, pagination } = talentAssignmentPagination;
+
+  const paginationClass = new Pagination(pagination);
+  let queryPagination = paginationClass.queryPagination();
+
+  let talentAssignments = [];
+  let count = [];
+
+  try {
+    talentAssignments = await TalentAssignmentSchema.find(filter, null, queryPagination);
+    count = await TalentAssignmentSchema.countDocuments(filter);
+  } catch (error) {
+    throw new Error(error);
+  }
+
+  queryPagination = { quantity: count, page: paginationClass.page };
+
+  return {
+    payload: {
+      hasError: false,
+      message: '',
+      content: talentAssignments,
+      pagination: new Pagination(queryPagination),
+    },
+  };
+};
 /**
 * Get all talent bootcamp
 * Get a list of talents bootcamp from the store
@@ -616,15 +685,15 @@ const getSingleTalentBootcamp = async ({ talentBootcampId }) => {
 
   if (!talent) {
     throw new CustomAPIError.NotFoundError(
-      utilsFunctions.textResponseFormat(talentName, SHORTTEXTREPONSE.deleted),
+      utilsFunctions.textResponseFormat(talentName, SHORTTEXTREPONSE.notFound),
     );
   }
 
-  const bootcamp = await recruiterUtils.isBootcampActive(talentBootcamp.talentId);
+  const bootcamp = await bootcampUtils.isBootcampActive(talentBootcamp.bootcampId);
 
-  if (!recruiter) {
+  if (!bootcamp) {
     throw new CustomAPIError.NotFoundError(
-      utilsFunctions.textResponseFormat(recruiterName, SHORTTEXTREPONSE.deleted),
+      utilsFunctions.textResponseFormat(bootcampName, SHORTTEXTREPONSE.notFound),
     );
   }
 
@@ -635,7 +704,7 @@ const getSingleTalentBootcamp = async ({ talentBootcampId }) => {
       content: talent,
     },
   };
-}
+};
 /**
 * Find talent assignment by ID
 * Returns a single talent assignment
@@ -643,20 +712,45 @@ const getSingleTalentBootcamp = async ({ talentBootcampId }) => {
 * talentAssignmentId String ID of talent assignment to return
 * returns getTalentAssingmentById_200_response
 * */
-const getTalentAssingmentById = ({ talentAssignmentId }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        talentAssignmentId,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const getTalentAssingmentById = async ({ talentAssignmentId }) => {
+  const talentAssignment = await TalentAssignmentSchema.findById(talentAssignmentId);
+
+  if (!talentAssignment) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(talentAssignmentName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  const talent = await talentUtils.isTalentActive(talentAssignment.talentId);
+
+  if (!talent) {
+    throw new CustomAPIError.BadRequestError(utilsFunctions.textResponseFormat(
+      talentName, SHORTTEXTREPONSE.notFound,
+    ));
+  }
+
+  const assignment = await assignmentUtils.isAssignmentActive(talentAssignment.assignmentId); // Terminar cuando el schema assignment este creado.
+
+  if (!assignment) {
+    throw new CustomAPIError.BadRequestError(utilsFunctions.textResponseFormat(
+      assignmentName, SHORTTEXTREPONSE.notFound,
+    ));
+  }
+
+  const talentAssignmentCreated = await TalentAssignmentSchema.create(talentAssignment);
+
+  if (!talentAssignmentCreated) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
+  return {
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(talentAssignmentName, SHORTTEXTREPONSE.found),
+      content: talent,
+    },
+  };
+};
 /**
 * Find talent assignment file by ID
 * Returns a single talent assignment file
@@ -664,20 +758,39 @@ const getTalentAssingmentById = ({ talentAssignmentId }) => new Promise(
 * talentAssignmentFileId String ID of talent assignment file to return
 * returns getTalentAssingmentById_200_response
 * */
-const getTalentAssingmentFileById = ({ talentAssignmentFileId }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        talentAssignmentFileId,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const getTalentAssingmentFileById = async ({ talentAssignmentFileId }) => {
+  const talentAssignmentFile = await TalentAssignmentFileSchema.findById(talentAssignmentFileId);
+
+  if (!talentAssignmentFile) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(talentAssignmentFileName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  const talentAssignment = await talentAssignmentUtils.isTalentAssignmentActive(talentAssignmentFile.talentAssignmentId);
+
+  if (!talentAssignment) {
+    throw new CustomAPIError.BadRequestError(utilsFunctions.textResponseFormat(
+      talentAssignmentName, SHORTTEXTREPONSE.notFound,
+    ));
+  }
+
+  const file = await fileUtils.isFileActive(talentAssignment.bootcampId); // Terminar cuando el schema file este creado.
+
+  if (!file) {
+    throw new CustomAPIError.BadRequestError(utilsFunctions.textResponseFormat(
+      fileName, SHORTTEXTREPONSE.notFound,
+    ));
+  }
+
+  return {
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(talentAssignmentFileName, SHORTTEXTREPONSE.found),
+      content: talentAssignmentFile,
+    },
+  };
+};
 /**
 * Find talent by ID
 * Returns a single talent
@@ -845,21 +958,53 @@ const updateTalent = async ({ talentId, talentCreated }) => {
 * talentAssignmentCreated TalentAssignmentCreated Update an existent talent assignment in the store
 * returns getTalentAssingmentById_200_response
 * */
-const updateTalentAssignment = ({ talentAssignmentId, talentAssignmentCreated }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        talentAssignmentId,
-        talentAssignmentCreated,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const updateTalentAssignment = async ({ talentAssignmentId, talentAssignmentCreated }) => {
+  if (talentAssignmentId !== talentAssignmentCreated._id) {
+    throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.errorId);
+  }
+
+  const talentAssignment = await TalentAssignmentSchema.findById(talentAssignmentId);
+
+  if (!talentAssignment) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(talentAssignmentName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  const talent = await talentUtils.isTalentActive(talentAssignment.talentId);
+
+  if (!talent) {
+    throw new CustomAPIError.BadRequestError(utilsFunctions.textResponseFormat(
+      talentName, SHORTTEXTREPONSE.notFound,
+    ));
+  }
+
+  const assignment = await assignmentUtils.isBootcampActive(talentAssignment.bootcampId); // Terminar cuando el schema assignment este creado.
+
+  if (!assignment) {
+    throw new CustomAPIError.BadRequestError(utilsFunctions.textResponseFormat(
+      assignmentName, SHORTTEXTREPONSE.notFound,
+    ));
+  }
+
+  const { _id, ...values } = talentAssignmentCreated;
+
+  const updated = await TalentAssignmentSchema.updateOne({ _id }, values);
+
+  if (updated.modifiedCount !== 1) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
+  const talentAssignmentUpdated = await TalentAssignmentSchema.findById(talentAssignmentId);
+
+  return {
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(talentAssignmentName, SHORTTEXTREPONSE.updated),
+      content: talentAssignmentUpdated,
+    },
+  };
+};
 /**
 * Update an existing talent assignment file
 * Update an existing talent assingment file by Id
@@ -891,21 +1036,53 @@ const updateTalentAssignmentFile = ({ talentAssignmentFileId, talentAssignmentFi
 * talentBootcampCreated TalentBootcampCreated Update an existent talent bootcamp in the store
 * returns addTalentBootcamp_200_response
 * */
-const updateTalentBootcamp = ({ talentBootcampId, talentBootcampCreated }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        talentBootcampId,
-        talentBootcampCreated,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const updateTalentBootcamp = async ({ talentBootcampId, talentBootcampCreated }) => {
+  if (talentBootcampId !== talentBootcampCreated._id) {
+    throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.errorId);
+  }
+
+  const talentBootcamp = await TalentBootcampSchema.findById(talentBootcampId);
+
+  if (!talentBootcamp) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(talentBootcampName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  const talent = await talentUtils.isTalentActive(talentBootcampCreated.talentId);
+
+  if (!talent) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(talentName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  const bootcamp = await bootcampUtils.isBootcampActive(talentBootcampCreated.bootcampId);
+
+  if (!bootcamp) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(bootcampName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  const { _id, ...values } = talentBootcampCreated;
+
+  const updated = await TalentBootcampSchema.updateOne({ _id }, values);
+
+  if (updated.modifiedCount !== 1) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
+  const talentBootcampUpdated = await TalentBootcampSchema.findById(talentBootcampId);
+
+  return {
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(talentBootcampName, SHORTTEXTREPONSE.updated),
+      content: talentBootcampUpdated,
+    },
+  };
+};
 /**
 * Update a talent process with recruiter by ID
 * Update an existing talent by Id

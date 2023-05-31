@@ -11065,6 +11065,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/TalentAssignment'
       - $ref: '#/components/schemas/AdministratorCreated_allOf'
+      - $ref: '#/components/schemas/StatusId_allOf'
     TalentAssignmentPagination:
       example:
         filter:
@@ -11100,6 +11101,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/TalentAssignmentFile'
       - $ref: '#/components/schemas/AdministratorCreated_allOf'
+      - $ref: '#/components/schemas/StatusId_allOf'
     TalentAssignmentFilePagination:
       example:
         filter:
@@ -13737,7 +13739,7 @@ components:
         comment: comment
         id: 644fca9f0aa5d55869c8756a
       properties:
-        id:
+        instructorId:
           example: 644fca9f0aa5d55869c8756a
           type: string
         comment:
