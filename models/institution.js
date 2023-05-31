@@ -1,15 +1,17 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const AddressSchema = require('./commons/address');
+
 
 const institutionSchema = new mongoose.Schema(
   {
     userId: {
-      type: [mongoose.Types.ObjectId],
+      type: mongoose.Types.ObjectId,
       ref: 'User',
       required: [true, 'Por favor, agregar ID al que le pertenece el usuario'],
     },
     companyDetails: {
-      type: [mongoose.Types.ObjectId],
+      type: Object,
       name: {
         type: String,
         required: [true, "Por favor, coloque un nombre"],
@@ -28,7 +30,7 @@ const institutionSchema = new mongoose.Schema(
         required: [true, "Por favor de digitar RNC"],
         minlength: 9,
         validate: {
-          validator: validator.isNumeric(str[no_symbols]),
+          validator: (value) => /^\d{10}$/.test(value),
           message: "Please provide a valid RNC",
         },
       },
@@ -36,7 +38,7 @@ const institutionSchema = new mongoose.Schema(
       required: [true, "Por favor, agregar los datos de la compañia"],
     },
     ownerDetails: {
-      type: [mongoose.Types.ObjectId],
+      type: Object,
       name: {
         type: String,
         required: [true, "Por favor, coloque un nombre"],
@@ -59,7 +61,7 @@ const institutionSchema = new mongoose.Schema(
         required: [true, "Por favor de digitar RNC"],
         minlength: 9,
         validate: {
-          validator: validator.isNumeric(str[no_symbols]),
+          validator: (value) => /^\d{10}$/.test(value),
           message: "Please provide a valid RNC",
         },
       },
