@@ -3,11 +3,11 @@ const validator = require('validator');
 
 const portfolioSchema = new mongoose.Schema({
         userId:{
-            type: String,
+            type: mongoose.Types.ObjectId,
             required: [true, 'Por favor de digitar userId'],
         },
         projectId:{
-            type: String,
+            type: mongoose.Types.ObjectId,
             required: [true, 'Por favor de digitar projectId'],
         },
         createdDate:{

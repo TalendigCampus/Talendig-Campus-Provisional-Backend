@@ -3,11 +3,11 @@ const validator = require('validator');
 
 const intershipTalentSchema = new mongoose.Schema({
     internshipId:{
-        type: String,
+        type: mongoose.Types.ObjectId,
         required: [true, 'Por favor de digitar internshipId'],
     },
         talentId:{
-            type: String,
+            type: mongoose.Types.ObjectId,
             required: [true, 'Por favor de digitar talentId'],
         },
         workPosition:{
@@ -19,7 +19,7 @@ const intershipTalentSchema = new mongoose.Schema({
             required: [true, 'Por favor de digitar resposabilidad a cumplir en el puesto'],
         },
         statusId:{
-            type: String,
+            type: mongoose.Types.ObjectId,
             required: [true, 'Por favor de digitar'],
         },
         startDate:{
@@ -34,4 +34,4 @@ const intershipTalentSchema = new mongoose.Schema({
     {timestamps: true}
 );
 
-module.exports = mongoose.model('intershipTalents', intershipTalentSchema);
+module.exports = mongoose.model('intershiptalent', intershipTalentSchema);
