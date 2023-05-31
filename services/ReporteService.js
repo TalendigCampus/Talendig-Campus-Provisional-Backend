@@ -1,5 +1,12 @@
 /* eslint-disable no-unused-vars */
+const { StatusCodes } = require('http-status-codes');
 const Service = require('./Service');
+const ReportSchema = require('../models/report');
+const CustomAPIError = require('../errors/index');
+const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
+const { utilsFunctions, statusUtils, Pagination } = require('../utils');
+
+const reportName = 'Report';
 
 /**
 * Create report
@@ -8,20 +15,25 @@ const Service = require('./Service');
 * report Report Create report object
 * returns createReport_200_response
 * */
-const createReport = ({ report }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        report,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const createReport = async ({ report }) => {
+  if (!report) {
+    throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.noBodyRequest);
+  }
+
+  const newReport = await ReportSchema.create(report);
+
+  return {
+    code: StatusCodes.CREATED,
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(
+        reportName,
+        SHORTTEXTREPONSE.created,
+      ),
+      content: newReport,
+    },
+  };
+};
 /**
 * Delete report
 * delete report
@@ -29,20 +41,36 @@ const createReport = ({ report }) => new Promise(
 * reportId String Id of the report
 * returns EmptyResponse
 * */
-const deleteReport = ({ reportId }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        reportId,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const deleteReport = async ({ reportId }) => {
+  const report = await ReportSchema.findById(reportId);
+
+  if (!report) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(reportName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  const statusId = await statusUtils.getStatusIdByName('inactive');
+  const eventDeleted = await ReportSchema.updateOne(
+    { _id: reportId },
+    { statusId },
+  );
+
+  if (eventDeleted.modifiedCount !== 1) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
+  return {
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(
+        reportName,
+        SHORTTEXTREPONSE.deleted,
+      ),
+      content: {},
+    },
+  };
+};
 /**
 * get reports
 * get reports
@@ -50,20 +78,29 @@ const deleteReport = ({ reportId }) => new Promise(
 * reportPagination ReportPagination Created report object
 * returns getReports_200_response
 * */
-const getReports = ({ reportPagination }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        reportPagination,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const getReports = async ({ reportPagination }) => {
+  const { filter, pagination } = reportPagination;
+
+  const paginationClass = new Pagination(pagination);
+  let queryPagination = paginationClass.queryPagination();
+
+  const reports = await ReportSchema.find(filter, null, queryPagination);
+  const count = await ReportSchema.countDocuments(filter);
+
+  queryPagination = { quantity: count, page: paginationClass.page };
+
+  return {
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(
+        reportName,
+        SHORTTEXTREPONSE.found,
+      ),
+      content: reports,
+      pagination: new Pagination(queryPagination),
+    },
+  };
+};
 /**
 * get report
 * get report
@@ -71,20 +108,37 @@ const getReports = ({ reportPagination }) => new Promise(
 * reportId String Id of the report
 * returns createReport_200_response
 * */
-const getSingleReport = ({ reportId }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        reportId,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const getSingleReport = async ({ reportId }) => {
+  const report = await ReportSchema.findById(reportId);
+
+  if (!report) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(reportName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  const isReportActive = await statusUtils.isActive(report.statusId);
+
+  if (!isReportActive) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(
+        reportName,
+        SHORTTEXTREPONSE.userDeleted,
+      ),
+    );
+  }
+
+  return {
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(
+        reportName,
+        SHORTTEXTREPONSE.found,
+      ),
+      content: report,
+    },
+  };
+};
 /**
 * update report
 * update report
@@ -93,21 +147,48 @@ const getSingleReport = ({ reportId }) => new Promise(
 * reportCreated ReportCreated Created report object
 * returns createReport_200_response
 * */
-const updateReport = ({ reportId, reportCreated }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        reportId,
-        reportCreated,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+const updateReport = async ({ reportId, reportCreated }) => {
+  if (reportId !== reportCreated._id) {
+    throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.errorId);
+  }
+
+  const report = await ReportSchema.findById(reportId);
+
+  if (!report) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(reportName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  const isReportActive = await statusUtils.isActive(report.statusId);
+
+  if (!isReportActive) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(reportName, SHORTTEXTREPONSE.userDeleted),
+    );
+  }
+
+  const { _id, ...values } = reportCreated;
+
+  const updated = await ReportSchema.updateOne({ _id }, values);
+
+  if (updated.modifiedCount !== 1) {
+    throw new Error(SHORTTEXTREPONSE.serverError);
+  }
+
+  const eventUpdated = await ReportSchema.findById(reportId);
+
+  return {
+    payload: {
+      hasError: false,
+      message: utilsFunctions.textResponseFormat(
+        reportName,
+        SHORTTEXTREPONSE.updated,
+      ),
+      content: eventUpdated,
+    },
+  };
+};
 
 module.exports = {
   createReport,
