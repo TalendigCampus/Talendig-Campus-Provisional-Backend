@@ -4,7 +4,7 @@ const Service = require('./Service');
 const TechnologySchema = require('../models/technology');
 const CustomAPIError = require('../errors/index');
 const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
-const { utilsFunctions, Pagination } = require('../utils');
+const { utilsFunctions, statusUtils, Pagination } = require('../utils');
 
 const technologyName = 'Tecnologia';
 
@@ -54,10 +54,13 @@ const deleteTechnology = async ({ technologyId }) => {
     );
   }
 
-  await TechnologySchema.deleteOne({ _id: technologyId });
-  const count = await TechnologySchema.countDocuments({ _id: technologyId }); // should be 0
+  const statusId = await statusUtils.getStatusIdByName('inactive');
+  const technologyDeleted = await TechnologySchema.updateOne(
+    { _id: technologyId },
+    { statusId },
+  );
 
-  if (count) {
+  if (technologyDeleted.modifiedCount !== 1) {
     throw new Error(SHORTTEXTREPONSE.serverError);
   }
 
@@ -87,6 +90,17 @@ const getSingleTechnology = async ({ technologyId }) => {
       utilsFunctions.textResponseFormat(
         technologyName,
         SHORTTEXTREPONSE.notFound,
+      ),
+    );
+  }
+
+  const isTechnologyActive = await statusUtils.isActive(technology.statusId);
+
+  if (!isTechnologyActive) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(
+        technologyName,
+        SHORTTEXTREPONSE.userDeleted,
       ),
     );
   }
@@ -152,6 +166,17 @@ const updateTechnology = async ({ technologyId, technologyCreated }) => {
       utilsFunctions.textResponseFormat(
         technologyName,
         SHORTTEXTREPONSE.notFound,
+      ),
+    );
+  }
+
+  const isTechnologyActive = await statusUtils.isActive(technology.statusId);
+
+  if (!isTechnologyActive) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(
+        technologyName,
+        SHORTTEXTREPONSE.userDeleted,
       ),
     );
   }

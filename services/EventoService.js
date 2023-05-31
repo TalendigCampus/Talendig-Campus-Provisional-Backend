@@ -116,6 +116,17 @@ const getSingleEvent = async ({ eventId }) => {
     );
   }
 
+  const isEventActive = await statusUtils.isActive(event.statusId);
+
+  if (!isEventActive) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(
+        eventName,
+        SHORTTEXTREPONSE.userDeleted,
+      ),
+    );
+  }
+
   return {
     payload: {
       hasError: false,
@@ -145,6 +156,14 @@ const updateEvent = async ({ eventId, eventCreated }) => {
   if (!event) {
     throw new CustomAPIError.NotFoundError(
       utilsFunctions.textResponseFormat(eventName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  const isEventActive = await statusUtils.isActive(event.statusId);
+
+  if (!isEventActive) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(eventName, SHORTTEXTREPONSE.userDeleted),
     );
   }
 

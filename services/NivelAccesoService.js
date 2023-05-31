@@ -9,12 +9,12 @@ const { utilsFunctions, statusUtils, Pagination } = require('../utils');
 const accessLevelName = 'Nivel de acceso';
 
 /**
-* Create accessLevel
-* The creation of a new accessLevel.
-*
-* accessLevel AccessLevel Create accessLevel object
-* returns createAccessLevel_200_response
-* */
+ * Create accessLevel
+ * The creation of a new accessLevel.
+ *
+ * accessLevel AccessLevel Create accessLevel object
+ * returns createAccessLevel_200_response
+ * */
 const createAccessLevel = async ({ accessLevel }) => {
   if (!accessLevel) {
     throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.noBodyRequest);
@@ -35,18 +35,21 @@ const createAccessLevel = async ({ accessLevel }) => {
   };
 };
 /**
-* Delete accessLevel
-* delete accessLevel
-*
-* accessLevelId String Id of the accessLevel
-* returns EmptyResponse
-* */
+ * Delete accessLevel
+ * delete accessLevel
+ *
+ * accessLevelId String Id of the accessLevel
+ * returns EmptyResponse
+ * */
 const deleteAccessLevel = async ({ accessLevelId }) => {
   const accessLevel = await AccessLevelSchema.findById(accessLevelId);
 
   if (!accessLevel) {
     throw new CustomAPIError.NotFoundError(
-      utilsFunctions.textResponseFormat(accessLevelName, SHORTTEXTREPONSE.notFound),
+      utilsFunctions.textResponseFormat(
+        accessLevelName,
+        SHORTTEXTREPONSE.notFound,
+      ),
     );
   }
 
@@ -72,19 +75,23 @@ const deleteAccessLevel = async ({ accessLevelId }) => {
   };
 };
 /**
-* get accessLevels
-* get accessLevels
-*
-* accessLevelPagination AccessLevelPagination Create accessLevel object
-* returns getAccessLevels_200_response
-* */
+ * get accessLevels
+ * get accessLevels
+ *
+ * accessLevelPagination AccessLevelPagination Create accessLevel object
+ * returns getAccessLevels_200_response
+ * */
 const getAccessLevels = async ({ accessLevelPagination }) => {
   const { filter, pagination } = accessLevelPagination;
 
   const paginationClass = new Pagination(pagination);
   let queryPagination = paginationClass.queryPagination();
 
-  const accessLevels = await AccessLevelSchema.find(filter, null, queryPagination);
+  const accessLevels = await AccessLevelSchema.find(
+    filter,
+    null,
+    queryPagination,
+  );
   const count = await AccessLevelSchema.countDocuments(filter);
 
   queryPagination = { quantity: count, page: paginationClass.page };
@@ -102,18 +109,32 @@ const getAccessLevels = async ({ accessLevelPagination }) => {
   };
 };
 /**
-* get accessLevel
-* get accessLevel
-*
-* accessLevelId String Id of the accessLevel
-* returns createAccessLevel_200_response
-* */
+ * get accessLevel
+ * get accessLevel
+ *
+ * accessLevelId String Id of the accessLevel
+ * returns createAccessLevel_200_response
+ * */
 const getSingleAccessLevel = async ({ accessLevelId }) => {
   const accessLevel = await AccessLevelSchema.findById(accessLevelId);
 
   if (!accessLevel) {
     throw new CustomAPIError.NotFoundError(
-      utilsFunctions.textResponseFormat(accessLevelName, SHORTTEXTREPONSE.notFound),
+      utilsFunctions.textResponseFormat(
+        accessLevelName,
+        SHORTTEXTREPONSE.notFound,
+      ),
+    );
+  }
+
+  const isAccessLevelActive = await statusUtils.isActive(accessLevel.statusId);
+
+  if (!isAccessLevelActive) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(
+        accessLevelName,
+        SHORTTEXTREPONSE.userDeleted,
+      ),
     );
   }
 
@@ -129,13 +150,13 @@ const getSingleAccessLevel = async ({ accessLevelId }) => {
   };
 };
 /**
-* update accessLevel
-* update accessLevel
-*
-* accessLevelId String Id of the accessLevel
-* accessLevelCreated AccessLevelCreated Created accessLevel object
-* returns createAccessLevel_200_response
-* */
+ * update accessLevel
+ * update accessLevel
+ *
+ * accessLevelId String Id of the accessLevel
+ * accessLevelCreated AccessLevelCreated Created accessLevel object
+ * returns createAccessLevel_200_response
+ * */
 const updateAccessLevel = async ({ accessLevelId, accessLevelCreated }) => {
   if (accessLevelId !== accessLevelCreated._id) {
     throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.errorId);
@@ -145,7 +166,18 @@ const updateAccessLevel = async ({ accessLevelId, accessLevelCreated }) => {
 
   if (!accessLevel) {
     throw new CustomAPIError.NotFoundError(
-      utilsFunctions.textResponseFormat(accessLevelName, SHORTTEXTREPONSE.notFound),
+      utilsFunctions.textResponseFormat(
+        accessLevelName,
+        SHORTTEXTREPONSE.notFound,
+      ),
+    );
+  }
+
+  const isAccessLevelActive = await statusUtils.isActive(accessLevel.statusId);
+
+  if (!isAccessLevelActive) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(accessLevelName, SHORTTEXTREPONSE.userDeleted),
     );
   }
 
