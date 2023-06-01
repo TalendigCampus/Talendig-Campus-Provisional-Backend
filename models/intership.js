@@ -3,7 +3,7 @@ const validator = require('validator');
 
 const intershipSchema = new mongoose.Schema({
     institutionId:{
-        type: String,
+        type: mongoose.Types.ObjectId,
         required: [true, 'Por favor de digitar idiomas'],
     },
         groupName:{
@@ -17,10 +17,10 @@ const intershipSchema = new mongoose.Schema({
         description: {
             type: String,
             required: [true, 'Por favor de digitar descripcion del grupo'],
-            maxlength: 200,
+            maxlength: 300,
         },
         statusId:{
-            type: String,
+            type: mongoose.Types.ObjectId,
             required: [true, 'Por favor de digitar'],
         },
 },

@@ -8,7 +8,15 @@ const TitleSchema = new mongoose.Schema(
       minlength: 3,
       trim: true,
     },
+
+    statusId: {
+      type: mongoose.Types.ObjectId,
+      trim: true,
+      ref: 'Status',
+      required: [true, 'Por favor, coloque un estado'],
+    },
   },
+
   { timestamps: true },
 );
 

@@ -12,6 +12,13 @@ const TechnologySchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+
+    statusId: {
+      type: mongoose.Types.ObjectId,
+      trim: true,
+      ref: 'Status',
+      required: [true, 'Por favor, coloque un estado'],
+    },
   },
   { timestamps: true },
 );
