@@ -3090,13 +3090,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TalentInstructor'
+              $ref: '#/components/schemas/TalentInstructorCreated'
           application/xml:
             schema:
-              $ref: '#/components/schemas/TalentInstructor'
+              $ref: '#/components/schemas/TalentInstructorCreated'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/TalentInstructor'
+              $ref: '#/components/schemas/TalentInstructorCreated'
         description: Update an existent talent instructor in the store
         required: true
       responses:
@@ -10905,6 +10905,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/TalentInstructor'
       - $ref: '#/components/schemas/AdministratorCreated_allOf'
+      - $ref: '#/components/schemas/StatusId_allOf'
     TalentInstructorPagination:
       example:
         filter:
@@ -10968,6 +10969,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/TalentInstitution'
       - $ref: '#/components/schemas/AdministratorCreated_allOf'
+      - $ref: '#/components/schemas/StatusId_allOf'
     TalentInstitutionPagination:
       example:
         filter:
