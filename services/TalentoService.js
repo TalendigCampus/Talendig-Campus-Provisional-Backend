@@ -1,9 +1,11 @@
+/* eslint-disable max-len */
 const { StatusCodes } = require('http-status-codes');
-// const Service = require('./Service');
 const CustomAPIError = require('../errors/index');
 const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
 const {
-  userUtils, Pagination, utilsFunctions, talentUtils, recruiterUtils, statusUtils,
+  Pagination, userUtils, utilsFunctions, talentUtils, recruiterUtils, statusUtils,
+  institutionUtils, instructorUtils, bootcampUtils, assignmentUtils, fileUtils,
+  talentAssignmentUtils,
 } = require('../utils/index');
 const TalentSchema = require('../models/talent');
 const TalentRecruiterSchema = require('../models/talentRecruiter');
@@ -309,6 +311,17 @@ const deleteATalentInstructorRecommendationById = async ({ talentInstructorId })
     );
   }
 
+  const isTalentInstructorActive = await statusUtils.isActive(talentInstructor.statusId);
+
+  if (!isTalentInstructorActive) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(
+        talentInstructorName,
+        SHORTTEXTREPONSE.notFound,
+      ),
+    );
+  }
+
   const statusId = await statusUtils.getStatusIdByName('inactive');
   const talentInstructorDeleted = await TalentInstructorSchema
     .updateOne({ _id: talentInstructorId }, { statusId });
@@ -344,6 +357,17 @@ const deleteTalentRecruiterProcess = async ({ talentRecruiterId }) => {
     );
   }
 
+  const isTalentRecruiterActive = await statusUtils.isActive(talentRecruiter.statusId);
+
+  if (!isTalentRecruiterActive) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(
+        talentRecruiterName,
+        SHORTTEXTREPONSE.notFound,
+      ),
+    );
+  }
+
   const statusId = await statusUtils.getStatusIdByName('inactive');
   const talentRecruiterDeleted = await TalentRecruiterSchema
     .updateOne({ _id: talentRecruiterId }, { statusId });
@@ -371,6 +395,17 @@ const deleteAllTalentinstitutionProcess = async ({ talentInstitutionId }) => {
   const talentInstitution = await TalentInstitutionSchema.findById(talentInstitutionId);
 
   if (!talentInstitution) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(
+        talentInstitutionName,
+        SHORTTEXTREPONSE.notFound,
+      ),
+    );
+  }
+
+  const isTalentInstitutionActive = await statusUtils.isActive(talentInstitution.statusId);
+
+  if (!isTalentInstitutionActive) {
     throw new CustomAPIError.NotFoundError(
       utilsFunctions.textResponseFormat(
         talentInstitutionName,
@@ -443,6 +478,17 @@ const deleteTalentAssingment = async ({ talentAssignmentId }) => {
     );
   }
 
+  const isTalentAssignmentActive = await statusUtils.isActive(talentAssignment.statusId);
+
+  if (!isTalentAssignmentActive) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(
+        talentAssignmentName,
+        SHORTTEXTREPONSE.notFound,
+      ),
+    );
+  }
+
   const statusId = await statusUtils.getStatusIdByName('inactive');
   const talentAssignmentDeleted = await TalentAssignmentSchema
     .updateOne({ _id: talentAssignmentId }, { statusId });
@@ -470,6 +516,17 @@ const deleteTalentAssingmentFile = async ({ talentAssignmentFileId }) => {
   const talentAssignmentFile = await TalentAssignmentFileSchema.findById(talentAssignmentFileId);
 
   if (!talentAssignmentFile) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(
+        talentAssignmentFileName,
+        SHORTTEXTREPONSE.notFound,
+      ),
+    );
+  }
+
+  const isTalentAssignmentFileActive = await statusUtils.isActive(talentAssignmentFile.statusId);
+
+  if (!isTalentAssignmentFileActive) {
     throw new CustomAPIError.NotFoundError(
       utilsFunctions.textResponseFormat(
         talentAssignmentFileName,
@@ -513,6 +570,17 @@ const deleteTalentBootcamp = async ({ talentBootcampId }) => {
     );
   }
 
+  const isTalentBootcampActive = await statusUtils.isActive(talentBootcamp.statusId);
+
+  if (!isTalentBootcampActive) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(
+        talentBootcampName,
+        SHORTTEXTREPONSE.notFound,
+      ),
+    );
+  }
+
   const statusId = await statusUtils.getStatusIdByName('inactive');
   const talentBootcampDeleted = await TalentBootcampSchema
     .updateOne({ _id: talentBootcampId }, { statusId });
@@ -540,6 +608,14 @@ const getATalentInstructorRecommendationById = async ({ talentInstructorId }) =>
   const talentInstructor = await TalentInstructorSchema.findById(talentInstructorId);
 
   if (!talentInstructor) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(talentInstructorName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  const isTalentInstructorActive = await statusUtils.isActive(talentInstructor.statusId);
+
+  if (!isTalentInstructorActive) {
     throw new CustomAPIError.NotFoundError(
       utilsFunctions.textResponseFormat(talentInstructorName, SHORTTEXTREPONSE.notFound),
     );
@@ -823,6 +899,14 @@ const getSingleTalentBootcamp = async ({ talentBootcampId }) => {
     );
   }
 
+  const isTalentBootcampActive = await statusUtils.isActive(talentBootcamp.statusId);
+
+  if (!isTalentBootcampActive) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(talentBootcampName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
   const talent = await talentUtils.isTalentActive(talentBootcamp.talentId);
 
   if (!talent) {
@@ -858,6 +942,14 @@ const getTalentAssingmentById = async ({ talentAssignmentId }) => {
   const talentAssignment = await TalentAssignmentSchema.findById(talentAssignmentId);
 
   if (!talentAssignment) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(talentAssignmentName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  const isTalentAssignmentActive = await statusUtils.isActive(talentAssignment.statusId);
+
+  if (!isTalentAssignmentActive) {
     throw new CustomAPIError.NotFoundError(
       utilsFunctions.textResponseFormat(talentAssignmentName, SHORTTEXTREPONSE.notFound),
     );
@@ -904,6 +996,14 @@ const getTalentAssingmentFileById = async ({ talentAssignmentFileId }) => {
   const talentAssignmentFile = await TalentAssignmentFileSchema.findById(talentAssignmentFileId);
 
   if (!talentAssignmentFile) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(talentAssignmentFileName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  const isTalentAssignmentFileActive = await statusUtils.isActive(talentAssignmentFile.statusId);
+
+  if (!isTalentAssignmentFileActive) {
     throw new CustomAPIError.NotFoundError(
       utilsFunctions.textResponseFormat(talentAssignmentFileName, SHORTTEXTREPONSE.notFound),
     );
@@ -979,6 +1079,14 @@ const getTalentRecruiterProcessById = async ({ talentRecruiterId }) => {
     );
   }
 
+  const isTalentRecruiterActive = await statusUtils.isActive(talentRecruiter.statusId);
+
+  if (!isTalentRecruiterActive) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(talentRecruiterName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
   const talent = await talentUtils.isTalentActive(talentRecruiter.talentId);
 
   if (!talent) {
@@ -1014,6 +1122,14 @@ const getTalentinstitutionProcessById = async ({ talentInstitutionId }) => {
   const talentInstitution = await TalentInstitutionSchema.findById(talentInstitutionId);
 
   if (!talentInstitution) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(talentInstitutionName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  const isTalentInstitutionActive = await statusUtils.isActive(talentInstitution.statusId);
+
+  if (!isTalentInstitutionActive) {
     throw new CustomAPIError.NotFoundError(
       utilsFunctions.textResponseFormat(talentInstitutionName, SHORTTEXTREPONSE.notFound),
     );
@@ -1059,6 +1175,14 @@ const updateATalentInstructorRecommendationById = async ({ talentInstructorId, t
   const talentInstructor = await TalentInstructorSchema.findById(talentInstructorId);
 
   if (!talentInstructor) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(talentInstructorName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  const isTalentInstructorActive = await statusUtils.isActive(talentInstructor.statusId);
+
+  if (!isTalentInstructorActive) {
     throw new CustomAPIError.NotFoundError(
       utilsFunctions.textResponseFormat(talentInstructorName, SHORTTEXTREPONSE.notFound),
     );
@@ -1164,6 +1288,14 @@ const updateTalentAssignment = async ({ talentAssignmentId, talentAssignmentCrea
     );
   }
 
+  const isTalentAssignmentActive = await statusUtils.isActive(talentAssignment.statusId);
+
+  if (!isTalentAssignmentActive) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(talentAssignmentName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
   const talent = await talentUtils.isTalentActive(talentAssignment.talentId);
 
   if (!talent) {
@@ -1219,6 +1351,14 @@ const updateTalentAssignmentFile = async ({ talentAssignmentFileId, talentAssign
     );
   }
 
+  const isTalentAssignmentFileActive = await statusUtils.isActive(talentAssignmentFile.statusId);
+
+  if (!isTalentAssignmentFileActive) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(talentAssignmentFileName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
   const talentAssignment = await talentAssignmentUtils.isTalentAssignmentActive(talentAssignmentFile.talentAssignmentId);
 
   if (!talentAssignment) {
@@ -1227,7 +1367,7 @@ const updateTalentAssignmentFile = async ({ talentAssignmentFileId, talentAssign
     ));
   }
 
-  const file = await filetUtils.isFileActive(talentAssignmentFile.fileId); // Terminar cuando el schema assignment este creado.
+  const file = await fileUtils.isFileActive(talentAssignmentFile.fileId); // Terminar cuando el schema assignment este creado.
 
   if (!file) {
     throw new CustomAPIError.BadRequestError(utilsFunctions.textResponseFormat(
@@ -1269,6 +1409,14 @@ const updateTalentBootcamp = async ({ talentBootcampId, talentBootcampCreated })
   const talentBootcamp = await TalentBootcampSchema.findById(talentBootcampId);
 
   if (!talentBootcamp) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(talentBootcampName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  const isTalentBootcampActive = await statusUtils.isActive(talentBootcamp.statusId);
+
+  if (!isTalentBootcampActive) {
     throw new CustomAPIError.NotFoundError(
       utilsFunctions.textResponseFormat(talentBootcampName, SHORTTEXTREPONSE.notFound),
     );
@@ -1329,6 +1477,14 @@ const updateTalentRecruiterProcess = async ({ talentRecruiterId, talentRecruiter
     );
   }
 
+  const isTalentRecruiterActive = await statusUtils.isActive(talentRecruiter.statusId);
+
+  if (!isTalentRecruiterActive) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(talentRecruiterName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
   const talent = await talentUtils.isTalentActive(talentRecruiter.talentId);
 
   if (!talent) {
@@ -1379,6 +1535,14 @@ const updateTalentinstitutionProcess = async ({ talentInstitutionId, talentInsti
   const talentInstitution = await TalentInstitutionSchema.findById(talentInstitutionId);
 
   if (!talentInstitution) {
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(talentInstitutionName, SHORTTEXTREPONSE.notFound),
+    );
+  }
+
+  const isTalentInstitutionActive = await statusUtils.isActive(talentInstitution.statusId);
+
+  if (!isTalentInstitutionActive) {
     throw new CustomAPIError.NotFoundError(
       utilsFunctions.textResponseFormat(talentInstitutionName, SHORTTEXTREPONSE.notFound),
     );

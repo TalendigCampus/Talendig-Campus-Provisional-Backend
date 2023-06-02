@@ -10,7 +10,7 @@ const isTalentActive = async (talentId) => {
     return false;
   }
 
-  const status = await isUserActive(talent.statusId);
+  const status = await isUserActive(talentId);
 
   return status;
 };

@@ -10,7 +10,20 @@ const getUserByInstitutionId = async (institutionId) => {
   return userFunctions.getUserById(institution.userId);
 };
 
+const isInstitutionActive = async (institutionId) => {
+  const institution = await getInstitutionById(institutionId);
+
+  if (!institution) {
+    return false;
+  }
+
+  const status = await userFunctions.isUserActive(institutionId);
+
+  return status;
+};
+
 module.exports = {
-    getInstitutionById,
+  getInstitutionById,
   getUserByInstitutionId,
+  isInstitutionActive,
 };

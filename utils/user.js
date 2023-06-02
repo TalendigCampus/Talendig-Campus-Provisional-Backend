@@ -27,9 +27,7 @@ const isUserActive = async (userId) => {
     return false;
   }
 
-  const status = await statusFunctions.getStatusById(user.statusId);
-
-  return status.name === 'active';
+  return statusFunctions.isActive(user.statusId);
 };
 
 module.exports = {

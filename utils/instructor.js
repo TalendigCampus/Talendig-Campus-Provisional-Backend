@@ -10,7 +10,20 @@ const getUserByInstructorId = async (instructorId) => {
   return userFunctions.getUserById(instructor.userId);
 };
 
+const isRecruiterActive = async (institutionId) => {
+  const institution = await getInstructorById(institutionId);
+
+  if (!institution) {
+    return false;
+  }
+
+  const status = await userFunctions.isUserActive(institutionId);
+
+  return status;
+};
+
 module.exports = {
   getInstructorById,
   getUserByInstructorId,
+  isRecruiterActive,
 };

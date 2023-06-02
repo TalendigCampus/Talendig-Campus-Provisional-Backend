@@ -10,14 +10,14 @@ const getUserByRecruiterId = async (recruiterId) => {
   return userFunctions.getUserById(recruiter.userId);
 };
 
-const isRecruiterActive = async (talentId) => {
-  const recruiter = await getRecruiterById(talentId);
+const isRecruiterActive = async (recruiterId) => {
+  const recruiter = await getRecruiterById(recruiterId);
 
   if (!recruiter) {
     return false;
   }
 
-  const status = await userFunctions.isUserActive(recruiter.statusId);
+  const status = await userFunctions.isUserActive(recruiterId);
 
   return status;
 };
