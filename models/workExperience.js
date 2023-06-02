@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const WorkExperienceSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Types.ObjectId,
+    ref: 'User',
+    required: [true, 'Por favor, agregar ID al que le pertenece el reclutador'],
+  },
   title: {
     type: String,
     required: [true, 'Por favor, digite un titulo'],

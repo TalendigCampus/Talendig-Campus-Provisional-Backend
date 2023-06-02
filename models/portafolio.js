@@ -10,13 +10,9 @@ const portfolioSchema = new mongoose.Schema({
             type: mongoose.Types.ObjectId,
             required: [true, 'Por favor de digitar projectId'],
         },
-        createdDate:{
-            type: Date,
-            required: [true, 'Por favor de digitar fecha cuando fue creado'],
-        },
-        modifiedDate:{
-            type: Date,
-            required: [true, 'Por favor de digitar fecha cuando fue modificaado'],
+        statusId:{
+            type: mongoose.Types.ObjectId,
+            required: [true, 'Por favor de digitar'],
         },
 },
     {timestamps: true}
