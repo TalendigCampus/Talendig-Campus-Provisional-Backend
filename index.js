@@ -5,6 +5,9 @@ const config = require('./config');
 const logger = require('./logger');
 const ExpressServer = require('./expressServer');
 
+const { NODE_ENV, MONGO_URI, MONGO_URI_TEST } = process.env;
+const conexionString = NODE_ENV === 'test' ? MONGO_URI_TEST : MONGO_URI;
+
 const launchServer = async () => {
   try {
     this.expressServer = new ExpressServer(
@@ -22,10 +25,9 @@ const launchServer = async () => {
 const start = async () => {
   try {
     launchServer().catch((e) => logger.error(e));
-    await connectDB(process.env.MONGO_URI);
+    await connectDB(conexionString);
   } catch (error) {
     console.log(error);
   }
 };
-
 start();

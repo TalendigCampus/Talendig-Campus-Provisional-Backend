@@ -104,6 +104,10 @@ const getSingleStatus = async ({ statusId }) => {
 const getStatus = async ({ statusPagination }) => {
   const { filter, pagination } = statusPagination;
 
+  if (!pagination) {
+    throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.noBodyRequest);
+  }
+
   const paginationClass = new Pagination(pagination);
   let queryPagination = paginationClass.queryPagination();
 

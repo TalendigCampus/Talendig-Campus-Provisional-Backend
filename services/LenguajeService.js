@@ -90,6 +90,10 @@ const deleteLanguage = async ({ languageId }) => {
 const getLanguages = async ({ languagePagination }) => {
   const { filter, pagination } = languagePagination;
 
+  if (!pagination) {
+    throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.noBodyRequest);
+  }
+
   const paginationClass = new Pagination(pagination);
   let queryPagination = paginationClass.queryPagination();
 

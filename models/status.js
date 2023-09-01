@@ -1,13 +1,16 @@
-const mongoose = require('mongoose');
+const { Schema, model } = require('mongoose');
 
-const StatusSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'Por favor, coloque un nombre'],
-    minlength: 3,
-    trim: true,
-    unique: true,
+const StatusSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: [true, 'Por favor, coloque un nombre'],
+      minlength: 3,
+      trim: true,
+      unique: true,
+    },
   },
-}, { timestamps: true });
+  { timestamps: true, versionKey: false },
+);
 
-module.exports = mongoose.model('Status', StatusSchema);
+module.exports = model('Status', StatusSchema);
