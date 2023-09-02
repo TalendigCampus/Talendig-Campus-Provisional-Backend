@@ -61,7 +61,7 @@ class Controller {
     let uploadedFileName = '';
     if (request.files && request.files.length > 0) {
       const fileObject = request.files.find(
-        (file) => file.fieldname === fieldName
+        (file) => file.fieldname === fieldName,
       );
       if (fileObject) {
         const fileArray = fileObject.originalname.split('.');
@@ -70,7 +70,7 @@ class Controller {
         uploadedFileName = `${fileArray.join('')}.${extension}`;
         fs.renameSync(
           path.join(config.FILE_UPLOAD_PATH, fileObject.filename),
-          path.join(config.FILE_UPLOAD_PATH, uploadedFileName)
+          path.join(config.FILE_UPLOAD_PATH, uploadedFileName),
         );
       }
     }
@@ -112,7 +112,7 @@ class Controller {
             } else {
               requestParams[property] = request.body[property];
             }
-          }
+          },
         );
       }
     }
@@ -132,7 +132,7 @@ class Controller {
   static async handleRequest(request, response, serviceOperation) {
     try {
       const serviceResponse = await serviceOperation(
-        this.collectRequestParams(request)
+        this.collectRequestParams(request),
       );
       Controller.sendResponse(response, serviceResponse);
     } catch (error) {
