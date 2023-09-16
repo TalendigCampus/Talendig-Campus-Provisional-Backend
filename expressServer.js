@@ -53,7 +53,6 @@ class ExpressServer {
       res.json(req.query);
     });
     this.app.post('/regimen-etico', async (req, res) => {
-      console.log('Pasaste');
       const { userId } = req.body;
       const { instructorId } = req.body;
 
