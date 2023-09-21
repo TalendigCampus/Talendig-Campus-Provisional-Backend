@@ -14,6 +14,7 @@ const SHORTTEXTREPONSE = {
   errorId: 'El id de la ruta no coincide con el id en el cuerpo.',
   userNotFound: '{placeholder} no se encuentra.',
   userDeleted: '{placeholder} esta inactivo.',
+  notId: 'Id no proporcionado',
 };
 
 module.exports = {

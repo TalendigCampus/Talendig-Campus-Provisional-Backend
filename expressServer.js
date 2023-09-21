@@ -2,6 +2,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const { StatusCodes } = require('http-status-codes');
 const swaggerUI = require('swagger-ui-express');
 const jsYaml = require('js-yaml');
 const express = require('express');
@@ -11,6 +12,7 @@ const bodyParser = require('body-parser');
 const { OpenApiValidator } = require('express-openapi-validator');
 const logger = require('./logger');
 const config = require('./config');
+const RegimenEticoService = require('./services/RegimenEticoService');
 
 class ExpressServer {
   constructor(port, openApiYaml) {
@@ -50,6 +52,20 @@ class ExpressServer {
     this.app.get('/oauth2-redirect.html', (req, res) => {
       res.status(200);
       res.json(req.query);
+    });
+    this.app.post('/regimen-etico', async (req, res) => {
+      const { userId } = req.body;
+      const { instructorId } = req.body;
+
+      const { CrearRegimenEtico, EncontrarUsuarios } = RegimenEticoService;
+      try {
+        await EncontrarUsuarios(userId, instructorId);
+        const respuesta = await CrearRegimenEtico({ formulario: req.body });
+
+        res.status(StatusCodes.CREATED).json(respuesta);
+      } catch (error) {
+        res.status(500).json(error);
+      }
     });
   }
 
