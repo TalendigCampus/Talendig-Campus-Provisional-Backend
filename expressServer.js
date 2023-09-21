@@ -53,7 +53,7 @@ class ExpressServer {
       res.status(200);
       res.json(req.query);
     });
-    this.app.post('/regimen-etico', async (req, res) => {
+    this.app.post('/api/v1/regimen-etico', async (req, res) => {
       const { userId } = req.body;
       const { instructorId } = req.body;
 
@@ -74,10 +74,9 @@ class ExpressServer {
       apiSpec: this.openApiPath,
       operationHandlers: path.join(__dirname),
       fileUploader: { dest: config.FILE_UPLOAD_PATH },
-    })
-      .install(this.app)
-      .catch((e) => console.log(e))
-      .then(async () => {
+    }).install(this.app)
+      .catch(e => console.log(e))
+      .then(() => {
         // eslint-disable-next-line no-unused-vars
         this.app.use((err, req, res, next) => {
           // format errors
@@ -93,8 +92,12 @@ class ExpressServer {
       });
   }
 
-  async close({ server = this.httpServer }) {
-    await server.closeAllConnections();
+
+  async close() {
+    if (this.server !== undefined) {
+      await this.server.close();
+      console.log(`Server on port ${this.port} shut down`);
+    }
   }
 }
 
