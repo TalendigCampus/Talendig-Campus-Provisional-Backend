@@ -42,7 +42,7 @@ describe('API endpoint regimen-etico', () => {
     const { body } = await api
       .post(`${base_url}/regimen-etico`)
       .send({ ...instructorBody, userId: '' })
-      .expect(404); // !error se esperaba 400 y responde con 500
+      .expect(404); // !error se esperaba 404 y responde con 500
 
     console.log(body);
   });
