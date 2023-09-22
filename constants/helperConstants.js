@@ -15,6 +15,8 @@ const SHORTTEXTREPONSE = {
   userNotFound: '{placeholder} no se encuentra.',
   userDeleted: '{placeholder} esta inactivo.',
   notId: 'Id no proporcionado',
+  badRequest:
+    '{placeholder} no es un valor válido, revise alguna de las puntuaciones de la evaluación',
 };
 
 module.exports = {
