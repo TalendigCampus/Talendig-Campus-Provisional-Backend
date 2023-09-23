@@ -42,14 +42,51 @@ const EncontrarUsuarios = async (userId, instructorId) => {
 
 const CrearRegimenEtico = async ({ formulario }) => {
   try {
+    const {
+      userId,
+      instructorId,
+      lealtad,
+      transparencia,
+      colaboracion,
+      relaciones_interpersonales,
+      cumplimiento_normas,
+    } = formulario;
+
+    const suma_puntuacion =
+      lealtad +
+      transparencia +
+      colaboracion +
+      relaciones_interpersonales +
+      cumplimiento_normas;
+
+    if (
+      lealtad > 3 ||
+      transparencia > 3 ||
+      colaboracion > 3 ||
+      relaciones_interpersonales > 3 ||
+      cumplimiento_normas > 3
+    ) {
+      return {
+        code: StatusCodes.BAD_REQUEST,
+        payload: {
+          hasError: true,
+          message: utilsFunctions.textResponseFormat(
+            `${suma_puntuacion}`,
+            SHORTTEXTREPONSE.badRequest,
+          ),
+          content: formulario,
+        },
+      };
+    }
     const newRegimen = new RegimenEtico({
-      userId: formulario.userId,
-      instructorId: formulario.instructorId,
-      lealtad: formulario.lealtad,
-      transparencia: formulario.transparencia,
-      colaboracion: formulario.colaboracion,
-      relaciones_interpersonales: formulario.relaciones_interpersonales,
-      cumplimiento_normas: formulario.cumplimiento_normas,
+      userId,
+      instructorId,
+      lealtad,
+      transparencia,
+      colaboracion,
+      relaciones_interpersonales,
+      cumplimiento_normas,
+      suma_puntuacion,
     });
 
     newRegimen.save();

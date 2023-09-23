@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
+const { Schema, Types, model } = require('mongoose');
 
-const regimenEticoSchema = new mongoose.Schema(
+const regimenEticoSchema = new Schema(
   {
     userId: {
-      type: mongoose.Types.ObjectId,
+      type: Types.ObjectId,
       ref: 'User',
       required: [
         true,
@@ -11,7 +11,7 @@ const regimenEticoSchema = new mongoose.Schema(
       ],
     },
     instructorId: {
-      type: mongoose.Types.ObjectId,
+      type: Types.ObjectId,
       ref: 'Instructor',
       required: [
         true,
@@ -63,8 +63,14 @@ const regimenEticoSchema = new mongoose.Schema(
         'Porfavor, introduzca un valor del 0 al 3 en este campo',
       ],
     },
+    suma_puntuacion: {
+      type: Number,
+      min: 0,
+      max: 15,
+      required: [true, 'Porfavor, introduzca la suma de los demás campos'],
+    },
   },
   { timestamps: true },
 );
 
-module.exports = mongoose.model('RegimenEtico', regimenEticoSchema);
+module.exports = model('RegimenEtico', regimenEticoSchema);

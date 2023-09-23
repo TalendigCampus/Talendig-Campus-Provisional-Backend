@@ -9,10 +9,10 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const { OpenApiValidator } = require('express-openapi-validator');
+const { OpenApiValidator, BadRequest } = require('express-openapi-validator');
 const logger = require('./logger');
 const config = require('./config');
-const RegimenEticoService = require('./services/RegimenEticoService');
+const routes = require('./routes/main-router');
 
 class ExpressServer {
   constructor(port, openApiYaml) {
@@ -53,20 +53,7 @@ class ExpressServer {
       res.status(200);
       res.json(req.query);
     });
-    this.app.post('/api/v1/regimen-etico', async (req, res) => {
-      const { userId } = req.body;
-      const { instructorId } = req.body;
-
-      const { CrearRegimenEtico, EncontrarUsuarios } = RegimenEticoService;
-      try {
-        await EncontrarUsuarios(userId, instructorId);
-        const respuesta = await CrearRegimenEtico({ formulario: req.body });
-
-        res.status(StatusCodes.CREATED).json(respuesta);
-      } catch (error) {
-        res.status(500).json(error);
-      }
-    });
+    this.app.use('/api/v1', routes);
   }
 
   launch() {
