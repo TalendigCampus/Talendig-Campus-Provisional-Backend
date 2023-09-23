@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 const { StatusCodes } = require('http-status-codes');
 const User = require('../models/user');
 const Instructor = require('../models/instructor');

@@ -27,7 +27,7 @@ describe('API endpoint regimen-etico', () => {
       .expect('Content-Type', /application\/json/)
       .expect(201);
   });
-  test('el nuevo regimen debe retornarse en formato json', async () => {
+  test('el nuevo regimen debe retornarse en formato json y tener la puntuacion total', async () => {
     const { body: regimen } = await api
       .post(`${base_url}/regimen-etico`)
       .send({ ...instructorBody, lealtad: 3 });
@@ -36,26 +36,27 @@ describe('API endpoint regimen-etico', () => {
     // const newArr = content.map((rgm) => rgm.lealtad);
     // console.log(regimen);
     expect(payload.content.lealtad).toBe(3);
+    expect(payload.content.suma_puntuacion).toBe(7);
   });
 
   test('deberia dar error al no encontrar el usuario o instuctor', async () => {
     const { body } = await api
       .post(`${base_url}/regimen-etico`)
       .send({ ...instructorBody, userId: '' })
-      .expect(404); // !error se esperaba 404 y responde con 500
+      .expect(400);
 
     console.log(body);
   });
 
   test('deberia dar error al no poner la informacion requerida', async () => {
-    await api.post(`${base_url}/regimen-etico`).send({}).expect(400); // !error se esperaba 400 y responde con 500
+    await api.post(`${base_url}/regimen-etico`).send({}).expect(400);
   });
 
   test('deberia dar error al poner informacion erronea', async () => {
     await api
       .post(`${base_url}/regimen-etico`)
       .send({ ...instructorBody, lealtad: 4 })
-      .expect(400); // ! error se esperaba 400 y responde con 201
+      .expect(400);
   });
 });
 
