@@ -20,4 +20,16 @@ router.post('/regimen-etico', async (req, res) => {
   }
 });
 
+router.post('/logro-metas', async (req, res) => {
+  const { EncontrarUsuarios } = RegimenEticoService;
+  const { userId, instructorId } = req.body;
+
+  try {
+    await EncontrarUsuarios(userId, instructorId);
+  } catch (error) {
+    if (error instanceof CustomAPIError) return res.status(400).json(error);
+    return res.status(500).json(error);
+  }
+});
+
 module.exports = router;
