@@ -29,8 +29,22 @@ const instructorBody = {
   relaciones_interpersonales: 0,
   cumplimiento_normas: 3,
 };
+
+const aspectoMejoraBody = {
+  userId: '650c566d33d491669553127b',
+  instructorId: '650c5e97733fc0d37b8bbb3b',
+  puntos_fuertes: ['hola mundo', 'hello world', 'good', 'great'],
+  areas_mejora: ['Awesome', 'Amazing', 'Not found'],
+  comentarios: ['first comment', 'Second comment', 'Third Comment'],
+  condicion_trabajo: ['condicion1', 'condicion2', 'condicion3'],
+  firmaEvaluador: 'http://google.com',
+  firmaServidor: 'http://google.com',
+  calificacion_plan_mejora: true,
+};
+
 module.exports = {
   initialStatus,
   initialLanguages,
   instructorBody,
+  aspectoMejoraBody,
 };
