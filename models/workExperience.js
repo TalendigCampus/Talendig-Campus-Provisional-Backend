@@ -39,11 +39,6 @@ const WorkExperienceSchema = new mongoose.Schema({
       required: [true, 'Por favor, digite un numero telefonico'],
       trim: true,
     },
-    address: {
-      type: [mongoose.Types.ObjectId],
-      ref: 'Address',
-      required: [true, 'Por favor seleccione una direccion'],
-    },
   },
 });
 

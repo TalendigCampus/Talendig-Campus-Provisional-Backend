@@ -5,6 +5,7 @@ const router = Router();
 const RegimenEticoService = require('../services/RegimenEticoService');
 const CustomAPIError = require('../errors/custom-api');
 const CrearAspectoMejora = require('../services/AspectoMejoraService');
+const crearLogroMetas = require('../services/LogroMetasService');
 
 router.post('/regimen-etico', async (req, res) => {
   const { userId } = req.body;
@@ -18,7 +19,24 @@ router.post('/regimen-etico', async (req, res) => {
     return res.status(respuesta.code).json(respuesta);
   } catch (error) {
     if (error instanceof CustomAPIError) return res.status(400).json(error);
-    res.status(404).json(error);
+    return res.status(404).json(error);
+  }
+});
+
+router.post('/logro-metas', async (req, res) => {
+  const { EncontrarUsuarios } = RegimenEticoService;
+  const { userId, instructorId } = req.body;
+
+  try {
+    const find = await EncontrarUsuarios(userId, instructorId);
+    if (find) {
+      const response = await crearLogroMetas({ formulario: req.body });
+      return res.status(response.code).json(response);
+    }
+    return res.status(400).json(false);
+  } catch (error) {
+    if (error instanceof CustomAPIError) return res.status(400).json(error);
+    return res.status(500).json(error);
   }
 });
 

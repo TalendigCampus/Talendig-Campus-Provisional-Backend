@@ -42,9 +42,28 @@ const aspectoMejoraBody = {
   calificacion_plan_mejora: true,
 };
 
+
+const logroMetasBody = {
+  userId: '650c566d33d491669553127b',
+  instructorId: '650c5e97733fc0d37b8bbb3b',
+  institucion: '65296fbb7189553d2356fe42',
+  firmaServidor: 'http://google.com',
+  firmaSupervisor: 'http://google.com',
+  indicadorCuando: ['asdas', 'abc', 'hola'],
+  indicadorCuanto: ['hello', 'world'],
+  metas: ['hola', 'mundo'],
+  observaciones: ['observacion1', 'observacion2'],
+  ponderacion: [30, 35],
+  unidadOrganizativa: 'Talendig',
+  calificacion: [30, 25],
+  cargoSupervisor: 'Profesor',
+  cargoServidor: 'Estudiante',
+};
+
 module.exports = {
   initialStatus,
   initialLanguages,
   instructorBody,
   aspectoMejoraBody,
+  logroMetasBody,
 };
