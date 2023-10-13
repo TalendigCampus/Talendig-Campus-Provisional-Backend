@@ -1,14 +1,18 @@
 const { Schema, model, Types } = require('mongoose');
+const validator = require('validator');
 
 const LogroMetasSchema = new Schema(
   {
     institucion: {
       type: Types.ObjectId,
-      required: true,
+      ref: 'institutions',
+      required: [true, 'Favor de ingresar la institucion'],
     },
+
     periodo: {
       type: Date,
       required: true,
+      default: Date.now(),
     },
 
     unidadOrganizativa: {
@@ -42,25 +46,56 @@ const LogroMetasSchema = new Schema(
       type: String,
       required: [true, 'favor de introducir su cargo actual'],
     },
-    metas: {
-      type: String,
-      required: [true, 'Favor de introducir sus metas actuales'],
-    },
-    indicadorCuanto: {
+
+    metas: [
+      {
+        type: String,
+        required: [true, 'Favor de introducir sus metas actuales'],
+      },
+    ],
+
+    indicadorCuanto: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
+
+    indicadorCuando: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
+
+    ponderacion: [
+      {
+        type: Number,
+      },
+    ],
+
+    ponderacionTotal: {
       type: Number,
+      required: true,
     },
-    indicadorCuando: {
+
+    calificacion: [
+      {
+        type: Number,
+      },
+    ],
+
+    calificacionTotal: {
       type: Number,
+      required: true,
     },
-    ponderacion: {
-      type: Number,
-    },
-    calificacion: {
-      type: Number,
-    },
-    observaciones: {
-      type: String,
-    },
+
+    observaciones: [
+      {
+        type: String,
+      },
+    ],
+
     fechaEvaluacion: {
       type: Date,
       required: true,
@@ -75,12 +110,26 @@ const LogroMetasSchema = new Schema(
 
     firmaServidor: {
       type: String,
-      required: true,
+      required: [true, 'Favor de ingresar la firma del servidor'],
+      validate: (value) => {
+        if (!validator.default.isURL(value)) {
+          throw new Error(
+            'Error favor de enviar una url valida para firma supervisor',
+          );
+        }
+      },
     },
 
     firmaSupervisor: {
       type: String,
-      required: true,
+      required: [true, 'Favor de ingresar la firma del supervisor'],
+      validate: (value) => {
+        if (!validator.default.isURL(value)) {
+          throw new Error(
+            'Error favor de enviar una url valida para firma supervisor',
+          );
+        }
+      },
     },
   },
   { timestamps: true, versionKey: false },

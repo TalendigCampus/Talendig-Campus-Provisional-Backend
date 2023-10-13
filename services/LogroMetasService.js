@@ -8,12 +8,28 @@ const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
 const { utilsFunctions } = require('../utils');
 
 const crearLogroMetas = async ({ formulario }) => {
+  const {
+    cargoServidor,
+    cargoSupervisor,
+    firmaServidor,
+    firmaSupervisor,
+    indicadorCuando,
+    indicadorCuanto,
+    institucion,
+    instructorId,
+    metas,
+    observaciones,
+    periodo,
+    ponderacion,
+    unidadOrganizativa,
+    userId,
+    calificacion,
+  } = formulario;
+
+  // * calificacion total del formulario
+  const calificacionBase = 65;
   try {
-    const newLogro = new LogroMetas(formulario);
-
-    const save = (await newLogro.save()) || null;
-
-    if (save === null) {
+    if (calificacion.some((item) => item > 65)) {
       return {
         code: StatusCodes.BAD_REQUEST,
         payload: {
@@ -21,10 +37,55 @@ const crearLogroMetas = async ({ formulario }) => {
           message: utilsFunctions.textResponseFormat(
             SHORTTEXTREPONSE.badRequest,
           ),
-          content: formulario,
+          content: 'La calificaion debe ser menor o igual a 65',
         },
       };
     }
+
+    if (ponderacion.reduce((acc, i) => acc + i) !== 65) {
+      return {
+        code: StatusCodes.BAD_REQUEST,
+        payload: {
+          hasError: true,
+          message: utilsFunctions.textResponseFormat(
+            SHORTTEXTREPONSE.badRequest,
+          ),
+          content: 'La evaluacion debe dar como total 65',
+        },
+      };
+    }
+    // * calculo de la ponderacion total
+    const total = calificacion
+      .map((item, i) => item * ponderacion[i])
+      .reduce((acc, i) => acc + i);
+    const ponderacionTotal = Math.round(total / calificacionBase);
+
+    const calificacionTotalSuma = calificacion.reduce((acc, i) => acc + i);
+    const calificacionTotal = calificacionTotalSuma / calificacion.length;
+
+    const newLogro = new LogroMetas({
+      cargoServidor,
+      cargoSupervisor,
+      firmaServidor,
+      firmaSupervisor,
+      indicadorCuando,
+      indicadorCuanto,
+      institucion,
+      instructorId,
+      metas,
+      observaciones,
+      periodo,
+      ponderacion,
+      ponderacionTotal,
+      unidadOrganizativa,
+      userId,
+      calificacion,
+      calificacionTotal,
+    });
+    // console.log(newLogro);
+    newLogro.save();
+    // console.log(save);
+
     return {
       code: StatusCodes.CREATED,
       payload: {
