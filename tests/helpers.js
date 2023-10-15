@@ -42,7 +42,6 @@ const aspectoMejoraBody = {
   calificacion_plan_mejora: true,
 };
 
-
 const logroMetasBody = {
   userId: '650c566d33d491669553127b',
   instructorId: '650c5e97733fc0d37b8bbb3b',
@@ -60,10 +59,23 @@ const logroMetasBody = {
   cargoServidor: 'Estudiante',
 };
 
+const competenciasBody = {
+  proposal: 11.10,
+  continuousImprovement: 0,
+  responsability: 8.25,
+  accurate: 11.10,
+  focus: 2.75,
+  adaptability: 11.10,
+  interest: 11.10,
+  communication: 5.50,
+  quality: 2.75,
+};
+
 module.exports = {
   initialStatus,
   initialLanguages,
   instructorBody,
   aspectoMejoraBody,
   logroMetasBody,
+  competenciasBody,
 };
