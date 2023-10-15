@@ -13,6 +13,7 @@ const { OpenApiValidator, BadRequest } = require('express-openapi-validator');
 const logger = require('./logger');
 const config = require('./config');
 const routes = require('./routes/main-router');
+const calidadRouter = require('./routes/calidadRouter');
 
 class ExpressServer {
   constructor(port, openApiYaml) {
@@ -54,6 +55,7 @@ class ExpressServer {
       res.json(req.query);
     });
     this.app.use('/api/v1', routes);
+    this.app.use('/api/v1', calidadRouter);
   }
 
   launch() {
