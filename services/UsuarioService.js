@@ -1,22 +1,25 @@
 const { StatusCodes } = require('http-status-codes');
-const { isEmail } = require('validator');
+const validator = require('validator');
 // const Service = require('./Service');
 const CustomAPIError = require('../errors/index');
 const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
 const {
-  userUtils, Pagination, statusUtils, utilsFunctions,
+  userUtils,
+  Pagination,
+  statusUtils,
+  utilsFunctions,
 } = require('../utils/index');
 const UserSchema = require('../models/user');
 
 const userName = 'Usuario';
 
 /**
-* Add a new usuario to the store
-* Add a new usuario to the store
-*
-* user User Create a new usuario in the store
-* returns getUserById_200_response
-* */
+ * Add a new usuario to the store
+ * Add a new usuario to the store
+ *
+ * user User Create a new usuario in the store
+ * returns getUserById_200_response
+ * */
 const addUser = async ({ user }) => {
   if (!user) {
     throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.noBodyRequest);
@@ -36,24 +39,28 @@ const addUser = async ({ user }) => {
     code: StatusCodes.CREATED,
     payload: {
       hasError: false,
-      message: utilsFunctions.textResponseFormat(userName, SHORTTEXTREPONSE.created),
+      message: utilsFunctions.textResponseFormat(
+        userName,
+        SHORTTEXTREPONSE.created,
+      ),
       content: userCreated,
     },
   };
 };
 /**
-* Deletes a usuario
-* delete a usuario
-*
-* userId String Usuario id to delete
-* returns EmptyResponse
-* */
+ * Deletes a usuario
+ * delete a usuario
+ *
+ * userId String Usuario id to delete
+ * returns EmptyResponse
+ * */
 const deleteUser = async ({ userId }) => {
   const userExists = await userUtils.getUserById(userId);
 
   if (!userExists) {
-    throw new CustomAPIError.NotFoundError(utilsFunctions
-      .textResponseFormat(userName, SHORTTEXTREPONSE.notFound));
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(userName, SHORTTEXTREPONSE.notFound),
+    );
   }
 
   const statusId = await statusUtils.getStatusIdByName('inactive');
@@ -66,18 +73,21 @@ const deleteUser = async ({ userId }) => {
   return {
     payload: {
       hasError: false,
-      message: utilsFunctions.textResponseFormat(userName, SHORTTEXTREPONSE.deleted),
+      message: utilsFunctions.textResponseFormat(
+        userName,
+        SHORTTEXTREPONSE.deleted,
+      ),
       content: {},
     },
   };
 };
 /**
-* Get all users
-* Get a list of users from the store
-*
-* userPagination UserPagination Get list of users with filter and pagination (optional)
-* returns getAllUsers_200_response
-* */
+ * Get all users
+ * Get a list of users from the store
+ *
+ * userPagination UserPagination Get list of users with filter and pagination (optional)
+ * returns getAllUsers_200_response
+ * */
 const getAllUsers = async ({ userPagination }) => {
   const { filter, pagination } = userPagination;
 
@@ -106,18 +116,19 @@ const getAllUsers = async ({ userPagination }) => {
   };
 };
 /**
-* Find user by ID
-* Returns a single user
-*
-* userId String ID of user to return
-* returns getUserById_200_response
-* */
+ * Find user by ID
+ * Returns a single user
+ *
+ * userId String ID of user to return
+ * returns getUserById_200_response
+ * */
 const getUserById = async ({ userId }) => {
   const user = await userUtils.getUserById(userId);
 
   if (!user) {
-    throw new CustomAPIError.NotFoundError(utilsFunctions
-      .textResponseFormat(userName, SHORTTEXTREPONSE.notFound));
+    throw new CustomAPIError.NotFoundError(
+      utilsFunctions.textResponseFormat(userName, SHORTTEXTREPONSE.notFound),
+    );
   }
 
   return {
@@ -129,47 +140,53 @@ const getUserById = async ({ userId }) => {
   };
 };
 /**
-* Login user
-* Log an user in
-*
-* credentials Credentials Log users in to use the app (optional)
-* returns EmptyResponse
-* */
+ * Login user
+ * Log an user in
+ *
+ * credentials Credentials Log users in to use the app (optional)
+ * returns EmptyResponse
+ * */
 const logInUser = async ({ credentials }) => {
   const { email, password } = credentials;
 
   if (!email || !password) {
-    throw new CustomAPIError.BadRequestError('Todos los campos son obligatorios');
+    throw new CustomAPIError.BadRequestError(
+      'Todos los campos son obligatorios',
+    );
   }
 
-  if (!isEmail(email)) {
+  if (!validator.default.isEmail(email)) {
     throw new CustomAPIError.BadRequestError('Introduzca un correo valido');
   }
 
-  const user = await UserSchema.findOne({ email, password });
+  const user = await UserSchema.findByCredentials(email, password);
 
-  if (!user) {
-    throw new CustomAPIError.NotFoundError('Estas credenciales no coinciden con un usuario registrado');
+  if (user === 'error') {
+    throw new CustomAPIError.NotFoundError(
+      'Estas credenciales no coinciden con un usuario registrado',
+    );
   }
+
+  const token = await user.generateAuthToken();
 
   return {
     payload: {
       hasError: false,
       message: '',
       content: {
-        email: user.email,
-        fullName: `${user.name} ${user.lastName}`,
+        user,
+        token,
       },
     },
   };
 };
 /**
-* Logout user
-* Log an user out
-*
-* userToken String userToken of user that need to be Logged Out
-* returns EmptyResponse
-* */
+ * Logout user
+ * Log an user out
+ *
+ * userToken String userToken of user that need to be Logged Out
+ * returns EmptyResponse
+ * */
 const logOutUser = ({ userToken }) => ({
   payload: {
     hasError: false,
@@ -178,13 +195,13 @@ const logOutUser = ({ userToken }) => ({
   },
 });
 /**
-* Update an existing user
-* Update an existing user by Id
-*
-* userId String userId of user that need to be updated
-* userCreated UserCreated Update an existent user in the store
-* returns getUserById_200_response
-* */
+ * Update an existing user
+ * Update an existing user by Id
+ *
+ * userId String userId of user that need to be updated
+ * userCreated UserCreated Update an existent user in the store
+ * returns getUserById_200_response
+ * */
 const updateUser = async ({ userId, userCreated }) => {
   if (userId !== userCreated._id) {
     throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.errorId);
@@ -203,7 +220,10 @@ const updateUser = async ({ userId, userCreated }) => {
   return {
     payload: {
       hasError: false,
-      message: utilsFunctions.textResponseFormat(userName, SHORTTEXTREPONSE.updated),
+      message: utilsFunctions.textResponseFormat(
+        userName,
+        SHORTTEXTREPONSE.updated,
+      ),
       content: userUpdated,
     },
   };

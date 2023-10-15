@@ -4,17 +4,16 @@ const portfolioSchema = require('../models/portafolio');
 const { textResponseFormat } = require('../utils/utilsFunctions');
 const CustomAPIError = require('../errors/index');
 const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
-const {statusUtils, Pagination} = require('../utils');
+const { statusUtils, Pagination } = require('../utils');
 
 /**
-* Create portfolio
-* Add portfolio
-*
-* portfolio Portfolio Create portfolio (optional)
-* returns createPortfolio_200_response
-* */
+ * Create portfolio
+ * Add portfolio
+ *
+ * portfolio Portfolio Create portfolio (optional)
+ * returns createPortfolio_200_response
+ * */
 const createPortfolio = async ({ portfolio }) => {
-
   const portfolioData = await portfolioSchema.create(portfolio);
   const entityName = 'Portfolio';
 
@@ -33,12 +32,12 @@ const createPortfolio = async ({ portfolio }) => {
   };
 };
 /**
-* delete a portfolio
-* delete a portfolio
-*
-* portfolioId String id of the portfolio
-* returns EmptyResponse
-* */
+ * delete a portfolio
+ * delete a portfolio
+ *
+ * portfolioId String id of the portfolio
+ * returns EmptyResponse
+ * */
 const deleteportfolio = async ({ portfolioId }) => {
   const portfolioExists = await portfolioSchema.findById(portfolioId);
   const entityName = 'Portfolio';
@@ -48,7 +47,10 @@ const deleteportfolio = async ({ portfolioId }) => {
   }
 
   const statusId = await statusUtils.getStatusIdByName('inactive');
-  const portfolioDeleted = await portfolioSchema.updateOne({ _id: portfolioId }, { statusId });
+  const portfolioDeleted = await portfolioSchema.updateOne(
+    { _id: portfolioId },
+    { statusId },
+  );
 
   if (portfolioDeleted.modifiedCount !== 1) {
     return null;
@@ -57,20 +59,19 @@ const deleteportfolio = async ({ portfolioId }) => {
   return {
     payload: {
       hasError: false,
-      message: textResponseFormat(entityName,SHORTTEXTREPONSE.deleted),
+      message: textResponseFormat(entityName, SHORTTEXTREPONSE.deleted),
       content: {},
     },
   };
 };
 /**
-* get a portfolio
-* get a portfolio
-*
-* portfolioId String id of the portfolio
-* returns createPortfolio_200_response
-* */
+ * get a portfolio
+ * get a portfolio
+ *
+ * portfolioId String id of the portfolio
+ * returns createPortfolio_200_response
+ * */
 const getPortfolio = async ({ portfolioId }) => {
-
   const portfolioData = await portfolioSchema.findById(portfolioId);
   const entityName = 'Portfolio';
 
@@ -88,12 +89,12 @@ const getPortfolio = async ({ portfolioId }) => {
   };
 };
 /**
-* Get portfolios
-* Show portfolios
-*
-* portfolioPagination PortfolioPagination Get portfolios (optional)
-* returns getPortfolios_200_response
-* */
+ * Get portfolios
+ * Show portfolios
+ *
+ * portfolioPagination PortfolioPagination Get portfolios (optional)
+ * returns getPortfolios_200_response
+ * */
 const getPortfolios = async ({ portfolioPagination }) => {
   const entityName = 'Portfolio';
 
@@ -110,10 +111,7 @@ const getPortfolios = async ({ portfolioPagination }) => {
   return {
     payload: {
       hasError: false,
-      message: textResponseFormat(
-        entityName,
-        SHORTTEXTREPONSE.found,
-      ),
+      message: textResponseFormat(entityName, SHORTTEXTREPONSE.found),
       content: portfolios,
       pagination: new Pagination(queryPagination),
     },

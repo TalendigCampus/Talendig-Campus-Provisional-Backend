@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcryptjs');
+// eslint-disable-next-line import/no-extraneous-dependencies
+const jwt = require('jsonwebtoken');
 const AddressSchema = require('./commons/address');
 
 const UserSchema = new mongoose.Schema(
@@ -82,10 +85,14 @@ const UserSchema = new mongoose.Schema(
       minlength: 5,
       select: false,
     },
-    verificationToken: {
-      type: String,
-      trim: true,
-    },
+    tokens: [
+      {
+        token: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
     verficationDate: {
       type: Date,
     },
@@ -127,5 +134,45 @@ const UserSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+const User = mongoose.model('User', UserSchema);
 
-module.exports = mongoose.model('User', UserSchema);
+// * auth
+UserSchema.statics.findByCredentials = async (email, pass) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    return 'error';
+  }
+  const isMatch = await bcrypt.compare(pass, user.pass);
+
+  if (!isMatch) {
+    // throw new Error('Incorrect Email or password');
+    return 'error';
+  }
+
+  return user;
+};
+
+// * get token after auth
+UserSchema.methods.generateAuthToken = async () => {
+  const token = jwt.sign(
+    { _id: this._id.toString() },
+    process.env.SECRETJWT || 'TalendigFactory5',
+    { expiresIn: '24h' },
+  );
+
+  this.tokens = this.tokens.concat({ token });
+
+  await this.save();
+
+  return token;
+};
+
+// * encrypt pass
+UserSchema.pre('save', async (next) => {
+  if (this.isModified('pass')) {
+    this.pass = await bcrypt.hash(this.pass, 8);
+  }
+
+  next();
+});
+module.exports = User;

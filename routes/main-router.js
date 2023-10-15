@@ -62,4 +62,22 @@ router.post('/aspecto-mejora', async (req, res) => {
   }
 });
 
+router.post('/login', async (req, res) => {
+  try {
+    req.user.tokens = req.user.tokens.filter(
+      (token) => token.token !== req.token,
+    );
+    await req.user.save();
+    res.status(200).json({
+      payload: {
+        hasError: false,
+        content: 'Se ha cerrado la sesión del usuario',
+      },
+    });
+  } catch (error) {
+    if (error instanceof CustomAPIError) return res.status(400).json(error);
+    return res.status(500).json(error);
+  }
+});
+
 module.exports = router;
