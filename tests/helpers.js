@@ -60,6 +60,8 @@ const logroMetasBody = {
 };
 
 const competenciasBody = {
+  userId: '650c566d33d491669553127b',
+  instructorId: '650c5e97733fc0d37b8bbb3b',
   proposal: 11.10,
   continuousImprovement: 0,
   responsability: 8.25,

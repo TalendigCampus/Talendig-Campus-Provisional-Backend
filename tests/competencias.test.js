@@ -39,14 +39,14 @@ describe('API endpoint calidadForm', () => {
     // expect(payload.content.areas_mejora).toContain('Awesome');
   });
 
-  //   test('deberia dar error al no encontrar el usuario o instuctor', async () => {
-  //     const { body } = await api
-  //       .post(`${base_url}/calidadForm`)
-  //       .send({ ...competenciasBody, userId: '' })
-  //       .expect(400);
+  test('deberia dar error al no encontrar el usuario o instuctor', async () => {
+    const { body } = await api
+      .post(`${base_url}/calidadForm`)
+      .send({ ...competenciasBody, userId: '' })
+      .expect(400);
 
-  //     console.log(body);
-  //   });
+    console.log(body);
+  });
 
   test('deberia dar error al no poner la informacion requerida', async () => {
     await api.post(`${base_url}/calidadForm`).send({}).expect(400);
