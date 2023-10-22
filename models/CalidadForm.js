@@ -1,8 +1,25 @@
 const mongoose = require('mongoose');
+const { Schema, Types, model } = mongoose;
 
 const CalidadFormSchema = new mongoose.Schema({
 
     //Orientacion a la calidad
+    userId: {
+        type: Types.ObjectId,
+        ref: 'User',
+        required: [
+          true,
+          'Porfavor, introduzca el id del usuario que lleno el formulario',
+        ],
+      },
+      instructorId: {
+        type: Types.ObjectId,
+        ref: 'Instructor',
+        required: [
+          true,
+          'Porfavor, introduzca el id del usuario que lleno el formulario',
+        ],
+      },
     proposal: {
         type : Number,
         required : true
@@ -52,7 +69,10 @@ const CalidadFormSchema = new mongoose.Schema({
     }
 
 },
-    {timestamps: true}
+    {
+    timestamps: true,
+    versionKey: false
+    }
 );
 
-module.export = mongoose.model('CalidadForm', CalidadFormSchema);
+module.exports = mongoose.model('CalidadForm', CalidadFormSchema);

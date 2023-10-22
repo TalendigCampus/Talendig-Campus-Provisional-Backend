@@ -3,10 +3,15 @@ const CalidadForm = require('../models/CalidadForm');
 const CustomAPIError = require('../errors/index');
 const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
 const { utilsFunctions } = require('../utils');
+// const { EncontrarUsuarios: findUser } = require('../services/RegimenEticoService');
+
+// findUser();
 
 const CrearCalidadForm = async ({ form }) => {
   try {
     const {
+      userId,
+      instructorId,
       proposal,
       continuousImprovement,
       responsability,
@@ -18,33 +23,38 @@ const CrearCalidadForm = async ({ form }) => {
       quality,
     } = form;
 
-    const totalPoints =
-      proposal +
-      continuousImprovementresponsability + accurate +
-      focus +
-      adaptability +
-      interest +
-      communication +
-      quality;
     
-    const { grade } = () =>{
-        if(totalPoints <= 59 ){
-            return "Grado 1";
+    const values = Object.values(form); 
+    
+    const totalPoints = Math.round(values.reduce((acc, i) => acc + i));
+    
 
-        } else if (totalPoints >=60 && totalPoints <= 69){
-            return "Grado 2";
-        } else if (totalPoints >= 70 && totalPoints <=79){
-            return "Grado 3";
-        } else if (totalPoints >= 80 && totalPoints <= 89){
-            return "Grado 4";
-        } else if (totalPoints >= 90 && totalPoints <= 100){
-            return "Grado 5";
-        } else {
-            return 0;
-        }
+    const findGrade = (totalPoints) => {
+      if (totalPoints <= 59) return 'Grado 1';
+      if (totalPoints >= 60 && totalPoints <= 69) return 'Grado 2';
+      if (totalPoints >= 70 && totalPoints <= 79) return 'Grado 3';
+      if (totalPoints >= 80 && totalPoints <= 89) return 'Grado 4';
+      if (totalPoints >= 90 && totalPoints <= 100) return 'Grado 5';
     }
+     
+    const grade = findGrade(totalPoints);
     
+    if (values.some((item) => typeof item !== 'number')) {
+      return {
+        code: StatusCodes.BAD_REQUEST,
+        payload: {
+          hasError: false,
+          message: utilsFunctions.textResponseFormat(
+            'Orientado a la calidad',
+            SHORTTEXTREPONSE.badRequest,
+          ),
+          content: 'Error',
+        },
+      };
+    }
     const newCalidad = new CalidadForm({
+      userId,
+      instructorId,
       proposal,
       continuousImprovement,
       responsability,
@@ -59,18 +69,7 @@ const CrearCalidadForm = async ({ form }) => {
     });
 
     newCalidad.save();
-
-    return {
-      code: StatusCodes.CREATED,
-      payload: {
-        hasError: false,
-        message: utilsFunctions.textResponseFormat(
-          'Orientado a la calidad',
-          SHORTTEXTREPONSE.created,
-        ),
-        content: newCalidad,
-      },
-    };
+    
   } catch (error) {
     throw new CustomAPIError.BadRequestError(SHORTTEXTREPONSE.serverError);
   }
