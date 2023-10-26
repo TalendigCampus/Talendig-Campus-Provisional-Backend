@@ -1,5 +1,5 @@
 const { Schema, model, Types } = require('mongoose');
-const validator = require('validator');
+// const validator = require('validator');
 
 const aspectoMejoraSchema = new Schema(
   {
@@ -24,7 +24,7 @@ const aspectoMejoraSchema = new Schema(
       {
         type: String,
         required: [true, 'Favor de escribir un punto fuerte'],
-        minlength: 3,
+        minlength: 2,
       },
     ],
 
@@ -32,7 +32,15 @@ const aspectoMejoraSchema = new Schema(
       {
         type: String,
         required: [true, 'Favor de colocar un area de mejora'],
-        minlength: 3,
+        minlength: 2,
+      },
+    ],
+
+    recomendaciones: [
+      {
+        type: String,
+        required: [true, 'Favor de colocar un area de mejora'],
+        minlength: 2,
       },
     ],
 
@@ -40,13 +48,13 @@ const aspectoMejoraSchema = new Schema(
       {
         type: String,
         required: [true, 'Favor de colocar condiciones/entorno de trabajo'],
-        minlength: 3,
+        minlength: 2,
       },
     ],
     comentarios: [
       {
         type: String,
-        minlength: 3,
+        minlength: 1,
       },
     ],
 
@@ -63,21 +71,21 @@ const aspectoMejoraSchema = new Schema(
     firmaEvaluador: {
       type: String,
       required: [true, 'Favor de colocar la firma del evaluador/a'],
-      validate(value) {
-        if (!validator.default.isURL(value)) {
-          throw new Error('Firma incorrecta, favor de introducir una URL');
-        }
-      },
+      // validate(value) {
+      //   if (!validator.default.isURL(value)) {
+      //     throw new Error('Firma incorrecta, favor de introducir una URL');
+      //   }
+      // },
     },
 
     firmaServidor: {
       type: String,
       required: [true, 'Favor de colocar la firma del servidor/a'],
-      validate(value) {
-        if (!validator.default.isURL(value)) {
-          throw new Error('Firma incorrecta, favor de introducir una URL');
-        }
-      },
+      // validate(value) {
+      //   if (!validator.default.isURL(value)) {
+      //     throw new Error('Firma incorrecta, favor de introducir una URL');
+      //   }
+      // },
     },
   },
   { timestamps: true, versionKey: false },

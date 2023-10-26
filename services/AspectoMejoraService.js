@@ -6,31 +6,29 @@ const { SHORTTEXTREPONSE } = require('../constants/helperConstants');
 const { utilsFunctions } = require('../utils');
 
 const CrearAspectoMejora = async ({ formulario }) => {
-  // console.log(formulario);
   const {
-    firmaEvaluador,
-    firmaServidor,
-    condicion_trabajo,
-    comentarios,
-    calificacion_plan_mejora,
-    areas_mejora,
-    puntos_fuertes,
-    userId,
-    instructorId,
+    recomendaciones, condicion_trabajo, areas_mejora, puntos_fuertes,
   } = formulario;
-
   try {
-    const newAspectoMejora = new AspectoMejora({
-      userId,
-      instructorId,
-      areas_mejora,
-      puntos_fuertes,
-      calificacion_plan_mejora,
-      comentarios,
-      condicion_trabajo,
-      firmaEvaluador,
-      firmaServidor,
-    });
+    if (
+      recomendaciones.length < 1
+      || condicion_trabajo.length < 1
+      || areas_mejora.length < 1
+      || puntos_fuertes.length < 1
+    ) {
+      return {
+        code: StatusCodes.BAD_REQUEST,
+        payload: {
+          hasError: false,
+          message: utilsFunctions.textResponseFormat(
+            'Regimen etico',
+            SHORTTEXTREPONSE.created,
+          ),
+          content: 'Llenar los campos',
+        },
+      };
+    }
+    const newAspectoMejora = new AspectoMejora({ ...formulario });
 
     await newAspectoMejora.save();
     // console.log(saved);

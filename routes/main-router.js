@@ -41,12 +41,14 @@ router.post('/logro-metas', async (req, res) => {
 });
 
 router.post('/aspecto-mejora', async (req, res) => {
-  const { userId, instructorId } = req.body;
+  console.log(req.body);
+  const body = req.body.data ? req.body.data : req.body;
+  const { userId, instructorId } = body;
   const { EncontrarUsuarios } = RegimenEticoService;
 
   try {
     await EncontrarUsuarios(userId, instructorId);
-    const response = await CrearAspectoMejora({ formulario: req.body });
+    const response = await CrearAspectoMejora({ formulario: body });
     // console.log(response);
 
     if (response.payload.hasError) {
@@ -57,7 +59,7 @@ router.post('/aspecto-mejora', async (req, res) => {
 
     return res.status(response.code).json(response);
   } catch (error) {
-    if (error instanceof CustomAPIError) return res.status(400).json(error);
+    if (error instanceof CustomAPIError) return res.status(400).json(error.message);
     return res.status(404).json(error);
   }
 });
